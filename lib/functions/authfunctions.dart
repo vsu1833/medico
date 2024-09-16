@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:login/pages/homepage.dart';
 
-signup(String email, String password) async {
+signup(BuildContext context, String email, String password) async {
   try {
     final credential =
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -12,6 +12,13 @@ signup(String email, String password) async {
       password: password,
     );
     print('////////////// SUCCESS SIGNING UP ////////');
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Text('Successful Sign Up Now Proceed to Log in'),
+          );
+        });
   } on FirebaseAuthException catch (e) {
     if (e.code == 'weak-password') {
       print('The password provided is too weak.');
@@ -39,5 +46,12 @@ signin(BuildContext context, String email, password) async {
     } else if (e.code == 'wrong-password') {
       print('Wrong password provided for that user.');
     }
+     showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Text('Invalid credentials'),
+          );
+        });
   }
 }

@@ -3,6 +3,7 @@ import 'package:login/components/my_button.dart';
 import 'package:login/components/my_textfield.dart';
 import 'package:login/functions/authFunctions.dart';
 import 'package:login/pages/homepage.dart';
+import 'package:login/pages/forgot_password.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,7 +20,9 @@ class _LoginPageState extends State<LoginPage> {
   String email = '';
   String password = '';
   String username = '';
+  String licenseNo = '';
   bool isLogin = false;
+  bool isDoctor = false;
 
   @override
   void dispose() {
@@ -48,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
           child: SafeArea(
             child: Center(
               child: Column(
-                children: [
+                children: <Widget>[
                   const SizedBox(height: 50),
                   // Logo
                   const Icon(
@@ -96,6 +99,40 @@ class _LoginPageState extends State<LoginPage> {
                         )
                       : Container(),
 
+                  const SizedBox(height: 10),
+
+                  //If doctor is the one signing in
+                  isDoctor
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: TextFormField(
+                            key: ValueKey('licenseNo'),
+                            decoration: const InputDecoration(
+                                enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white),
+                                ),
+                                focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                fillColor: Colors.white,
+                                filled: true,
+                                hintText: "Enter your License Number",
+                                hintStyle: const TextStyle(color: Colors.grey)),
+                            validator: (value) {
+                              if ((value.toString().length < 8)) {
+                                return 'Invalid license No';
+                              } else {
+                                return null;
+                              }
+                            },
+                            onSaved: (value) {
+                              setState(() {
+                                licenseNo = value!;
+                              });
+                            },
+                          ),
+                        )
+                      : Container(),
                   const SizedBox(height: 10),
                   // Email textfield
                   Padding(
@@ -190,23 +227,43 @@ class _LoginPageState extends State<LoginPage> {
                       if (_formkey.currentState!.validate()) {
                         _formkey.currentState!.save();
                         !isLogin
-                            ? signin(context,email, password)
-                            : signup(email, password);
+                            ? signin(context, email, password)
+                            : signup(context, email, password);
                       }
                     },
                     buttonname: isLogin ? "Sign up" : "Login",
                   ),
                   const SizedBox(height: 10),
                   // Are you a Doctor? text
-                  const Text(
-                    'Are you a Doctor?',
-                    style: TextStyle(color: Colors.white),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isDoctor = !isDoctor;
+                        print(isDoctor);
+                      });
+                      print('The Doctor button was pressed and state was set');
+                    },
+                    child: !isDoctor
+                        ? Text(
+                            'Are you a Doctor?',
+                            style: TextStyle(color: Colors.white),
+                          )
+                        : Text(
+                            'Are you a Patient?',
+                            style: TextStyle(color: Colors.white),
+                          ),
                   ),
                   const SizedBox(height: 10),
                   // Forgot Password Button
                   !isLogin
                       ? TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ForgotPasswordPage()),
+                            );
+                          },
                           child: const Text(
                             'Forgot Password?',
                             style: TextStyle(color: Colors.white),

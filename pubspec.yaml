@@ -76,7 +76,9 @@ flutter:
     - assets/dcotor.jpeg
     - assets/choose_doctor.png
     - assets/medical_his.png
-    - assets/hii.png     
+    - assets/hii.png  
+    - assets/cognitive_training.png   
+    - assets/brain_question_mark.jpg 
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
