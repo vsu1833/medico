@@ -213,7 +213,7 @@ class _LoginPageState extends State<LoginPage> {
                             });
                           },
                           child: Text(
-                            isLogin ? 'Not Signed Up? Log in' : 'Signup',
+                            isLogin ? 'already Signed Up? Log in' : 'Signup',
                             style: const TextStyle(color: Colors.white),
                           ),
                         ),
