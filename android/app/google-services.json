@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "727553929161",
+    "project_id": "mediconew-20b8f",
+    "storage_bucket": "mediconew-20b8f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:727553929161:android:bc7349843ca50165d1c218",
+        "android_client_info": {
+          "package_name": "com.example.login"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWNxwyUbfZiQn3_iOWh0If6gQYTAT8DEg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
