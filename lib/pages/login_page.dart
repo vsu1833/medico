@@ -228,7 +228,7 @@ class _LoginPageState extends State<LoginPage> {
                         _formkey.currentState!.save();
                         !isLogin
                             ? signin(context, email, password)
-                            : signup(context, email, password);
+                            : signup(context, email, password,isDoctor);
                       }
                     },
                     buttonname: isLogin ? "Sign up" : "Login",
