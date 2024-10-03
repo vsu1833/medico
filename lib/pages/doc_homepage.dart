@@ -4,7 +4,7 @@ import 'package:login/components/category_card.dart';
 import 'package:login/components/doctor_card.dart';
 import 'package:login/components/banner.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:login/pages/profile_updation.dart';
+import 'package:login/pages/doc_profile.dart';
 
 class DocHomepage extends StatefulWidget {
   DocHomepage({super.key});
@@ -57,7 +57,7 @@ class _DocHomepageState extends State<DocHomepage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProfileUpdateApp()),
+                  MaterialPageRoute(builder: (context) => DoctorProfileUpdateApp ()),
                 );
               },
               icon: Icon(Icons.person))
