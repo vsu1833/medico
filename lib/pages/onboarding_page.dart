@@ -19,7 +19,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     // Initialize the onboarding pages inside build method where context is available
-    final List<Widget> _onBoardingPages = [
+    final List<Widget> onBoardingPages = [
       OnboardingCard(
         image: "assets/dcotor.jpeg",
         imageHeight: 400,
@@ -66,7 +66,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           // Navigate to LoginPage on button press
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => LoginPage()),
+            MaterialPageRoute(builder: (context) => const LoginPage()),
           );
         },
       ),
@@ -84,12 +84,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
             Expanded(
               child: PageView(
                 controller: _pageController,
-                children: _onBoardingPages,
+                children: onBoardingPages,
               ),
             ),
             SmoothPageIndicator(
               controller: _pageController,
-              count: _onBoardingPages.length,
+              count: onBoardingPages.length,
               effect: const WormEffect(
                 paintStyle: PaintingStyle.stroke,
                 strokeWidth: 1.5,
@@ -104,7 +104,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             ),
             TextButton(
               onPressed: () {
-                _pageController.jumpToPage(_onBoardingPages.length - 1);
+                _pageController.jumpToPage(onBoardingPages.length - 1);
               },
               child: const Text(
                 "Skip",

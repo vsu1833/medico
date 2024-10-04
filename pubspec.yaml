@@ -40,6 +40,8 @@ dependencies:
   firebase_core: ^3.4.1
   firebase_auth: ^5.2.1
   cloud_firestore: ^5.4.3
+  material_design_icons_flutter: ^7.0.7296
+
   image_picker: ^1.1.2
 
 dev_dependencies:
@@ -79,6 +81,7 @@ flutter:
     - assets/choose_doctor.png
     - assets/medical_his.png
     - assets/hii.png  
+    - assets/google.png
     - assets/cognitive_training.png   
     - assets/brain_question_mark.jpg 
 

@@ -21,7 +21,7 @@ class OnboardingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: MediaQuery.sizeOf(context).height * 0.80,
       width: MediaQuery.sizeOf(context).width,
       child: Column(
@@ -71,14 +71,14 @@ class OnboardingCard extends StatelessWidget {
               onPressed: () => onPressed(),
               minWidth: 300,
               color: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
               child: Text(
                 buttonText,
                 style: TextStyle(
                   color: Color.fromARGB(255, 255, 255, 255),
                 ),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
               ),
             ),
           ),

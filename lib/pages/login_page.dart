@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login/components/my_button.dart';
 import 'package:login/components/my_textfield.dart';
 import 'package:login/functions/authFunctions.dart';
-import 'package:login/pages/homepage.dart';
+import 'package:login/pages/home_screen.dart';
 import 'package:login/pages/forgot_password.dart';
 
 class LoginPage extends StatefulWidget {
@@ -33,13 +33,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void signUserIn() {
-    print("Tapped on the button");
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Homepage()),
-    );
-  }
+  
 
   @override
   Widget build(BuildContext context) {
