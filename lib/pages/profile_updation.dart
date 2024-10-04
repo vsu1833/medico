@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:login/pages/home_screen.dart';
+import 'package:login/pages/main_screen.dart';
 
 class ProfileUpdateApp extends StatelessWidget {
+  const ProfileUpdateApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,6 +18,8 @@ class ProfileUpdateApp extends StatelessWidget {
 }
 
 class ProfileUpdatePage extends StatefulWidget {
+  const ProfileUpdatePage({super.key});
+
   @override
   _ProfileUpdatePageState createState() => _ProfileUpdatePageState();
 }
@@ -57,7 +63,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: Column(
+          content: const Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.check_circle, color: Colors.green, size: 50),
@@ -67,7 +73,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
@@ -83,7 +89,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Patient Profile'),
+        title: const Text('Patient Profile'),
         backgroundColor: const Color.fromARGB(255, 107, 170, 181),
       ),
       body: SingleChildScrollView(
@@ -94,15 +100,15 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Center(
                   child: GestureDetector(
                     onTap: () {
                       // Handle view/change profile picture
                     },
-                    child: CircleAvatar(
+                    child: const CircleAvatar(
                       radius: 56,
-                      backgroundColor: const Color.fromARGB(255, 107, 170, 181),
+                      backgroundColor: Color.fromARGB(255, 107, 170, 181),
                       child: CircleAvatar(
                         radius: 50,
                         backgroundImage:
@@ -111,12 +117,12 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
-                Center(
+                const SizedBox(height: 10),
+                const Center(
                   child: Text(
                     'Patient ID: name@xyz',
                     style: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
+                      color: Color.fromARGB(255, 107, 170, 181),
                       fontSize: 16,
                     ),
                   ),
@@ -125,20 +131,20 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                   initialValue:
                       'user@example.com', // Replace with the actual email.
                   readOnly: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                     labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
+                      color: Color.fromARGB(255, 107, 170, 181),
                     ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
+                const SizedBox(height: 20),
                 if (!_showNameFields)
                   TextFormField(
                     onTap: () {
@@ -146,14 +152,14 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                         _showNameFields = true;
                       });
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Name',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
@@ -165,17 +171,17 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                     },
                   ),
                 if (_showNameFields) ...[
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _firstNameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'First Name',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
@@ -186,32 +192,32 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _middleNameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Middle Name (Optional)',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _lastNameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Last Name',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
@@ -226,18 +232,18 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                     },
                   ),
                 ],
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextFormField(
                   readOnly: true,
                   onTap: () => _selectDate(context),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Date of Birth',
                     labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
+                      color: Color.fromARGB(255, 107, 170, 181),
                     ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
                     suffixIcon: Icon(Icons.calendar_today),
@@ -254,13 +260,13 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text('Gender:',
+                    const Text('Gender:',
                         style: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         )),
                     Radio(
                       value: 'Male',
@@ -271,9 +277,9 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                         });
                       },
                     ),
-                    Text('Male',
+                    const Text('Male',
                         style: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         )),
                     Radio(
                       value: 'Female',
@@ -284,13 +290,13 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                         });
                       },
                     ),
-                    Text('Female',
+                    const Text('Female',
                         style: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         )),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 if (!_showAddressFields)
                   TextFormField(
                     onTap: () {
@@ -298,14 +304,14 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                         _showAddressFields = true;
                       });
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Address',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
@@ -317,17 +323,17 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                     },
                   ),
                 if (_showAddressFields) ...[
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _houseNoController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'House No.',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
@@ -338,17 +344,17 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _streetNameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Street Name',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
@@ -359,17 +365,17 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _cityController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'City',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
@@ -380,17 +386,17 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _districtController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'District',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
@@ -401,17 +407,17 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _stateController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'State',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
@@ -422,17 +428,17 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _pincodeController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Pincode',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
@@ -443,12 +449,12 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   InternationalPhoneNumberInput(
                     onInputChanged: (PhoneNumber number) {
                       print(number.phoneNumber);
                     },
-                    selectorConfig: SelectorConfig(
+                    selectorConfig: const SelectorConfig(
                       selectorType: PhoneInputSelectorType.DROPDOWN,
                     ),
                     ignoreBlank: false,
@@ -457,14 +463,14 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                     textFieldController: _phoneController,
                     formatInput: false,
                     keyboardType: TextInputType.number,
-                    inputBorder: OutlineInputBorder(
+                    inputBorder: const OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
                   ),
                 ],
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -474,21 +480,27 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                           showSuccessDialog();
                         }
                       },
-                      child: Text('Save'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             const Color.fromARGB(255, 107, 170, 181),
                       ),
+                      child: Text('Save'),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                       
+                    Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>  MainScreen(),
+                  ),
+                );
                       },
-                      child: Text('Cancel'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey,
                       ),
+                      child: Text('Cancel'),
                     ),
                   ],
                 ),

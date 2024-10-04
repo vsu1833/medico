@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 // Define the main StatefulWidget
 class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({super.key});
+
   @override
   _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
 }
@@ -24,7 +26,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       showDialog(
         context: context,
         builder: (context) {
-          return AlertDialog(
+          return const AlertDialog(
             content:
                 Text('Password Reset link has been sent to your email address'),
           );
@@ -48,7 +50,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(254, 254, 254, 254),
+      backgroundColor: const Color.fromARGB(254, 254, 254, 254),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -62,10 +64,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 width: 150,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // "Forgot Password" title
-            Text(
+            const Text(
               "Forgot Password",
               style: TextStyle(
                 fontSize: 24,
@@ -73,10 +75,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 color: Color.fromARGB(255, 107, 170, 181),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             // Centered message
-            Text(
+            const Text(
               "No worries! Provide your email id and we'll send you the reset link",
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -84,7 +86,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 color: Color.fromARGB(255, 107, 170, 181),
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
 
             // Email TextField using the provided MyTextfield widget
             MyTextfield(
@@ -92,7 +94,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               hintText: 'Email ID',
               obscureText: false,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Proceed button
             ElevatedButton(
@@ -106,10 +108,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 107, 170, 181),
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                backgroundColor: const Color.fromARGB(255, 107, 170, 181),
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
               ),
-              child: Text(
+              child: const Text(
                 "Proceed",
                 style: TextStyle(
                   color: Colors.white,
@@ -131,11 +133,11 @@ class MyTextfield extends StatelessWidget {
   final bool obscureText;
 
   const MyTextfield({
-    Key? key,
+    super.key,
     required this.controller,
     required this.hintText,
     required this.obscureText,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

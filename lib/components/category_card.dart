@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class categoryCard extends StatelessWidget {
   final String catName;
 
-  categoryCard({
+  const categoryCard({
     super.key,
     required this.catName,
   });
@@ -20,13 +20,13 @@ class categoryCard extends StatelessWidget {
         screenSize.height * 0.075; // 30% of screen height
 
     return Padding(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 8,
       ),
       child: Container(
         height: containerHeight,
         width: containerWidth,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(15)),
           color: Color.fromARGB(255, 136, 214, 228),
         ),

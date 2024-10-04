@@ -6,7 +6,7 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-        color: Color.fromARGB(255, 107, 170, 181),
+        color: const Color.fromARGB(255, 107, 170, 181),
         child: ListView(
           children: [
             const UserAccountsDrawerHeader(
@@ -24,7 +24,7 @@ class CustomDrawer extends StatelessWidget {
               ),
             ),
             ListTile(
-              leading: Icon(
+              leading: const Icon(
                 Icons.local_hospital_rounded,
                 size: 30,
               ),
@@ -36,11 +36,11 @@ class CustomDrawer extends StatelessWidget {
                 print('Button tapped');
               },
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             ListTile(
-              leading: Icon(
+              leading: const Icon(
                 Icons.fitness_center_rounded,
                 size: 30,
               ),
@@ -52,11 +52,11 @@ class CustomDrawer extends StatelessWidget {
                 print('Button tapped');
               },
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             ListTile(
-              leading: Icon(
+              leading: const Icon(
                 Icons.search,
                 size: 30,
               ),
@@ -68,11 +68,11 @@ class CustomDrawer extends StatelessWidget {
                 print('Button tapped');
               },
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             ListTile(
-              leading: Icon(
+              leading: const Icon(
                 Icons.receipt_long_rounded,
                 size: 30,
               ),
@@ -84,11 +84,11 @@ class CustomDrawer extends StatelessWidget {
                 print('Button tapped');
               },
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             ListTile(
-              leading: Icon(
+              leading: const Icon(
                 Icons.rate_review,
                 size: 30,
               ),

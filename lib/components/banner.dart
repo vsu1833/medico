@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MyBanner extends StatelessWidget {
   final String bannerName;
 
-  MyBanner(
+  const MyBanner(
     {super.key,
     required this.bannerName,
   }
@@ -21,7 +21,7 @@ class MyBanner extends StatelessWidget {
       height: containerHeight,
       width: containerWidth,
       decoration: BoxDecoration(
-        color: Color.fromARGB(255, 107, 170, 181),
+        color: const Color.fromARGB(255, 107, 170, 181),
         borderRadius: BorderRadius.circular(10),
         image: DecorationImage(
             image: Image.asset('assets/$bannerName.jpg').image, fit: BoxFit.fill),

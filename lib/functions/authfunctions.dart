@@ -2,8 +2,9 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:login/pages/homepage.dart';
-import 'package:login/pages/doc_homepage.dart';
+// import 'package:login/pages/homepage.dart';
+// import 'package:login/pages/doc_homepage.dart';
+import 'package:login/pages/home_screen.dart';
 
 signup(
     BuildContext context, String email, String password, bool isDoctor) async {
@@ -28,11 +29,11 @@ signup(
 
     // Show success feedback
     ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Sign Up Successful! Log in Now')));
+        .showSnackBar(const SnackBar(content: Text('Sign Up Successful! Log in Now')));
           showDialog(
         context: context,
         builder: (context) {
-          return AlertDialog(
+          return const AlertDialog(
             content: Text('Successful Sign Up . You can Log in now'),
           );
         });
@@ -67,14 +68,14 @@ signin(BuildContext context, String email, password) async {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                DocHomepage()), // If doctor, navigate to DoctorHomepage
+                HomeScreen()), // If doctor, navigate to DoctorHomepage
       );
     } else {
       Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) =>
-                Homepage()), // If patient, navigate to PatientHomepage
+                HomeScreen()), // If patient, navigate to PatientHomepage
       );
     }
 
@@ -89,7 +90,7 @@ signin(BuildContext context, String email, password) async {
     showDialog(
         context: context,
         builder: (context) {
-          return AlertDialog(
+          return const AlertDialog(
             content: Text('Invalid credentials'),
           );
         });
