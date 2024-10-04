@@ -5,6 +5,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:login/pages/doctor_screen_page.dart';
 import 'package:login/pages/doc_profile_update.dart';
 
+
 class DocHomeScreen extends StatelessWidget {
   // List of categories and icons
   List catNames = ["Dental", "Health", "Eye", "Brain", "Ear", "Bone"];
@@ -82,9 +83,11 @@ class DocHomeScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
+
                   MaterialPageRoute(
                     builder: (context) => DoctorProfileUpdateApp(),
                   ),
+
                 );
               },
             ),

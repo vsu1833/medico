@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:login/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:login/pages/main_screen.dart';
+
 class ProfileUpdateApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -57,8 +58,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
       });
     }
   }
-
-  void showSuccessDialog() {
+   void showSuccessDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -129,9 +129,11 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
     // Show a success message after saving the profile
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Profile updated successfully!')),
+
     );
     showSuccessDialog();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -545,6 +547,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
                           savePatientProfile();
+
                         }
                       },
                       child: Text('Save'),
