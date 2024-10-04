@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 // import 'package:login/pages/homepage.dart';
 // import 'package:login/pages/doc_homepage.dart';
 import 'package:login/pages/home_screen.dart';
+import 'package:login/pages/doc_homepage.dart';
 
 signup(
     BuildContext context, String email, String password, bool isDoctor) async {
@@ -68,7 +69,7 @@ signin(BuildContext context, String email, password) async {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                HomeScreen()), // If doctor, navigate to DoctorHomepage
+                DocHomeScreen()), // If doctor, navigate to DoctorHomepage
       );
     } else {
       Navigator.push(

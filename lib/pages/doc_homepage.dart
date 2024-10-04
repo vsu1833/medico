@@ -1,14 +1,11 @@
-import 'package:flutter/widgets.dart';
-import 'package:login/components/symptoms/dentaldoc.dart';
 import 'package:flutter/material.dart';
+import 'package:login/components/symptoms/dentaldoc.dart';
 import 'package:login/pages/profile_updation.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:login/pages/doctor_screen_page.dart';
+import 'package:login/pages/doc_profile_update.dart';
 
-class HomeScreen extends StatelessWidget {
-
-  
-
+class DocHomeScreen extends StatelessWidget {
   // List of categories and icons
   List catNames = ["Dental", "Health", "Eye", "Brain", "Ear", "Bone"];
 
@@ -38,16 +35,14 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    
       // AppBar with Drawer icon
-    appBar: AppBar(),
-    
+      appBar: AppBar(),
 
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-          const  DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.teal,
               ),
@@ -60,7 +55,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "Hi, Rogi",
+                    "Hi, Doctor",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -71,36 +66,31 @@ class HomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.home, color: Colors.teal),
-              title:const  Text('Home'),
+              title: const Text('Home'),
               onTap: () {
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading:const  Icon(Icons.person, color: Colors.teal),
+              leading: const Icon(Icons.person, color: Colors.teal),
               title: const Text('Profile'),
-              onTap: () {
-                
-                     
-                
-              },
+              onTap: () {},
             ),
             ListTile(
               leading: Icon(Icons.update, color: Colors.teal),
               title: Text('Update Profile'),
               onTap: () {
-                
-                    Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>  ProfileUpdateApp(),
+                    builder: (context) => DoctorProfileUpdateApp(),
                   ),
                 );
               },
             ),
             ListTile(
               leading: Icon(Icons.health_and_safety, color: Colors.teal),
-              title: Text('Health Analytics'),
+              title: Text('See Appointments Scheduled'),
               onTap: () {
                 // Add appointments navigation logic here
                 Navigator.pop(context);
@@ -118,12 +108,10 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        
         padding: EdgeInsets.only(top: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-           
             // Search Box
             Container(
               margin: EdgeInsets.only(top: 20, bottom: 20, left: 15, right: 15),
@@ -181,10 +169,21 @@ class HomeScreen extends StatelessWidget {
                         horizontal: 10.0), // Increased horizontal gap
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Dentaldoc(),
+                        // Show dialog here
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Notice'),
+                            content: Text(
+                                'Work is in progress on doc page. This is just a trial'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context); // Close the dialog
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
                           ),
                         );
                       },
@@ -336,9 +335,8 @@ class HomeScreen extends StatelessWidget {
                                   Text(
                                     "Surgeon",
                                     style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w900,
-                                      color: Colors.black.withOpacity(0.6),
+                                      fontSize: 15,
+                                      color: Colors.black.withOpacity(0.5),
                                     ),
                                   ),
                                   SizedBox(height: 8),
@@ -346,16 +344,14 @@ class HomeScreen extends StatelessWidget {
                                     children: [
                                       Icon(
                                         Icons.star,
-                                        color: Colors.yellow,
+                                        color: Colors.amber,
+                                        size: 20,
                                       ),
-                                      SizedBox(
-                                        height: 15,
-                                      ),
+                                      SizedBox(width: 5),
                                       Text(
                                         "4.9",
                                         style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
                                           color: Colors.black.withOpacity(0.6),
                                         ),
                                       ),
