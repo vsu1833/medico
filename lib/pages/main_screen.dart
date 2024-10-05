@@ -5,7 +5,7 @@ import 'package:login/pages/scheduleScreen.dart';
 import 'package:login/pages/home_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../components/scheduleScreen.dart';
+// import '../components/scheduleScreen.dart';
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
