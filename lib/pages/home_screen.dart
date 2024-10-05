@@ -7,11 +7,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:login/pages/doctor_screen_page.dart';
 import 'package:login/pages/ratings_and_reviews.dart';
 
-
 class HomeScreen extends StatelessWidget {
-
-  
-
   // List of categories and icons
   List catNames = ["Dental", "Health", "Eye", "Brain", "Ear", "Bone"];
 
@@ -41,16 +37,14 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    
       // AppBar with Drawer icon
-    appBar: AppBar(),
-    
+      appBar: AppBar(),
 
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-          const  DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.teal,
               ),
@@ -74,88 +68,79 @@ class HomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.home, color: Colors.teal),
-              title:const  Text('Home'),
+              title: const Text('Home'),
               onTap: () {
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading:const  Icon(Icons.person, color: Colors.teal),
+              leading: const Icon(Icons.person, color: Colors.teal),
               title: const Text('Profile'),
-              onTap: () {
-                
-                     
-                
-              },
+              onTap: () {},
             ),
             ListTile(
               leading: const Icon(Icons.update, color: Colors.teal),
               title: const Text('Update Profile'),
               onTap: () {
-                
-                    Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>  ProfileUpdateApp(),
+                    builder: (context) => ProfileUpdateApp(),
                   ),
                 );
               },
             ),
             ListTile(
- latest_reviews_integrated
               leading: Icon(Icons.health_and_safety, color: Colors.teal),
               title: Text('Ratings and Reviews'),
-
               onTap: () {
-             Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>  RatingsAndReviews(),
+                    builder: (context) => RatingsAndReviews(),
                   ),
                 );
               },
             ),
             ListTile(
-              leading: const Icon(Icons.meeting_room_outlined, color: Colors.teal),
+              leading:
+                  const Icon(Icons.meeting_room_outlined, color: Colors.teal),
               title: const Text('Book Appointment'),
               onTap: () {
-                   Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>  CategoryPage(),
+                    builder: (context) => CategoryPage(),
                   ),
-            );
-                
+                );
               },
             ),
-          
-        
-             ListTile(
-              leading: const Icon(Icons.meeting_room_outlined, color: Colors.teal),
+            ListTile(
+              leading:
+                  const Icon(Icons.meeting_room_outlined, color: Colors.teal),
               title: const Text('logout'),
               onTap: () {
-                   Navigator.push(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>  Container(),
+                    builder: (context) => Container(),
                   ),
-            );
-                
+                );
               },
             ),
-            ],
+          ],
+        ),
       ),
-    ),
-    
-  body: SingleChildScrollView(
-  padding: const EdgeInsets.only(top: 30),
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-           
+
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.only(top: 30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             // Search Box
             Container(
-              margin: const EdgeInsets.only(top: 20, bottom: 20, left: 15, right: 15),
+              margin: const EdgeInsets.only(
+                  top: 20, bottom: 20, left: 15, right: 15),
               width: MediaQuery.of(context).size.width,
               height: 55,
               alignment: Alignment.center,
@@ -278,8 +263,8 @@ class HomeScreen extends StatelessWidget {
                       Container(
                         height: 300,
                         width: 200,
-                        margin:
-                            const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 20),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(15),
@@ -351,7 +336,8 @@ class HomeScreen extends StatelessWidget {
                               height: 8,
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 5),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
