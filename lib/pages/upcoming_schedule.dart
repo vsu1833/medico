@@ -9,25 +9,25 @@ class UpcomingSchedule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "About Doctor",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Container(
-            padding: EdgeInsets.symmetric(vertical: 5),
+            padding: const EdgeInsets.symmetric(vertical: 5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
                   blurRadius: 4,
@@ -39,7 +39,7 @@ class UpcomingSchedule extends StatelessWidget {
               width: MediaQuery.of(context).size.width,
               child: Column(
                 children: [
-                  ListTile(
+                  const ListTile(
                     title: Text("Dr. Adarsh Nalayak",
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text("Therapist"),
@@ -48,7 +48,7 @@ class UpcomingSchedule extends StatelessWidget {
                       backgroundImage: AssetImage("images/doctor1.jpg"),
                     ),
                   ),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 15),
                     child: Divider(
                       thickness: 1,
@@ -58,7 +58,7 @@ class UpcomingSchedule extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Row(
+                      const Row(
                         children: [
                           Icon(
                             Icons.calendar_month,
@@ -75,7 +75,7 @@ class UpcomingSchedule extends StatelessWidget {
                           )
                         ],
                       ),
-                      Row(
+                      const Row(
                         children: [
                           Icon(
                             Icons.access_time_filled,
@@ -93,16 +93,16 @@ class UpcomingSchedule extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
+                            padding: const EdgeInsets.all(5),
+                            decoration: const BoxDecoration(
                               color: Colors.green,
                               shape: BoxShape.circle,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 5
                           ),
-                          Text(
+                          const Text(
                             "Confirmed",
                             style: TextStyle(
                               color: Colors.black54,
@@ -113,7 +113,7 @@ class UpcomingSchedule extends StatelessWidget {
 
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                     
                   ),
@@ -126,13 +126,13 @@ class UpcomingSchedule extends StatelessWidget {
                         },
                        child: Container(
                         width: 150,
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
                           
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Text("Cancel",
                             style: TextStyle(
                               fontSize: 16,
@@ -148,45 +148,45 @@ class UpcomingSchedule extends StatelessWidget {
                         },
                        child: Container(
                         width: 150,
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: Colors.teal,
                           borderRadius: BorderRadius.circular(10),
                           
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Text("Rescheduled",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight : FontWeight.w500 ,
-                              color: const Color.fromARGB(255, 252, 252, 252),
+                              color: Color.fromARGB(255, 252, 252, 252),
                             ),),
                           ),
                         ),
                        ), 
                     ],
                   ),
-                  SizedBox(height: 10,)
+                  const SizedBox(height: 10,)
 
                 ],
               ),
             ),
           ),
-           Text(
+           const Text(
             "About Doctor",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           Container(
-            padding: EdgeInsets.symmetric(vertical: 5),
+            padding: const EdgeInsets.symmetric(vertical: 5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
                   blurRadius: 4,
@@ -198,7 +198,7 @@ class UpcomingSchedule extends StatelessWidget {
               width: MediaQuery.of(context).size.width,
               child: Column(
                 children: [
-                  ListTile(
+                  const ListTile(
                     title: Text("Dr. Adarsh Nalayak",
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text("Therapist"),
@@ -207,7 +207,7 @@ class UpcomingSchedule extends StatelessWidget {
                       backgroundImage: AssetImage("images/doctor1.jpg"),
                     ),
                   ),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 15),
                     child: Divider(
                       thickness: 1,
@@ -217,7 +217,7 @@ class UpcomingSchedule extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Row(
+                      const Row(
                         children: [
                           Icon(
                             Icons.calendar_month,
@@ -234,7 +234,7 @@ class UpcomingSchedule extends StatelessWidget {
                           )
                         ],
                       ),
-                      Row(
+                      const Row(
                         children: [
                           Icon(
                             Icons.access_time_filled,
@@ -252,16 +252,16 @@ class UpcomingSchedule extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
+                            padding: const EdgeInsets.all(5),
+                            decoration: const BoxDecoration(
                               color: Colors.green,
                               shape: BoxShape.circle,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 5
                           ),
-                          Text(
+                          const Text(
                             "Confirmed",
                             style: TextStyle(
                               color: Colors.black54,
@@ -272,7 +272,7 @@ class UpcomingSchedule extends StatelessWidget {
 
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                     
                   ),
@@ -285,13 +285,13 @@ class UpcomingSchedule extends StatelessWidget {
                         },
                        child: Container(
                         width: 150,
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
                           
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Text("Cancel",
                             style: TextStyle(
                               fontSize: 16,
@@ -307,25 +307,25 @@ class UpcomingSchedule extends StatelessWidget {
                         },
                        child: Container(
                         width: 150,
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: Colors.teal,
                           borderRadius: BorderRadius.circular(10),
                           
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Text("Rescheduled",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight : FontWeight.w500 ,
-                              color: const Color.fromARGB(255, 252, 252, 252),
+                              color: Color.fromARGB(255, 252, 252, 252),
                             ),),
                           ),
                         ),
                        ), 
                     ],
                   ),
-                  SizedBox(height: 10,)
+                  const SizedBox(height: 10,)
 
                 ],
               ),

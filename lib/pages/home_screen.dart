@@ -1,9 +1,11 @@
-import 'package:flutter/widgets.dart';
+import 'package:login/category.dart';
+
 import 'package:login/components/symptoms/dentaldoc.dart';
 import 'package:flutter/material.dart';
 import 'package:login/pages/profile_updation.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:login/pages/doctor_screen_page.dart';
+import 'package:login/appointment_booking.dart';
 
 class HomeScreen extends StatelessWidget {
 
@@ -86,8 +88,8 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.update, color: Colors.teal),
-              title: Text('Update Profile'),
+              leading: const Icon(Icons.update, color: Colors.teal),
+              title: const Text('Update Profile'),
               onTap: () {
                 
                     Navigator.push(
@@ -99,41 +101,61 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.health_and_safety, color: Colors.teal),
-              title: Text('Health Analytics'),
+              leading: const Icon(Icons.health_and_safety, color: Colors.teal),
+              title: const Text('Health Analytics'),
               onTap: () {
                 // Add appointments navigation logic here
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading: Icon(Icons.logout, color: Colors.teal),
-              title: Text('Logout'),
+              leading: const Icon(Icons.meeting_room_outlined, color: Colors.teal),
+              title: const Text('Book Appointment'),
               onTap: () {
-                // Add logout logic here
-                Navigator.pop(context);
+                   Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>  CategoryPage(),
+                  ),
+            );
+                
               },
             ),
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
+          
         
-        padding: EdgeInsets.only(top: 30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+             ListTile(
+              leading: const Icon(Icons.meeting_room_outlined, color: Colors.teal),
+              title: const Text('logout'),
+              onTap: () {
+                   Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>  Container(),
+                  ),
+            );
+                
+              },
+            ),
+            ],
+      ),
+    ),
+    
+  body: SingleChildScrollView(
+  padding: const EdgeInsets.only(top: 30),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
            
             // Search Box
             Container(
-              margin: EdgeInsets.only(top: 20, bottom: 20, left: 15, right: 15),
+              margin: const EdgeInsets.only(top: 20, bottom: 20, left: 15, right: 15),
               width: MediaQuery.of(context).size.width,
               height: 55,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
                     spreadRadius: 3,
@@ -148,7 +170,7 @@ class HomeScreen extends StatelessWidget {
                   hintStyle: TextStyle(
                     color: Colors.black.withOpacity(0.5),
                   ),
-                  prefixIcon: Icon(
+                  prefixIcon: const Icon(
                     Icons.search,
                     size: 25,
                   ),
@@ -158,7 +180,7 @@ class HomeScreen extends StatelessWidget {
 
             // Symptoms Section
             Padding(
-              padding: EdgeInsets.only(left: 15),
+              padding: const EdgeInsets.only(left: 15),
               child: Text(
                 "Symptoms",
                 style: TextStyle(
@@ -168,8 +190,8 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 15),
-            Container(
+            const SizedBox(height: 15),
+            SizedBox(
               height: 110,
               child: ListView.builder(
                 shrinkWrap: true,
@@ -177,24 +199,24 @@ class HomeScreen extends StatelessWidget {
                 itemCount: catNames.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Padding(
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                         horizontal: 10.0), // Increased horizontal gap
                     child: InkWell(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => Dentaldoc(),
+                            builder: (context) => const Dentaldoc(),
                           ),
                         );
                       },
                       child: Column(
                         children: [
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 5),
+                            margin: const EdgeInsets.symmetric(vertical: 5),
                             height: 60,
                             width: 60,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Colors.white,
                               shape: BoxShape.circle,
                               boxShadow: [
@@ -207,7 +229,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                             child: Center(child: catIcons[index]),
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           Text(
                             catNames[index],
                             style: TextStyle(
@@ -225,9 +247,9 @@ class HomeScreen extends StatelessWidget {
             ),
 
             // Best Doctors Section
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Padding(
-              padding: EdgeInsets.only(left: 15),
+              padding: const EdgeInsets.only(left: 15),
               child: Text(
                 "Our Best Doctors",
                 style: TextStyle(
@@ -237,7 +259,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
+            SizedBox(
               height: 370,
               child: ListView.builder(
                 shrinkWrap: true,
@@ -250,11 +272,11 @@ class HomeScreen extends StatelessWidget {
                         height: 300,
                         width: 200,
                         margin:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                            const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
                               color: Colors.black12,
                               blurRadius: 4,
@@ -279,7 +301,7 @@ class HomeScreen extends StatelessWidget {
                                     );
                                   },
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.only(
+                                    borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(15),
                                       topRight: Radius.circular(15),
                                     ),
@@ -294,10 +316,10 @@ class HomeScreen extends StatelessWidget {
                                 Align(
                                   alignment: Alignment.topRight,
                                   child: Container(
-                                    margin: EdgeInsets.all(8),
+                                    margin: const EdgeInsets.all(8),
                                     height: 45,
                                     width: 45,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                         color: Colors.white,
                                         shape: BoxShape.circle,
                                         boxShadow: [
@@ -307,7 +329,7 @@ class HomeScreen extends StatelessWidget {
                                             spreadRadius: 2,
                                           ),
                                         ]),
-                                    child: Center(
+                                    child: const Center(
                                       child: Icon(
                                         Icons.favorite_outline,
                                         color: Colors.teal,
@@ -318,11 +340,11 @@ class HomeScreen extends StatelessWidget {
                                 )
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 8,
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              padding: const EdgeInsets.symmetric(horizontal: 5),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -341,14 +363,14 @@ class HomeScreen extends StatelessWidget {
                                       color: Colors.black.withOpacity(0.6),
                                     ),
                                   ),
-                                  SizedBox(height: 8),
+                                  const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.star,
                                         color: Colors.yellow,
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 15,
                                       ),
                                       Text(

@@ -7,7 +7,6 @@ import 'package:login/pages/home_screen.dart';
 import 'package:login/pop_up/app_pop_up.dart';
 import 'package:login/pages/doctor_screen_page.dart';
 import 'package:login/pages/main_screen.dart';
-import 'package:login/pop_up/app_pop_up.dart';
 class DoctorScreenPage extends StatelessWidget {
   DoctorScreenPage({super.key});
 
@@ -36,14 +35,12 @@ class DoctorScreenPage extends StatelessWidget {
                     children: [
                       InkWell(
                         onTap: () {
-                           
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const MainScreen(),
                           ),
                         );
-                      
                         },
                         child: const Icon(
                           Icons.arrow_back,
