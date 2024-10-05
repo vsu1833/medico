@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:login/pages/profile_updation.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:login/pages/doctor_screen_page.dart';
+import 'package:login/pages/ratings_and_reviews.dart';
 
 class HomeScreen extends StatelessWidget {
 
@@ -100,10 +101,14 @@ class HomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.health_and_safety, color: Colors.teal),
-              title: Text('Health Analytics'),
+              title: Text('Ratings and Reviews'),
               onTap: () {
-                // Add appointments navigation logic here
-                Navigator.pop(context);
+             Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>  RatingsAndReviews(),
+                  ),
+                );
               },
             ),
             ListTile(
