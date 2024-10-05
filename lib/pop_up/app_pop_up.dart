@@ -64,7 +64,7 @@ class _PopUpAppoState extends State<PopUpAppo> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>const AppointmentPage(),
+                    builder: (context) => const AppointmentPage(),
                   ),
                 );
               },
@@ -80,9 +80,9 @@ class _PopUpAppoState extends State<PopUpAppo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Appointment Reminder'),
+        title: const Text('Appointment Reminder'),
       ),
-      body: Center(
+      body: const Center(
         child: Text('Reminder: You need to pay appointment fees.'),
       ),
     );
