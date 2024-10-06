@@ -33,7 +33,15 @@ class MyApp extends StatelessWidget {
 }
 */
 class RatingsAndReviews extends StatefulWidget {
-  const RatingsAndReviews({super.key});
+  final dynamic drName;
+  final dynamic appointmentDate;
+  final dynamic docId;
+  const RatingsAndReviews({
+    required this.drName,
+    required this.appointmentDate,
+    required this.docId,
+    super.key,
+  });
 
   @override
   State<RatingsAndReviews> createState() => _RatingsAndReviewsState();
@@ -55,38 +63,51 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
 
   Future<void> saveReview() async {
     // Get the current user's ID
-    print('Entered the saveReview function');
     User? currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser == null) {
-      print('User not detected');
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('User is not logged in.')),
       );
       return;
     }
 
-    // Create a new document reference in Firestore using the user's UID
-    DocumentReference docRef =
-        FirebaseFirestore.instance.collection('reviews').doc(currentUser.uid);
-    print('Review Document reference created');
+    // Save the review in the 'reviews' collection
+    DocumentReference docRef = FirebaseFirestore.instance
+        .collection('reviews')
+        .doc(currentUser.uid + widget.docId);
 
-    // Add or update the review in Firestore
     await docRef.set({
-      'DocId': "9wDohxgkhqZNpqF720eWAJv2zDW2",
-      'PatientId': currentUser.uid,
-      'Appointment_date': '1-10-2024',
-      'Review_date': formattedDate,
-      'Stars_count': _currentRating,
-      'Review_title': _reviewTitleController.text,
-      'Will_recommend': currentOption,
-      'Review': _review
+      'docId': widget.docId,
+      'patientId': currentUser.uid,
+      'appointment_date': widget.appointmentDate,
+      'review_date': formattedDate,
+      'stars_count': _currentRating,
+      'review_title': _reviewTitleController.text,
+      'will_recommend': currentOption,
+      'review': _review
     });
+    print('////////REVIEW UPDATED ///////');
+    // Update the `reviewStatus` in the `appointments` collection
+    QuerySnapshot appointmentSnapshot = await FirebaseFirestore.instance
+        .collection('appointments')
+        .where('patientId', isEqualTo: currentUser.uid)
+        .where('docId', isEqualTo: widget.docId) // Assuming docId is doctorId
+        .where('date', isEqualTo: widget.appointmentDate)
+        .limit(1)
+        .get();
 
-    print('The review has been submitted');
+    if (appointmentSnapshot.docs.isNotEmpty) {
+      // Assuming only one document is retrieved
+      DocumentReference appointmentRef =
+          appointmentSnapshot.docs.first.reference;
 
-    // Show a success message after saving the review
+      await appointmentRef.update({
+        'reviewStatus': 'true',
+      });
+    }
+    print('/////////REVIEWED FLAG TRUE ///////');
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Review submitted successfully!')),
     );
@@ -244,12 +265,12 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      'Doctor- Adarsh Nayak',
+                      'Dr Name- ${widget.drName}', // Access drName using widget
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(width: 110),
+                    SizedBox(width: 100),
                     Text(
-                      'Date of Appointment- DD-MM-YYYY',
+                      'Date of Appointment- ${widget.appointmentDate}', // Access appointmentDate using widget
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],

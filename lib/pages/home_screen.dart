@@ -6,6 +6,7 @@ import 'package:login/pages/profile_updation.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:login/pages/doctor_screen_page.dart';
 import 'package:login/pages/ratings_and_reviews.dart';
+import 'package:login/pages/whom_to_review_selection.dart';
 
 class HomeScreen extends StatelessWidget {
   // List of categories and icons
@@ -97,7 +98,7 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => RatingsAndReviews(),
+                    builder: (context) => WhomToReviewSelection(),
                   ),
                 );
               },
