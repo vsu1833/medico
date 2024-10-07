@@ -1,6 +1,5 @@
 // import 'dart:ffi';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class UpcomingSchedule extends StatelessWidget {

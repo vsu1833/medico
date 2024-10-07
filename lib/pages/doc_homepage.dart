@@ -5,33 +5,56 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:login/pages/doctor_screen_page.dart';
 import 'package:login/pages/doc_profile_update.dart';
 
-
 class DocHomeScreen extends StatelessWidget {
   // List of categories and icons
-  List catNames = ["Dental", "Health", "Eye", "Brain", "Ear", "Bone"];
-
+  List<String> catNames = ['Physician',
+    'Cardiologist',
+    'Surgeon',
+    'Orthopaedician',
+    'Pediatrician',
+    'Skin Specialist',
+    'Gynecologist',
+    'ENT',
+    'Neurologist',
+    'Psychiatrist',
+    'Dentist',];
   List<Icon> catIcons = [
-    Icon(MdiIcons.toothOutline,
+   
+  
+    Icon(MdiIcons.hospital, // Icon for Physician
         color: const Color.fromARGB(255, 37, 135, 159), size: 30),
-    Icon(MdiIcons.heartPlus,
+    Icon(MdiIcons.heart, // Icon for Cardiologist
         color: const Color.fromARGB(255, 48, 181, 218), size: 30),
-    Icon(MdiIcons.eye,
+    Icon(MdiIcons.knife, // Icon for Surgeon
         color: const Color.fromARGB(255, 82, 212, 255), size: 30),
-    Icon(MdiIcons.brain,
+    Icon(MdiIcons.bone, // Icon for Orthopaedician
         color: const Color.fromARGB(255, 54, 202, 205), size: 30),
-    Icon(MdiIcons.earHearing,
+    Icon(MdiIcons.baby, // Icon for Pediatrician
         color: const Color.fromARGB(255, 43, 165, 196), size: 30),
-    Icon(MdiIcons.bone,
+    Icon(MdiIcons.ski, // Icon for Skin Specialist
         color: const Color.fromARGB(255, 37, 135, 159), size: 30),
+    Icon(MdiIcons.faceWoman, // Icon for Gynecologist
+        color: const Color.fromARGB(255, 48, 181, 218), size: 30),
+    Icon(MdiIcons.earHearing, // Icon for ENT
+        color: const Color.fromARGB(255, 82, 212, 255), size: 30),
+    Icon(MdiIcons.brain, // Icon for Neurologist
+        color: const Color.fromARGB(255, 54, 202, 205), size: 30),
+    Icon(MdiIcons.emoticonSad, // Icon for Psychiatrist
+        color: const Color.fromARGB(255, 43, 165, 196), size: 30),
+    Icon(MdiIcons.toothOutline, // Icon for Dentist
+        color: const Color.fromARGB(255, 37, 135, 159), size: 30),
+  
   ];
 
-  List imgs = [
+  List<String> imgs = [
     "images/doct1.jpg",
     "images/doct2.jpg",
     "images/doct3.jpeg",
     "images/doctor1.jpg",
     "images/doctor2.jpeg",
   ];
+
+  DocHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -78,30 +101,28 @@ class DocHomeScreen extends StatelessWidget {
               onTap: () {},
             ),
             ListTile(
-              leading: Icon(Icons.update, color: Colors.teal),
-              title: Text('Update Profile'),
+              leading: const Icon(Icons.update, color: Colors.teal),
+              title: const Text('Update Profile'),
               onTap: () {
                 Navigator.push(
                   context,
-
                   MaterialPageRoute(
-                    builder: (context) => DoctorProfileUpdateApp(),
+                    builder: (context) => const DoctorProfileUpdateApp(),
                   ),
-
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.health_and_safety, color: Colors.teal),
-              title: Text('See Appointments Scheduled'),
+              leading: const Icon(Icons.health_and_safety, color: Colors.teal),
+              title: const Text('See Appointments Scheduled'),
               onTap: () {
                 // Add appointments navigation logic here
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading: Icon(Icons.logout, color: Colors.teal),
-              title: Text('Logout'),
+              leading: const Icon(Icons.logout, color: Colors.teal),
+              title: const Text('Logout'),
               onTap: () {
                 // Add logout logic here
                 Navigator.pop(context);
@@ -111,20 +132,20 @@ class DocHomeScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(top: 30),
+        padding: const EdgeInsets.only(top: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Search Box
             Container(
-              margin: EdgeInsets.only(top: 20, bottom: 20, left: 15, right: 15),
+              margin: const EdgeInsets.all(15),
               width: MediaQuery.of(context).size.width,
               height: 55,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
                     spreadRadius: 3,
@@ -139,7 +160,7 @@ class DocHomeScreen extends StatelessWidget {
                   hintStyle: TextStyle(
                     color: Colors.black.withOpacity(0.5),
                   ),
-                  prefixIcon: Icon(
+                  prefixIcon: const Icon(
                     Icons.search,
                     size: 25,
                   ),
@@ -148,19 +169,19 @@ class DocHomeScreen extends StatelessWidget {
             ),
 
             // Symptoms Section
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(left: 15),
               child: Text(
                 "Symptoms",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black.withOpacity(0.7),
+                  color: Colors.black54,
                 ),
               ),
             ),
-            SizedBox(height: 15),
-            Container(
+            const SizedBox(height: 15),
+            SizedBox(
               height: 110,
               child: ListView.builder(
                 shrinkWrap: true,
@@ -168,23 +189,22 @@ class DocHomeScreen extends StatelessWidget {
                 itemCount: catNames.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 10.0), // Increased horizontal gap
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10.0), // Increased horizontal gap
                     child: InkWell(
                       onTap: () {
                         // Show dialog here
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                            title: Text('Notice'),
-                            content: Text(
-                                'Work is in progress on doc page. This is just a trial'),
+                            title: const Text('Notice'),
+                            content: const Text('Work is in progress on doc page. This is just a trial'),
                             actions: [
                               TextButton(
                                 onPressed: () {
                                   Navigator.pop(context); // Close the dialog
                                 },
-                                child: Text('OK'),
+                                child: const Text('OK'),
                               ),
                             ],
                           ),
@@ -193,10 +213,10 @@ class DocHomeScreen extends StatelessWidget {
                       child: Column(
                         children: [
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 5),
+                            margin: const EdgeInsets.symmetric(vertical: 5),
                             height: 60,
                             width: 60,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Colors.white,
                               shape: BoxShape.circle,
                               boxShadow: [
@@ -209,7 +229,7 @@ class DocHomeScreen extends StatelessWidget {
                             ),
                             child: Center(child: catIcons[index]),
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           Text(
                             catNames[index],
                             style: TextStyle(
@@ -227,19 +247,19 @@ class DocHomeScreen extends StatelessWidget {
             ),
 
             // Best Doctors Section
-            SizedBox(height: 30),
-            Padding(
+            const SizedBox(height: 30),
+            const Padding(
               padding: EdgeInsets.only(left: 15),
               child: Text(
                 "Our Best Doctors",
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black.withOpacity(0.7),
+                  color: Colors.black54,
                 ),
               ),
             ),
-            Container(
+            SizedBox(
               height: 370,
               child: ListView.builder(
                 shrinkWrap: true,
@@ -252,11 +272,11 @@ class DocHomeScreen extends StatelessWidget {
                         height: 300,
                         width: 200,
                         margin:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                            const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
                               color: Colors.black12,
                               blurRadius: 4,
@@ -275,13 +295,21 @@ class DocHomeScreen extends StatelessWidget {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            DoctorScreenPage(),
+                                        builder: (context) => DoctorScreenPage(
+                                          doctorName: '',
+                                          doctorSpecialization:    ''  ,
+                                          doctorDescription: "Detailed description about the doctor...",
+                                          doctorLocation: "Doctor's location",
+                                          doctorAddress: "Doctor's address",
+                                          doctorImage: imgs[index],
+                                          doctorImages: const [], // Add list of images if any
+                                          consultationFee: "400", doctorId: '', description: '', phone: '', userId: '', reviews: [],
+                                        ),
                                       ),
                                     );
                                   },
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.only(
+                                    borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(15),
                                       topRight: Radius.circular(15),
                                     ),
@@ -296,69 +324,65 @@ class DocHomeScreen extends StatelessWidget {
                                 Align(
                                   alignment: Alignment.topRight,
                                   child: Container(
-                                    margin: EdgeInsets.all(8),
+                                    margin: const EdgeInsets.all(8),
                                     height: 45,
                                     width: 45,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black12,
-                                            blurRadius: 4,
-                                            spreadRadius: 2,
-                                          ),
-                                        ]),
-                                    child: Center(
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 4,
+                                          spreadRadius: 2,
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Center(
                                       child: Icon(
                                         Icons.favorite_outline,
-                                        color: Colors.teal,
+                                        color: Colors.redAccent,
                                         size: 28,
                                       ),
                                     ),
                                   ),
-                                )
+                                ),
                               ],
                             ),
-                            SizedBox(
-                              height: 8,
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                              child: Text(
+                                "Dr. Tanish Hede",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black.withOpacity(0.6),
+                                ),
+                              ),
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              child: Text(
+                                "Surgeon",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black.withOpacity(0.5),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                              child: Row(
                                 children: [
+                                  const Icon(Icons.star, color: Colors.amber, size: 20),
+                                  const SizedBox(width: 5),
                                   Text(
-                                    "Dr. Tanish Hede",
+                                    "4.9",
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: Colors.black.withOpacity(0.6),
-                                    ),
-                                  ),
-                                  Text(
-                                    "Surgeon",
-                                    style: TextStyle(
-                                      fontSize: 15,
                                       color: Colors.black.withOpacity(0.5),
                                     ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.star,
-                                        color: Colors.amber,
-                                        size: 20,
-                                      ),
-                                      SizedBox(width: 5),
-                                      Text(
-                                        "4.9",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black.withOpacity(0.6),
-                                        ),
-                                      ),
-                                    ],
                                   ),
                                 ],
                               ),

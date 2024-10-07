@@ -1,42 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'doctor_screen_page.dart';
+import 'package:flutter/rendering.dart';
+// import 'doctor_screen_page.dart';
 
-class AppointmentPage extends StatefulWidget {
-   final String doctorId;
-  final String doctorName;
-  final String doctorSpecialization;
-  final String doctorAddress;
-  final String userId; // Accept userId here
-  final String Image;
-  final String desc ;
+class AppointmentPage1 extends StatefulWidget {
+  final String doctorId; // Doctor's ID passed from previous page
+  final String doctorName; // Doctor's name
+  final String doctorSpecialization; // Doctor's specialization
+  final String doctorImage; // Doctor's image
+  final String doctorAddress; // Doctor's address
+  final String description; // Doctor's description
+  final String phone; // Doctor's phone
+  final String consultationFee; // Doctor's consultation fee
+  final String userId;
+List<Map<String, dynamic>> reviews; 
 
-  const AppointmentPage({
+   AppointmentPage1({
     super.key,
     required this.doctorId,
     required this.doctorName,
     required this.doctorSpecialization,
+    required this.doctorImage,
     required this.doctorAddress,
-    // ignore: non_constant_identifier_names
-    required this.Image,
-    required this.userId, // Pass it when booking
-    required this.desc, required description, required String consultationFee, required String doctorImage, required String phone,
+    required this.description,
+    required this.phone,
+    required this.consultationFee,
+    required this.userId, required this.reviews, // Required field
   });
 
   @override
   _AppointmentPageState createState() => _AppointmentPageState();
 }
 
-class _AppointmentPageState extends State<AppointmentPage> {
+class _AppointmentPageState extends State<AppointmentPage1> {
+
+
   String selectedDate = '';
   List<String> bookedTimes = [];
   bool isBooking = false;
   String? selectedTime;
+  
+  // ignore: recursive_getters
+  // String get description => description;
 
   @override
   void initState() {
     super.initState();
-    // Any initialization goes here
   }
 
   Future<void> fetchBookedTimes() async {
@@ -76,42 +85,11 @@ class _AppointmentPageState extends State<AppointmentPage> {
     }
 
     try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('appointments')
-          .where('date', isEqualTo: selectedDate)
-          .where('user_id', isEqualTo: 'user123') // Replace with actual user ID
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Appointment Limit'),
-              content: const Text(
-                  'You cannot select more than one appointment in a day.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-        return;
-      }
-    } catch (e) {
-      print("Error checking appointments: $e");
-    }
-
-    try {
       setState(() {
         isBooking = true;
       });
 
+      // here it is Checking if the selected time slot is already booked
       if (bookedTimes.contains(selectedTime)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Time slot already booked!')),
@@ -122,15 +100,19 @@ class _AppointmentPageState extends State<AppointmentPage> {
         return;
       }
 
-      await FirebaseFirestore.instance.collection('appointments').add({
-        'date': selectedDate,
-        'time': selectedTime,
-        'user_id': 'user123', // Replace with actual user ID
-        'doctor_id': widget.doctorId,
-      });
+await FirebaseFirestore.instance.collection('appointments').add({
+  'date': selectedDate,
+  'time': selectedTime,
+  'patient_id': widget.userId,
+  'doctor_id': widget.doctorId,
+  'doctor_name': widget.doctorName,
+  'review_status':false,
+  'status' : false,
+});
+
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Appointment booked for $selectedTime')),
+        SnackBar(content: Text('Appointment booked for $selectedTime on $selectedDate')),
       );
 
       await fetchBookedTimes();
@@ -148,7 +130,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
       });
     }
   }
-
+////
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -164,22 +146,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 children: [
                   InkWell(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>   DoctorScreenPage(
-    doctorName: widget.doctorName,
-    doctorSpecialization: widget.doctorSpecialization,
-    doctorDescription: widget.desc,
-    doctorLocation: widget.doctorAddress,
-    doctorAddress: widget.doctorAddress,
-    doctorImage: widget.Image,
-    doctorImages: const [], // Pass an actual list of images if you have
-    consultationFee: "400", doctorId: widget.doctorId, description: '', phone: '',
-    userId : widget.userId, reviews: [],
-                        ),
-                        ),
-                      );
+                      Navigator.pop(context);
                     },
                     child: const Icon(
                       Icons.arrow_back_ios_new_outlined,
@@ -196,11 +163,11 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 children: [
                   CircleAvatar(
                     radius: 80,
-                    backgroundImage: AssetImage(widget.Image), // Dynamic
+                    backgroundImage: AssetImage(widget.doctorImage), // Dynamic doctor image
                   ),
                   const SizedBox(height: 15),
                   Text(
-                    widget.doctorName, // Dynamic
+                    widget.doctorName, // Dynamic doctor name
                     style: const TextStyle(
                       fontSize: 23,
                       fontWeight: FontWeight.w500,
@@ -209,7 +176,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    widget.doctorSpecialization, // Dynamic
+                    widget.doctorSpecialization, // Dynamic doctor specialization
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -227,7 +194,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 children: [
                   const SizedBox(height: 5),
                   Text(
-                    "Dr. ${widget.doctorName} is a highly skilled and compassionate medical professional...",
+                    widget.description,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
@@ -252,7 +219,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                       scrollDirection: Axis.horizontal,
                       itemCount: 10,
                       itemBuilder: (context, index) {
-                        String date = '2024-10-${index + 4}'; // Example dates
+                        String date = '2024-10-${index + 4}'; // this is just for example(dates)
                         bool isSelected = selectedDate == date;
 
                         return InkWell(
@@ -382,11 +349,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                             },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 50),
-                        backgroundColor: Colors.teal,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                            vertical: 10, horizontal: 20),
                       ),
                       child: isBooking
                           ? const CircularProgressIndicator(
@@ -394,10 +357,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                             )
                           : const Text(
                               "Book Now",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: TextStyle(fontSize: 18),
                             ),
                     ),
                   ),

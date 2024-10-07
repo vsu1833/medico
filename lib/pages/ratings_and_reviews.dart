@@ -62,7 +62,7 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
       print('User not detected');
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('User is not logged in.')),
+        const SnackBar(content: Text('User is not logged in.')),
       );
       return;
     }
@@ -88,7 +88,7 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
 
     // Show a success message after saving the review
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Review submitted successfully!')),
+      const SnackBar(content: Text('Review submitted successfully!')),
     );
   }
 
@@ -96,7 +96,7 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ratings And Reviews'),
+        title: const Text('Ratings And Reviews'),
         backgroundColor: const Color.fromARGB(255, 107, 170, 181),
         centerTitle: true,
       ),
@@ -108,15 +108,15 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 15),
-                Text(
+                const SizedBox(height: 15),
+                const Text(
                   'Overall Rating',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 RatingBar(
                   minRating: 1,
                   maxRating: 5,
@@ -126,22 +126,22 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
                     _saveRating(rating);
                   },
                   ratingWidget: RatingWidget(
-                    full: Icon(Icons.star, color: Colors.amber),
-                    half: Icon(Icons.star_half, color: Colors.amber),
-                    empty: Icon(Icons.star, color: Colors.grey),
+                    full: const Icon(Icons.star, color: Colors.amber),
+                    half: const Icon(Icons.star_half, color: Colors.amber),
+                    empty: const Icon(Icons.star, color: Colors.grey),
                   ),
                 ),
-                SizedBox(height: 4),
-                Text(
+                const SizedBox(height: 4),
+                const Text(
                   'Click to rate',
                   style: TextStyle(color: Colors.grey),
                 ),
-                SizedBox(height: 10),
-                Text(
+                const SizedBox(height: 10),
+                const Text(
                   'Review Title',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: TextFormField(
@@ -150,11 +150,11 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
                       hintText: 'Enter review title',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.black87),
+                        borderSide: const BorderSide(color: Colors.black87),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey),
+                        borderSide: const BorderSide(color: Colors.grey),
                       ),
                     ),
                     validator: (value) {
@@ -165,20 +165,20 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
                     },
                   ),
                 ),
-                SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.all(3.0),
+                const SizedBox(height: 20),
+                const Padding(
+                  padding: EdgeInsets.all(3.0),
                   child: Text(
                     'Are you likely to recommend the services of this doctor to your friends and family?',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   children: <Widget>[
                     Expanded(
                       child: ListTile(
-                        title: Text("Yes"),
+                        title: const Text("Yes"),
                         leading: Radio(
                           activeColor: Colors.black87,
                           value: 'Yes',
@@ -193,7 +193,7 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
                     ),
                     Expanded(
                       child: ListTile(
-                        title: Text("No"),
+                        title: const Text("No"),
                         leading: Radio(
                           activeColor: Colors.black87,
                           value: 'No',
@@ -208,25 +208,25 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                  child: const Text(
+                const SizedBox(height: 20),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 2),
+                  child: Text(
                     'Detailed Review',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 TextFormField(
                   maxLines: 6, // Allows multiple lines
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black87),
+                      borderSide: const BorderSide(color: Colors.black87),
                     ),
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey)),
+                        borderSide: const BorderSide(color: Colors.grey)),
                     hintText: 'Write your review here ',
                   ),
                   validator: (value) {
@@ -239,8 +239,8 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
                     _review = value;
                   },
                 ),
-                SizedBox(height: 10),
-                Row(
+                const SizedBox(height: 10),
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
@@ -254,7 +254,7 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
                     ),
                   ],
                 ),
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
                 MyBlackButton(
                     onTap: () {
                       if (_formKey.currentState?.validate() ?? false) {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:login/components/onboarding_card.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:login/pages/login_page.dart';

@@ -1,22 +1,36 @@
-// import 'package:login/pages/appointment_page.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:login/pages/appointment_page.dart';
-import 'package:login/pages/home_screen.dart';
-import 'package:login/pop_up/app_pop_up.dart';
-import 'package:login/pages/doctor_screen_page.dart';
+// import 'package:login/pages/appointment_page.dart';
 import 'package:login/pages/main_screen.dart';
+import 'package:login/pop_up/app_pop_up.dart';
+//3rd this
 class DoctorScreenPage extends StatelessWidget {
-  DoctorScreenPage({super.key});
+  final String doctorName;
+  final String doctorSpecialization;
+  final String doctorDescription;
+  final String doctorLocation;
+  final String doctorAddress;
+  final String doctorImage;
+  final List<String> doctorImages;
+  final String doctorId;
+  final String userId;
 
-  // Define the images list here
-  final List<String> imgs = [
-    'assets/images/doctor1.jpg',
-    'assets/images/doctor2.jpeg',
-    'assets/images/doct3.jpeg',
-    'assets/images/doct4.jpg',
-  ];
+  final String consultationFee;
+  final List<Map<String, dynamic>> reviews;
+
+  const DoctorScreenPage({
+    super.key,
+    required this.doctorName,
+    required this.doctorSpecialization,
+    required this.doctorDescription,
+    required this.doctorLocation,
+    required this.doctorAddress,
+    required this.doctorImage,
+    required this.doctorImages,
+    required this.consultationFee,
+    required this.reviews,
+    required this.doctorId, required  this.userId, required String description, required String phone,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,12 +49,12 @@ class DoctorScreenPage extends StatelessWidget {
                     children: [
                       InkWell(
                         onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const MainScreen(),
-                          ),
-                        );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const MainScreen(),
+                            ),
+                          );
                         },
                         child: const Icon(
                           Icons.arrow_back,
@@ -55,24 +69,23 @@ class DoctorScreenPage extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        const CircleAvatar(
+                        CircleAvatar(
                           radius: 50,
-                          backgroundImage:
-                              AssetImage("assets/images/doct1.jpg"),
+                          backgroundImage: AssetImage(doctorImage),
                         ),
                         const SizedBox(height: 15),
-                        const Text(
-                          "Dr. Adarsh Nayak",
-                          style: TextStyle(
+                        Text(
+                          doctorName,
+                          style: const TextStyle(
                             fontSize: 23,
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 2, 0, 0),
                           ),
                         ),
                         const SizedBox(height: 10),
-                        const Text(
-                          "Surgeon",
-                          style: TextStyle(
+                        Text(
+                          doctorSpecialization,
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w200,
                             color: Color.fromARGB(255, 5, 0, 0),
@@ -136,13 +149,13 @@ class DoctorScreenPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black54,
+                      color: Color.fromARGB(178, 0, 0, 0),
                     ),
                   ),
                   const SizedBox(height: 5),
-                  const Text(
-                    "Dr. Adarsh Nayak is a highly skilled and compassionate medical professional with over 10 years of experience in the field of surgery. Specializing in general surgery.....",
-                    style: TextStyle(
+                  Text(
+                    doctorDescription,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Color.fromARGB(231, 0, 0, 0),
                     ),
@@ -150,9 +163,9 @@ class DoctorScreenPage extends StatelessWidget {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                   const Row(
+                      const Row(
                         children: [
-                           Text(
+                          Text(
                             "Reviews",
                             style: TextStyle(
                               fontSize: 18,
@@ -160,19 +173,19 @@ class DoctorScreenPage extends StatelessWidget {
                               color: Colors.black,
                             ),
                           ),
-                           SizedBox(width: 10),
-                           Icon(Icons.star, color: Colors.amber),
-                           Text(
+                          SizedBox(width: 10),
+                          Icon(Icons.star, color: Colors.amber),
+                          Text(
                             "4.9",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
-                           SizedBox(
+                          SizedBox(
                             width: 15,
                           ),
-                           Text(
+                          Text(
                             "(124)",
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
@@ -192,14 +205,14 @@ class DoctorScreenPage extends StatelessWidget {
                               fontSize: 16,
                               color: Colors.teal,
                             ),
-                          ))
+                          )),
                     ],
                   ),
                   SizedBox(
                     height: 160,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: imgs.length, // Use the length of the imgs list
+                      itemCount: doctorImages.length,
                       itemBuilder: (context, index) {
                         return Container(
                           margin: const EdgeInsets.all(10),
@@ -222,7 +235,7 @@ class DoctorScreenPage extends StatelessWidget {
                                   leading: CircleAvatar(
                                     radius: 25,
                                     backgroundImage: AssetImage(
-                                      imgs[index], // Correctly use imgs list here
+                                      doctorImages[index],
                                     ),
                                   ),
                                   title: const Text(
@@ -232,10 +245,10 @@ class DoctorScreenPage extends StatelessWidget {
                                     ),
                                   ),
                                   subtitle: const Text("1 day ago"),
-                                  trailing:const Row(
+                                  trailing: const Row(
                                     mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    children:  [
+                                    children: [
                                       Icon(
                                         Icons.star,
                                         color: Colors.amber,
@@ -277,10 +290,10 @@ class DoctorScreenPage extends StatelessWidget {
                       color: Colors.black54,
                     ),
                   ),
-                  const ListTile(
-                    leading: CircleAvatar(
+                  ListTile(
+                    leading: const CircleAvatar(
                       radius: 30,
-                      backgroundColor: Color.fromARGB(23, 11, 0, 0),
+                      backgroundColor: Color.fromARGB(102, 11, 0, 0),
                       child: Icon(
                         Icons.location_on,
                         color: Color.fromARGB(255, 82, 246, 255),
@@ -288,19 +301,19 @@ class DoctorScreenPage extends StatelessWidget {
                       ),
                     ),
                     title: Text(
-                      "New Delhi, Medical Center",
-                      style: TextStyle(
+                      doctorLocation,
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Color.fromARGB(255, 0, 0, 0),
                       ),
-                      
                     ),
-subtitle: Text(
-    "1234 Health St, Block C, Sector 9, New Delhi, Delhi 110001, India",
-    style: TextStyle(
-      color: Color.fromARGB(255, 0, 0, 0),
-    ),
-  ),                  ),
+                    subtitle: Text(
+                      doctorAddress,
+                      style: const TextStyle(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -322,48 +335,54 @@ subtitle: Text(
         ),
         child: Column(
           children: [
-          const  Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Row(
               children: [
-                 Text(
-                  "Consultation fee",
+                
+                const Text(
+                  "Consultation Fee",
                   style: TextStyle(
-                    color: Color.fromARGB(221, 0, 0, 0),
+                    color: Colors.black54,
+                    fontSize: 20,
                   ),
                 ),
-                Spacer(),
-                 Text(
-                  "₹400",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.teal,
+                const Spacer(),
+                Text(
+                  consultationFee,
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
-                )
+                ),
               ],
             ),
             const SizedBox(height: 15),
-            InkWell(
-              onTap: () {
-                // Navigate to appointment popup page
-                Navigator.push(context, MaterialPageRoute(builder: (context) => PopUpAppo()));
-              },
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                decoration: BoxDecoration(
-                  color: Colors.teal,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Center(
-                  child: Text(
-                    "Book Appointment",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => PopUpAppo(
+                        doctorName: doctorName,
+                        doctorSpecialization: doctorSpecialization,
+                        review_status: reviews,
+                        doctorImage: doctorImage,
+                        description: doctorDescription,
+                        doctorDescription: doctorDescription,
+                        doctorAddress: doctorAddress,
+                        doctorId: doctorId, doctorLocation: doctorAddress, doctorImages: [], consultationFee: consultationFee, reviews:reviews, userId: userId, UserId:userId ,),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal[200],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                ),
+                child: const Text(
+                  "Book Appointment",
+                  style: TextStyle(fontSize: 20),
                 ),
               ),
             )
