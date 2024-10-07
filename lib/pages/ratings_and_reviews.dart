@@ -91,8 +91,9 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
     // Update the `reviewStatus` in the `appointments` collection
     QuerySnapshot appointmentSnapshot = await FirebaseFirestore.instance
         .collection('appointments')
-        .where('patientId', isEqualTo: currentUser.uid)
-        .where('docId', isEqualTo: widget.docId) // Assuming docId is doctorId
+        .where('patient_id', isEqualTo: currentUser.uid)
+        .where('doctor_id',
+            isEqualTo: widget.docId) // Assuming docId is doctorId
         .where('date', isEqualTo: widget.appointmentDate)
         .limit(1)
         .get();
@@ -103,7 +104,7 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
           appointmentSnapshot.docs.first.reference;
 
       await appointmentRef.update({
-        'reviewStatus': 'true',
+        'review_status': 'true',
       });
     }
     print('/////////REVIEWED FLAG TRUE ///////');

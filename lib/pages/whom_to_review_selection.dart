@@ -18,15 +18,17 @@ class _WhomToReviewSelectionState extends State<WhomToReviewSelection> {
   Future<List<Map<String, dynamic>>> _fetchAppointments() async {
     // Get the current user's UID
     String uid = FirebaseAuth.instance.currentUser!.uid;
+    print('Current user UID: $uid'); // Add this line for debugging
 
     // Query Firestore for appointments with status="true" and reviewStatus="false"
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('appointments')
-        .where('patientId', isEqualTo: uid)
+        .where('patient_id', isEqualTo: uid)
         .where('status', isEqualTo: 'true')
-        .where('reviewStatus', isEqualTo: 'false')
+        .where('review_status', isEqualTo: 'false')
         .get();
-
+    print(
+        'Number of appointments fetched: ${querySnapshot.docs.length}'); // Add this line
     // Extract the list of appointment data
     List<Map<String, dynamic>> appointments = querySnapshot.docs
         .map((doc) => doc.data() as Map<String, dynamic>)
@@ -58,12 +60,11 @@ class _WhomToReviewSelectionState extends State<WhomToReviewSelection> {
               itemCount: appointments.length,
               itemBuilder: (context, index) {
                 final appointment = appointments[index];
-                final doctorName =
-                    appointment['drName']; // Assuming 'doctorName' field exists
-                final appointmentDate = appointment[
-                    'date']; 
+                final doctorName = appointment[
+                    'doctor_name']; // Assuming 'doctorName' field exists
+                final appointmentDate = appointment['date'];
                 final docId = appointment[
-                    'docId'];// Assuming 'appointmentDate' field exists
+                    'doctor_id']; // Assuming 'appointmentDate' field exists
 
                 return Card(
                   margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
@@ -78,9 +79,10 @@ class _WhomToReviewSelectionState extends State<WhomToReviewSelection> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => RatingsAndReviews(
-                                drName: doctorName,
-                                appointmentDate: appointmentDate,
-                                docId: docId,),
+                              drName: doctorName,
+                              appointmentDate: appointmentDate,
+                              docId: docId,
+                            ),
                           ),
                         );
                       },
