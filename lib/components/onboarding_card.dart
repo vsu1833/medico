@@ -76,7 +76,7 @@ class OnboardingCard extends StatelessWidget {
               ),
               child: Text(
                 buttonText,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Color.fromARGB(255, 255, 255, 255),
                 ),
               ),

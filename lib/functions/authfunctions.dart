@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:flutter/material.dart';
 // import 'package:login/pages/doc_homepage.dart';
 import 'package:login/pages/home_screen.dart';
 import 'package:login/pages/doc_homepage.dart';
+import 'package:login/pages/main_screen.dart';
 
 signup(
     BuildContext context, String email, String password, bool isDoctor) async {
@@ -69,14 +69,14 @@ signin(BuildContext context, String email, password) async {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                DocHomeScreen()), // If doctor, navigate to DoctorHomepage
+                const MainScreen()), // If doctor, navigate to DoctorHomepage
       );
     } else {
       Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) =>
-                HomeScreen()), // If patient, navigate to PatientHomepage
+                MainScreen()), // If patient, navigate to PatientHomepage
       );
     }
 

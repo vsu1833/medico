@@ -1,5 +1,4 @@
 import 'package:login/pages/upcoming_schedule.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -12,7 +11,7 @@ class ScheduleScreen extends StatefulWidget {
 class _ScheduleScreenState extends State<ScheduleScreen> {
   int _buttonIndex = 0;
   final _scheduleWidgets = [
-    UpcomingSchedule(),
+    const UpcomingSchedule(),
     Container(), // Placeholder for Completed schedule
     Container(), // Placeholder for Cancelled schedule
   ];
@@ -21,11 +20,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.only(top: 30),
+        padding: const EdgeInsets.only(top: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: Text(
                 "Schedule",
@@ -35,12 +34,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
-              padding: EdgeInsets.all(5),
-              margin: EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.all(5),
+              margin: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
-                color: Color(0xFFF4F6FA),
+                color: const Color(0xFFF4F6FA),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -53,7 +52,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       });
                     },
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 25),
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 25),
                       decoration: BoxDecoration(
                         color: _buttonIndex == 0 ? Colors.teal : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
@@ -75,7 +74,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       });
                     },
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 25),
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 25),
                       decoration: BoxDecoration(
                         color: _buttonIndex == 1 ? Colors.teal : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
@@ -97,7 +96,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       });
                     },
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 25),
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 25),
                       decoration: BoxDecoration(
                         color: _buttonIndex == 2 ? Colors.teal : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
@@ -115,7 +114,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             _scheduleWidgets[_buttonIndex], // Display the selected schedule widget
           ],
         ),

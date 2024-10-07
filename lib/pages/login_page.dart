@@ -65,18 +65,18 @@ class _LoginPageState extends State<LoginPage> {
                       ? Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: TextFormField(
-                            key: ValueKey('username'),
+                            key: const ValueKey('username'),
                             decoration: const InputDecoration(
-                                enabledBorder: const OutlineInputBorder(
+                                enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.white),
                                 ),
-                                focusedBorder: const OutlineInputBorder(
+                                focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.grey),
                                 ),
                                 fillColor: Colors.white,
                                 filled: true,
                                 hintText: "Enter your Name",
-                                hintStyle: const TextStyle(color: Colors.grey)),
+                                hintStyle: TextStyle(color: Colors.grey)),
                             validator: (value) {
                               if ((value.toString().length < 3)) {
                                 return 'Invalid username';
@@ -100,18 +100,18 @@ class _LoginPageState extends State<LoginPage> {
                       ? Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: TextFormField(
-                            key: ValueKey('licenseNo'),
+                            key: const ValueKey('licenseNo'),
                             decoration: const InputDecoration(
-                                enabledBorder: const OutlineInputBorder(
+                                enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.white),
                                 ),
-                                focusedBorder: const OutlineInputBorder(
+                                focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.grey),
                                 ),
                                 fillColor: Colors.white,
                                 filled: true,
                                 hintText: "Enter your License Number",
-                                hintStyle: const TextStyle(color: Colors.grey)),
+                                hintStyle: TextStyle(color: Colors.grey)),
                             validator: (value) {
                               if ((value.toString().length < 8)) {
                                 return 'Invalid license No';
@@ -132,18 +132,18 @@ class _LoginPageState extends State<LoginPage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: TextFormField(
-                      key: ValueKey('email'),
+                      key: const ValueKey('email'),
                       decoration: const InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
+                          enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.grey),
                           ),
                           fillColor: Colors.white,
                           filled: true,
                           hintText: "Enter Email",
-                          hintStyle: const TextStyle(color: Colors.grey)),
+                          hintStyle: TextStyle(color: Colors.grey)),
                       validator: (value) {
                         if (!(value.toString().contains('@'))) {
                           return 'Invalid email Id';
@@ -166,18 +166,18 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: TextFormField(
                       obscureText: true,
-                      key: ValueKey('password'),
+                      key: const ValueKey('password'),
                       decoration: const InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
+                          enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.grey),
                           ),
                           fillColor: Colors.white,
                           filled: true,
                           hintText: "Enter Password",
-                          hintStyle: const TextStyle(color: Colors.grey)),
+                          hintStyle: TextStyle(color: Colors.grey)),
                       validator: (value) {
                         if (value.toString().length < 6) {
                           return 'Password is too small';
@@ -238,11 +238,11 @@ class _LoginPageState extends State<LoginPage> {
                       print('The Doctor button was pressed and state was set');
                     },
                     child: !isDoctor
-                        ? Text(
+                        ? const Text(
                             'Are you a Doctor?',
                             style: TextStyle(color: Colors.white),
                           )
-                        : Text(
+                        : const Text(
                             'Are you a Patient?',
                             style: TextStyle(color: Colors.white),
                           ),
@@ -255,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ForgotPasswordPage()),
+                                  builder: (context) => const ForgotPasswordPage()),
                             );
                           },
                           child: const Text(

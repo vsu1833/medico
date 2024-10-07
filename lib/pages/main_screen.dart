@@ -3,7 +3,6 @@
 // import 'package:appointmentpage/pages/home_screen.dart';
 import 'package:login/pages/scheduleScreen.dart';
 import 'package:login/pages/home_screen.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import '../components/scheduleScreen.dart';
 class MainScreen extends StatefulWidget {
@@ -30,8 +29,8 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Color.fromARGB(255, 30, 167, 198),
-        unselectedItemColor: Colors.black26,
+        selectedItemColor: const Color.fromARGB(255, 30, 167, 198),
+        unselectedItemColor: const Color.fromARGB(130, 0, 0, 0),
         selectedLabelStyle: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 15,
