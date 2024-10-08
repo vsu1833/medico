@@ -2,6 +2,7 @@ import 'package:login/category.dart';
 
 import 'package:login/components/symptoms/dentaldoc.dart';
 import 'package:flutter/material.dart';
+import 'package:login/pages/patient_profileview.dart';
 import 'package:login/pages/profile_updation.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:login/pages/doctor_screen_page.dart';
@@ -76,7 +77,14 @@ class HomeScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.person, color: Colors.teal),
               title: const Text('Profile'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfileViewApp(),
+                  ),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.update, color: Colors.teal),

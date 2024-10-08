@@ -38,6 +38,7 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
   bool _isSpecializationSelected = false;
   String? _selectedSpecialization;
   File? _profileImage;
+  bool _showNameFields = false;
 
   final List<String> _mbbsSpecializations = ['General Practitioner'];
   final List<String> _postgraduateSpecializations = [
@@ -135,92 +136,100 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                   ),
                 ),
                 SizedBox(height: 30),
-                TextFormField(
-                  onTap: () {
-                    setState(() {
-                      _isSpecializationSelected = true;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                    labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
-                    ),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
+                TextFormField(onTap: () {
+                  setState(() {
+                    _isSpecializationSelected = true;
+                  });
+                }),
+                if (!_showNameFields)
+                  TextFormField(
+                    onTap: () {
+                      setState(() {
+                        _showNameFields = true;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      labelStyle: TextStyle(
                         color: const Color.fromARGB(255, 107, 170, 181),
                       ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(Icons.person,
+                          color: const Color.fromARGB(255, 107, 170, 181)),
                     ),
-                    prefixIcon: Icon(Icons.person,
-                        color: const Color.fromARGB(255, 107, 170, 181)),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Name is required';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Name is required';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _firstNameController,
-                  decoration: InputDecoration(
-                    labelText: 'First Name',
-                    labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
-                    ),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
+                if (_showNameFields) ...[
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _firstNameController,
+                    decoration: InputDecoration(
+                      labelText: 'First Name',
+                      labelStyle: TextStyle(
                         color: const Color.fromARGB(255, 107, 170, 181),
                       ),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'First Name is required';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _middleNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Middle Name (Optional)',
-                    labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
-                    ),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        ),
                       ),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'First Name is required';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: _lastNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Last Name',
-                    labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
-                    ),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _middleNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Middle Name (Optional)',
+                      labelStyle: TextStyle(
                         color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        ),
                       ),
                     ),
                   ),
-                  validator: (value) {
-                    if (_firstNameController.text.isEmpty) {
-                      return 'Please enter First Name before Last Name';
-                    }
-                    if (value == null || value.isEmpty) {
-                      return 'Last Name is required';
-                    }
-                    return null;
-                  },
-                ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _lastNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Last Name',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (_firstNameController.text.isEmpty) {
+                        return 'Please enter First Name before Last Name';
+                      }
+                      if (value == null || value.isEmpty) {
+                        return 'Last Name is required';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
                 SizedBox(height: 20),
                 TextFormField(
                   controller: _clinicAddressController,

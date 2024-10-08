@@ -39,9 +39,11 @@ dependencies:
   cupertino_icons: ^1.0.6
   firebase_core: ^3.4.1
   firebase_auth: ^5.2.1
+  firebase_storage: ^12.3.2
   cloud_firestore: ^5.4.3
   material_design_icons_flutter: ^7.0.7296
   flutter_rating_bar: ^4.0.1
+  path: ^1.9.0
 
   image_picker: ^1.1.2
 
