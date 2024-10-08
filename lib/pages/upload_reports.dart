@@ -142,7 +142,7 @@ class _UploadReportsState extends State<UploadReports> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Upload Reports"),
-        backgroundColor: const Color.fromARGB(255, 107, 170, 181),
+        backgroundColor: Color.fromARGB(255, 3, 131, 170),
         centerTitle: true,
       ),
       body: Padding(
@@ -273,11 +273,18 @@ class _UploadReportsState extends State<UploadReports> {
               ),
               const SizedBox(height: 40),
               ElevatedButton.icon(
-                icon: const Icon(Icons.upload_file),
-                label: const Text("Upload Report PDF"),
+                icon: const Icon(
+                  Icons.upload_file,
+                  color: Colors.white,
+                ),
+                label: const Text(
+                  "Upload Report PDF",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.white),
+                ),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.grey[800],
+                  backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

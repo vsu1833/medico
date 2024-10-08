@@ -29,9 +29,9 @@ signup(
     print('User data saved successfully.');
 
     // Show success feedback
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Sign Up Successful! Log in Now')));
-          showDialog(
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sign Up Successful! Log in Now')));
+    showDialog(
         context: context,
         builder: (context) {
           return const AlertDialog(
@@ -69,7 +69,7 @@ signin(BuildContext context, String email, password) async {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                const MainScreen()), // If doctor, navigate to DoctorHomepage
+                DocHomeScreen()), // If doctor, navigate to DoctorHomepage
       );
     } else {
       Navigator.push(

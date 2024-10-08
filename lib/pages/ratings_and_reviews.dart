@@ -119,7 +119,7 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ratings And Reviews'),
-        backgroundColor: const Color.fromARGB(255, 107, 170, 181),
+        backgroundColor: Color.fromARGB(255, 3, 131, 170),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -262,7 +262,7 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
                   },
                 ),
                 const SizedBox(height: 10),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(

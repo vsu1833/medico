@@ -24,8 +24,8 @@ class _WhomToReviewSelectionState extends State<WhomToReviewSelection> {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('appointments')
         .where('patient_id', isEqualTo: uid)
-        .where('status', isEqualTo: 'true')
-        .where('review_status', isEqualTo: 'false')
+        .where('status', isEqualTo: true)
+        .where('review_status', isEqualTo: false)
         .get();
     print(
         'Number of appointments fetched: ${querySnapshot.docs.length}'); // Add this line
@@ -42,7 +42,7 @@ class _WhomToReviewSelectionState extends State<WhomToReviewSelection> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Your Previous Appointments'),
-        backgroundColor: const Color.fromARGB(255, 107, 170, 181),
+        backgroundColor: Color.fromARGB(255, 3, 131, 170),
         centerTitle: true,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
@@ -66,27 +66,66 @@ class _WhomToReviewSelectionState extends State<WhomToReviewSelection> {
                 final docId = appointment[
                     'doctor_id']; // Assuming 'appointmentDate' field exists
 
-                return Card(
-                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                  child: ListTile(
-                    title: Text('Doctor: $doctorName'),
-                    subtitle: Text('Date: $appointmentDate'),
-                    trailing: ElevatedButton(
-                      onPressed: () {
-                        print(
-                            '//////Navigation button has been pressed////////');
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RatingsAndReviews(
-                              drName: doctorName,
-                              appointmentDate: appointmentDate,
-                              docId: docId,
+                return SizedBox(
+                  height: 120,
+                  width: double.infinity,
+                  child: Card(
+                    color: Colors.blue, // Background color for the card
+                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(15.0), // Rounded corners
+                    ),
+                    elevation: 5, // Shadow around the card
+                    child: Padding(
+                      padding: EdgeInsets.all(12.0), // Padding inside the card
+                      child: ListTile(
+                        title: Text(
+                          'Doctor: $doctorName',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white, // White text for the title
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Date: $appointmentDate',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white, // White text for the subtitle
+                          ),
+                        ),
+                        trailing: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black, // Button color
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  20), // Rounded button corners
                             ),
                           ),
-                        );
-                      },
-                      child: Text('Review'),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RatingsAndReviews(
+                                  drName: doctorName,
+                                  appointmentDate: appointmentDate,
+                                  docId: docId,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'Review',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white, // White text for the button
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 );
