@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:io'; // To handle the file object
-import 'package:image_picker/image_picker.dart'; // To pick image from gallery/camera
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+// To handle the file object
+// To pick image from gallery/camera
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:login/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:login/pages/main_screen.dart';
 

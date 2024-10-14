@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:login/components/black_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:login/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 // Fetching the current date and time
@@ -119,7 +117,7 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ratings And Reviews'),
-        backgroundColor: Color.fromARGB(255, 3, 131, 170),
+        backgroundColor: const Color.fromARGB(255, 3, 131, 170),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -267,12 +265,12 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
                   children: [
                     Text(
                       'Dr Name- ${widget.drName}', // Access drName using widget
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(width: 100),
+                    const SizedBox(width: 100),
                     Text(
                       'Date of Appointment- ${widget.appointmentDate}', // Access appointmentDate using widget
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
