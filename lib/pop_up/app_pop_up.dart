@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:login/pages/doctor_screen_page.dart';
 import 'package:login/pages/appointment_page.dart';
-import 'package:login/sidebar/updated_final_booking.dart';
-import 'package:meta/meta.dart';
+import 'package:login/sidebar/final_booking.dart';
 
 class PopUpAppo extends StatefulWidget {
-   final String doctorName;
+  final String doctorName;
   final String doctorSpecialization;
   final String doctorDescription;
   final String doctorLocation;
@@ -13,14 +12,12 @@ class PopUpAppo extends StatefulWidget {
   final String doctorImage;
   final List<String> doctorImages;
   final String doctorId;
-final String UserId;
+  final String userId;  // Only userId, no UserId
   final String consultationFee;
   final List<Map<String, dynamic>> reviews;
 
-
-
   const PopUpAppo({
-    super.key, 
+    super.key,
     required this.doctorName,
     required this.doctorSpecialization,
     required this.doctorDescription,
@@ -31,7 +28,7 @@ final String UserId;
     required this.consultationFee,
     required this.reviews,
     required this.doctorId,
-     required String userId, required this.UserId, required List<Map<String, dynamic>> review_status, required String description,
+    required this.userId, // Removed 'UserId' for consistency
   });
 
   @override
@@ -42,7 +39,6 @@ class _PopUpAppoState extends State<PopUpAppo> {
   @override
   void initState() {
     super.initState();
-    // Show the dialog after a short delay when the widget is first displayed
     Future.delayed(Duration.zero, () => _showDialog());
   }
 
@@ -53,8 +49,8 @@ class _PopUpAppoState extends State<PopUpAppo> {
         return AlertDialog(
           title: const Row(
             children: [
-              Icon(Icons.info, color: Colors.blue), // Add an icon
-              SizedBox(width: 10), // Space between icon and text
+              Icon(Icons.info, color: Colors.blue),
+              SizedBox(width: 10),
               Text('Appointment Fees'),
             ],
           ),
@@ -63,25 +59,20 @@ class _PopUpAppoState extends State<PopUpAppo> {
           actions: [
             TextButton(
               onPressed: () {
-                // Navigate back to DoctorScreenPage with the relevant details
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => DoctorScreenPage(
                       doctorName: widget.doctorName,
                       doctorSpecialization: widget.doctorSpecialization,
-                      // doctorDescription:widget.description, // Replace with dynamic data if available
-                      // doctorLocation: '', // Replace with dynamic data if available
-                      doctorAddress:
-                          widget.doctorAddress, // Replace with dynamic data if available
+                      doctorAddress: widget.doctorAddress,
                       doctorImage: widget.doctorImage,
-                      // doctorImages: const [], // Pass an actual list of images if you have
-                      consultationFee: widget.consultationFee, // Use a dynamic fee if applicable
-                      doctorId:widget.doctorId, // Provide actual doctor ID if available
-                      // phone: '', // Provide actual phone number if available
-                      // description: widget.doctorDescription,
-                      userId:widget.UserId,
-                      reviews: widget.reviews, doctorDescription:widget.doctorDescription, doctorLocation: '', doctorImages: [], description: '', phone: '', // Provide actual description if available
+                      consultationFee: widget.consultationFee,
+                      doctorId: widget.doctorId,
+                      userId: widget.userId,  // Passing userId
+                      doctorDescription: widget.doctorDescription,
+                      doctorLocation: widget.doctorLocation,
+                      doctorImages: widget.doctorImages,
                     ),
                   ),
                 );
@@ -90,24 +81,20 @@ class _PopUpAppoState extends State<PopUpAppo> {
             ),
             ElevatedButton(
               onPressed: () {
-                // Navigate to AppointmentPage with dynamic data
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => AppointmentPage1(
-                      doctorId:
-                          widget.doctorId, // Replace with actual doctor ID if available
+                      doctorId: widget.doctorId,
                       doctorName: widget.doctorName,
                       doctorSpecialization: widget.doctorSpecialization,
-                      doctorImage: widget.doctorImage, // Use the passed image
-                      phone:
-                          '', // Replace with actual phone number if available
-                      description: widget.doctorDescription, // Replace with dynamic description if available
-                      doctorAddress: '',
-                      consultationFee: '',
-                      // Image: '',
-                      // desc: '',
-                      userId: widget.UserId, reviews: widget.reviews, // Replace with dynamic address if available
+                      doctorImage: widget.doctorImage,
+                      phone: '', // Placeholder for actual phone number
+                      description: widget.doctorDescription,
+                      doctorAddress: widget.doctorAddress,
+                      consultationFee: widget.consultationFee,
+                      userId: widget.userId,  // Using consistent userId
+                      reviews: widget.reviews,
                     ),
                   ),
                 );

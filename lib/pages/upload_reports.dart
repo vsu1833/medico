@@ -7,7 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:login/pages/home_screen.dart';
 
@@ -20,7 +19,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +34,7 @@ class MyApp extends StatelessWidget {
 }
 
 class UploadReports extends StatefulWidget {
-  const UploadReports({Key? key}) : super(key: key);
+  const UploadReports({super.key});
 
   @override
   _UploadReportsState createState() => _UploadReportsState();
@@ -53,7 +52,7 @@ class _UploadReportsState extends State<UploadReports> {
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('User not logged in')),
+        const SnackBar(content: Text('User not logged in')),
       );
       return;
     }
@@ -121,18 +120,18 @@ class _UploadReportsState extends State<UploadReports> {
           reportFilePath = downloadUrl;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
               content: Text('File uploaded and metadata added successfully!')),
         );
       } catch (e) {
         print("Error uploading file or saving details: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload file or save metadata')),
+          const SnackBar(content: Text('Failed to upload file or save metadata')),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('No file selected')),
+        const SnackBar(content: Text('No file selected')),
       );
     }
   }
@@ -142,7 +141,7 @@ class _UploadReportsState extends State<UploadReports> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Upload Reports"),
-        backgroundColor: Color.fromARGB(255, 3, 131, 170),
+        backgroundColor: const Color.fromARGB(255, 3, 131, 170),
         centerTitle: true,
       ),
       body: Padding(
@@ -151,7 +150,7 @@ class _UploadReportsState extends State<UploadReports> {
           key: _formKey,
           child: ListView(
             children: [
-              Text(
+              const Text(
                 'Select Report Type',
                 style: TextStyle(
                   fontSize: 15,
@@ -197,7 +196,7 @@ class _UploadReportsState extends State<UploadReports> {
               ),
               const SizedBox(height: 40),
               if (selectedReportType == 'Any Other')
-                Text(
+                const Text(
                   'Enter Report Name ',
                   style: TextStyle(
                     fontSize: 15,
@@ -216,7 +215,7 @@ class _UploadReportsState extends State<UploadReports> {
                   ),
                 ),
               if (selectedReportType == 'Any Other') const SizedBox(height: 40),
-              Text(
+              const Text(
                 'Enter Report Date ',
                 style: TextStyle(
                   fontSize: 15,
@@ -252,14 +251,14 @@ class _UploadReportsState extends State<UploadReports> {
                 ),
               ),
               const SizedBox(height: 40),
-              Text(
+              const Text(
                 'Enter Test Result ',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               TextFormField(

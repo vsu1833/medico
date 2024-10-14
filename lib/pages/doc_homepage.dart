@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+
 import 'package:login/pages/doc_profile_update.dart';
 import 'package:login/pages/doctors_view_of_appointments.dart';
 
@@ -232,6 +235,7 @@ class DocHomeScreen extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+
                             const Text(
                               'Appointments',
                               style: TextStyle(
@@ -239,6 +243,7 @@ class DocHomeScreen extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
+
                             ),
                             Text(
                               snapshot.hasData ? '${snapshot.data}' : '...',
