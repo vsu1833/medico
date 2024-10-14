@@ -1,8 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:login/components/symptoms/dentaldoc.dart';
-import 'package:login/pages/profile_updation.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:login/pages/doctor_screen_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:login/pages/doc_profile_update.dart';
 import 'package:login/pages/doctors_view_of_appointments.dart';
 
@@ -12,6 +10,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,7 +24,44 @@ class MyApp extends StatelessWidget {
 }
 
 class DocHomeScreen extends StatelessWidget {
+  final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
   DocHomeScreen({super.key});
+
+  Future<int> getTotalAppointments() async {
+    print('Fetching total appointments...');
+    print('Fetching appointmnets for $currentUserId');
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('appointments')
+        .where('doctor_id', isEqualTo: currentUserId)
+        .get();
+
+    print('Total appointments fetched: ${querySnapshot.size}');
+    return querySnapshot
+        .size; // Returns the total number of documents that match
+  }
+
+  Future<double> getAverageRating() async {
+    print('Fetching average rating...');
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('reviews')
+        .where('docId', isEqualTo: currentUserId)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      print('No reviews found.');
+      return 0.0; // No reviews found
+    }
+
+    double totalStars = 0.0;
+    for (var doc in querySnapshot.docs) {
+      totalStars += doc['stars_count'];
+    }
+
+    final average = totalStars / querySnapshot.docs.length;
+    print('Average rating calculated: $average');
+    return average;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +71,10 @@ class DocHomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black87,
       appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.black87,
-        title: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 120),
+        title: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 120),
           child: Text(
             'M E D I C O',
             textAlign: TextAlign.center,
@@ -50,9 +87,7 @@ class DocHomeScreen extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.teal,
-              ),
+              decoration: BoxDecoration(color: Colors.teal),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -63,10 +98,7 @@ class DocHomeScreen extends StatelessWidget {
                   SizedBox(height: 10),
                   Text(
                     "Hi, Doctor",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
                 ],
               ),
@@ -99,7 +131,12 @@ class DocHomeScreen extends StatelessWidget {
               leading: const Icon(Icons.health_and_safety, color: Colors.teal),
               title: const Text('See Appointments Scheduled'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DoctorsViewOfAppointments(),
+                  ),
+                );
               },
             ),
             ListTile(
@@ -117,15 +154,13 @@ class DocHomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 10),
-
-            // Centered Container with Greeting Tile
+            const SizedBox(height: 10),
             Center(
               child: Container(
-                height: screenHeight * 0.35, // 30% of screen height
-                width: screenWidth * 0.90, // 85% of screen width
+                height: screenHeight * 0.35,
+                width: screenWidth * 0.90,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     colors: [Colors.blue, Colors.lightBlue],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
@@ -133,15 +168,14 @@ class DocHomeScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey
-                          .withOpacity(0.3), // Reduced shadow color opacity
-                      spreadRadius: 3, // Reduced spread radius
-                      blurRadius: 8, // Reduced blur radius
-                      offset: Offset(0, 4), // Reduced offset
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 3,
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
-                child: Center(
+                child: const Center(
                   child: Padding(
                     padding: EdgeInsets.all(20),
                     child: Row(
@@ -157,10 +191,8 @@ class DocHomeScreen extends StatelessWidget {
                         ),
                         SizedBox(width: 20),
                         CircleAvatar(
-                          radius: 50, // Increased size of the avatar
-                          backgroundImage: AssetImage(
-                            "assets/doc2.jpg", // Path to doctor's profile picture
-                          ),
+                          radius: 40,
+                          backgroundImage: AssetImage("assets/doc2.jpg"),
                         ),
                       ],
                     ),
@@ -168,137 +200,128 @@ class DocHomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Space between greeting container and green containers
-            SizedBox(height: 30),
-
-            // Row for the green containers
+            const SizedBox(height: 30),
             Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceEvenly, // Space between the containers
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // First Green Container
-                Container(
-                  height: screenHeight * 0.25, // 25% of screen height
-                  width: screenWidth * 0.37, // 35% of screen width
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.green, Colors.lightGreen],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey
-                            .withOpacity(0.3), // Reduced shadow color opacity
-                        spreadRadius: 3, // Reduced spread radius
-                        blurRadius: 8, // Reduced blur radius
-                        offset: Offset(0, 4), // Reduced offset
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center, // Center vertically
-                      mainAxisSize:
-                          MainAxisSize.min, // Size to fit the children
-                      children: [
-                        Text(
-                          'Ratings',
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                FutureBuilder<int>(
+                  future: getTotalAppointments(),
+                  builder: (context, snapshot) {
+                    print(
+                        'Total appointments FutureBuilder state: ${snapshot.connectionState}');
+                    return Container(
+                      height: screenHeight * 0.25,
+                      width: screenWidth * 0.45,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Colors.green, Colors.lightGreen],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                        Text(
-                          '4.8',
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 3,
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
                           ),
-                        ), // Insert the actual rating here
-                      ],
-                    ),
-                  ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Appointments',
+                              style: TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              snapshot.hasData ? '${snapshot.data}' : '...',
+                              style: const TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-
-                // Second Green Container (exact copy of the first)
-                Container(
-                  height: screenHeight * 0.25, // 25% of screen height
-                  width: screenWidth * 0.37, // 35% of screen width
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.green, Colors.lightGreen],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey
-                            .withOpacity(0.3), // Reduced shadow color opacity
-                        spreadRadius: 3, // Reduced spread radius
-                        blurRadius: 8, // Reduced blur radius
-                        offset: Offset(0, 4), // Reduced offset
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center, // Center vertically
-                      mainAxisSize:
-                          MainAxisSize.min, // Size to fit the children
-                      children: [
-                        Text(
-                          'Appointments',
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                FutureBuilder<double>(
+                  future: getAverageRating(),
+                  builder: (context, snapshot) {
+                    print(
+                        'Average rating FutureBuilder state: ${snapshot.connectionState}');
+                    return Container(
+                      height: screenHeight * 0.25,
+                      width: screenWidth * 0.45,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Colors.green, Colors.lightGreen],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                        Text(
-                          '450',
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 3,
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
                           ),
-                        ), // Insert the actual rating here
-                      ],
-                    ),
-                  ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Ratings',
+                              style: TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              snapshot.hasData
+                                  ? snapshot.data!.toStringAsFixed(1)
+                                  : '...',
+                              style: const TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
-
-            // Space between green containers and review appointments container
-            SizedBox(height: 30),
-
-            // Review Appointments Container wrapped with GestureDetector
+            const SizedBox(height: 30),
             GestureDetector(
               onTap: () {
-                // Add your desired action here
-                // For example, navigate to a new screen
-                print("Review Appointments tapped");
-
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => DoctorsViewOfAppointments(),
                   ),
-                ); // You can uncomment the following line to navigate to another page
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => YourNewScreen()));
+                );
               },
               child: Center(
                 child: Container(
-                  height: screenHeight * 0.15, // 20% of screen height
-                  width: screenWidth * 0.90, // 90% of screen width
+                  height: screenHeight * 0.15,
+                  width: screenWidth * 0.90,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [Colors.grey.shade600, Colors.grey.shade400],
@@ -308,19 +331,18 @@ class DocHomeScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey
-                            .withOpacity(0.3), // Reduced shadow color opacity
-                        spreadRadius: 3, // Reduced spread radius
-                        blurRadius: 8, // Reduced blur radius
-                        offset: Offset(0, 4), // Reduced offset
+                        color: Colors.grey.withOpacity(0.3),
+                        spreadRadius: 3,
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Text(
-                      'Review Appointments',
+                      'See Appointments Scheduled',
                       style: TextStyle(
-                        fontSize: 25,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
@@ -329,6 +351,7 @@ class DocHomeScreen extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

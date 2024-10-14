@@ -44,168 +44,170 @@ class _HealthanalyticsUpdateState extends State<HealthanalyticsUpdate> {
           ),
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Patient ID: ${widget.patientId}',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Patient ID: ${widget.patientId}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              SizedBox(height: screenHeight * 0.05),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.green.shade300,
-                ),
-                height: screenHeight * 0.6,
-                width: screenWidth * 0.9,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Update Health Analytics',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        TextFormField(
-                          controller: _bloodPressureController,
-                          decoration: InputDecoration(
-                            labelText: 'Blood Pressure',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter blood pressure';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        TextFormField(
-                          controller: _bloodSugarController,
-                          decoration: InputDecoration(
-                            labelText: 'Blood Sugar',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter blood sugar';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        TextFormField(
-                          controller: _pulseController,
-                          decoration: InputDecoration(
-                            labelText: 'Pulse',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter pulse';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        TextFormField(
-                          controller: _notesController,
-                          decoration: InputDecoration(
-                            labelText: 'Notes',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                          maxLines: 4,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter notes';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black, // Black background
-                            textStyle:
-                                TextStyle(color: Colors.white), // White text
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                SizedBox(height: screenHeight * 0.05),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.green.shade300,
+                  ),
+                  height: screenHeight * 0.8,
+                  width: screenWidth * 0.9,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Update Health Analytics',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              // Get the values from the text fields
-                              String bloodPressure =
-                                  _bloodPressureController.text;
-                              String bloodSugar = _bloodSugarController.text;
-                              String pulse = _pulseController.text;
-                              String notes = _notesController.text;
+                          SizedBox(height: 10),
+                          TextFormField(
+                            controller: _bloodPressureController,
+                            decoration: InputDecoration(
+                              labelText: 'Blood Pressure',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(color: Colors.white),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter blood pressure';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 10),
+                          TextFormField(
+                            controller: _bloodSugarController,
+                            decoration: InputDecoration(
+                              labelText: 'Blood Sugar',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(color: Colors.white),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter blood sugar';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 10),
+                          TextFormField(
+                            controller: _pulseController,
+                            decoration: InputDecoration(
+                              labelText: 'Pulse',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(color: Colors.white),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter pulse';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 10),
+                          TextFormField(
+                            controller: _notesController,
+                            decoration: InputDecoration(
+                              labelText: 'Notes',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide(color: Colors.white),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            maxLines: 4,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter notes';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 20),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black, // Black background
+                              textStyle:
+                                  TextStyle(color: Colors.white), // White text
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                // Get the values from the text fields
+                                String bloodPressure =
+                                    _bloodPressureController.text;
+                                String bloodSugar = _bloodSugarController.text;
+                                String pulse = _pulseController.text;
+                                String notes = _notesController.text;
 
-                              // Call the update function for health analytics
-                              await updateHealthAnalytics(
-                                widget.patientId,
-                                bloodPressure,
-                                bloodSugar,
-                                pulse,
-                                notes,
-                              );
+                                // Call the update function for health analytics
+                                await updateHealthAnalytics(
+                                  widget.patientId,
+                                  bloodPressure,
+                                  bloodSugar,
+                                  pulse,
+                                  notes,
+                                );
 
-                              // Update the appointments status
-                              await updateAppointmentStatus(
-                                  widget.patientId, currentUserId);
+                                // Update the appointments status
+                                await updateAppointmentStatus(
+                                    widget.patientId, currentUserId);
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Analytics updated!')),
-                              );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Analytics updated!')),
+                                );
 
-                              // Optionally, you can navigate back or clear the fields
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: Text('Submit'),
-                        ),
-                      ],
+                                // Optionally, you can navigate back or clear the fields
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: Text('Submit'),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
