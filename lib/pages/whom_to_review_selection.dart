@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:login/components/black_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:login/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:login/pages/ratings_and_reviews.dart';
 
@@ -41,19 +37,19 @@ class _WhomToReviewSelectionState extends State<WhomToReviewSelection> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Previous Appointments'),
-        backgroundColor: Color.fromARGB(255, 3, 131, 170),
+        title: const Text('Your Previous Appointments'),
+        backgroundColor: const Color.fromARGB(255, 3, 131, 170),
         centerTitle: true,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _fetchAppointments(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error loading appointments'));
+            return const Center(child: Text('Error loading appointments'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No appointments to review'));
+            return const Center(child: Text('No appointments to review'));
           } else {
             List<Map<String, dynamic>> appointments = snapshot.data!;
             return ListView.builder(
@@ -71,18 +67,18 @@ class _WhomToReviewSelectionState extends State<WhomToReviewSelection> {
                   width: double.infinity,
                   child: Card(
                     color: Colors.blue, // Background color for the card
-                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.circular(15.0), // Rounded corners
                     ),
                     elevation: 5, // Shadow around the card
                     child: Padding(
-                      padding: EdgeInsets.all(12.0), // Padding inside the card
+                      padding: const EdgeInsets.all(12.0), // Padding inside the card
                       child: ListTile(
                         title: Text(
                           'Doctor: $doctorName',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.white, // White text for the title
@@ -90,7 +86,7 @@ class _WhomToReviewSelectionState extends State<WhomToReviewSelection> {
                         ),
                         subtitle: Text(
                           'Date: $appointmentDate',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white, // White text for the subtitle
                           ),
@@ -98,7 +94,7 @@ class _WhomToReviewSelectionState extends State<WhomToReviewSelection> {
                         trailing: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.black, // Button color
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 10),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
@@ -117,7 +113,7 @@ class _WhomToReviewSelectionState extends State<WhomToReviewSelection> {
                               ),
                             );
                           },
-                          child: Text(
+                          child: const Text(
                             'Review',
                             style: TextStyle(
                               fontSize: 16,

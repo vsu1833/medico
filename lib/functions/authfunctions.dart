@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // import 'package:login/pages/homepage.dart';
 // import 'package:login/pages/doc_homepage.dart';
-import 'package:login/pages/home_screen.dart';
 import 'package:login/pages/doc_homepage.dart';
 import 'package:login/pages/main_screen.dart';
 
@@ -76,7 +75,7 @@ signin(BuildContext context, String email, password) async {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                MainScreen()), // If patient, navigate to PatientHomepage
+                const MainScreen()), // If patient, navigate to PatientHomepage
       );
     }
 

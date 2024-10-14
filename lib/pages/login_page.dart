@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login/components/my_button.dart';
-import 'package:login/components/my_textfield.dart';
 import 'package:login/functions/authFunctions.dart';
-import 'package:login/pages/home_screen.dart';
 import 'package:login/pages/forgot_password.dart';
 
 class LoginPage extends StatefulWidget {

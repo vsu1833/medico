@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:login/components/symptoms/dentaldoc.dart';
-import 'package:login/pages/profile_updation.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:login/pages/doctor_screen_page.dart';
 import 'package:login/pages/doc_profile_update.dart';
@@ -296,14 +294,14 @@ class DocHomeScreen extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => DoctorScreenPage(
-                                          doctorName: '',
+                                          doctorName:'',
                                           doctorSpecialization:    ''  ,
                                           doctorDescription: "Detailed description about the doctor...",
                                           doctorLocation: "Doctor's location",
                                           doctorAddress: "Doctor's address",
                                           doctorImage: imgs[index],
                                           doctorImages: const [], // Add list of images if any
-                                          consultationFee: "400", doctorId: '', description: '', phone: '', userId: '', reviews: [],
+                                          consultationFee: "400", doctorId: '', userId: '',
                                         ),
                                       ),
                                     );

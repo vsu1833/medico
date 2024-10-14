@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:login/sidebar/updated_appointment_booking.dart';
+import 'package:login/sidebar/appointment_booking.dart';
 // 1s this
 class CategoryPage extends StatelessWidget {
   final List<String> categories = [
@@ -89,10 +89,10 @@ class CategoryPage extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     category,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 2, 111, 138), // Dark teal text
+                      color: Color.fromARGB(255, 2, 111, 138), // Dark teal text
                     ),
                   ),
                 ],

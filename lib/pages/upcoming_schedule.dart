@@ -1,9 +1,212 @@
-// import 'dart:ffi';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class UpcomingSchedule extends StatelessWidget {
-  const UpcomingSchedule({super.key});
+class UpcomingSchedule extends StatefulWidget {
+  final String userId; // Pass the user ID to fetch appointments
+
+  const UpcomingSchedule({super.key, required this.userId});
+
+  @override
+  State<UpcomingSchedule> createState() => _UpcomingScheduleState();
+}
+
+class _UpcomingScheduleState extends State<UpcomingSchedule> {
+  List<Map<String, dynamic>> appointments = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchScheduledAppointments();
+  }
+
+  Future<void> fetchScheduledAppointments() async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('appointments')
+          .where('patient_id', isEqualTo: widget.userId)
+          .where('cancelled', isEqualTo: false) // Only show active appointments
+          .where('status', isEqualTo: false) // Only show upcoming appointments
+          .get();
+
+      List<Map<String, dynamic>> fetchedAppointments = [];
+      for (var doc in querySnapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id; // Add document ID for further operations
+        fetchedAppointments.add(data);
+      }
+
+      setState(() {
+        appointments = fetchedAppointments;
+      });
+    } catch (e) {
+      print("Error fetching appointments: $e");
+    }
+  }
+
+  Future<void> cancelAppointment(String appointmentId) async {
+    bool? confirmCancel = await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Confirm Cancellation"),
+          content:
+              const Text("Are you sure you want to cancel this appointment?"),
+          actions: [
+            TextButton(
+              child: const Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: const Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmCancel == true) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('appointments')
+            .doc(appointmentId)
+            .update({'cancelled': true});
+
+        fetchScheduledAppointments();
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Success"),
+              content: const Text("Appointment has been cancelled successfully."),
+              actions: [
+                TextButton(
+                  child: const Text("OK"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      } catch (e) {
+        print("Error cancelling appointment: $e");
+      }
+    }
+  }
+
+  Future<void> rescheduleAppointment(String appointmentId) async {
+    try {
+      DateTime currentDate = DateTime.now();
+      DateTime lastAvailableDate = currentDate.add(const Duration(days: 7));
+
+      DateTime? newDate = await showDatePicker(
+        context: context,
+        initialDate: currentDate,
+        firstDate: currentDate,
+        lastDate: lastAvailableDate,
+      );
+
+      if (newDate == null) return;
+
+      TimeOfDay? newTime = await showDialog<TimeOfDay>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text("Select Time"),
+            children: List<Widget>.generate(5, (int index) {
+              int hour = 8 + index;
+              return SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, TimeOfDay(hour: hour, minute: 0));
+                },
+                child: Text('$hour:00 AM'),
+              );
+            }),
+          );
+        },
+      );
+
+      if (newTime == null) return;
+
+      bool isSlotTaken = await checkIfSlotIsTaken(newDate, newTime);
+      if (isSlotTaken) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Slot Unavailable"),
+              content: const Text(
+                  "This time slot is already taken. Please select another time."),
+              actions: [
+                TextButton(
+                  child: const Text("OK"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+
+      await FirebaseFirestore.instance
+          .collection('appointments')
+          .doc(appointmentId)
+          .update({
+        'date': '${newDate.year}-${newDate.month}-${newDate.day}',
+        'time': newTime.format(context),
+      });
+
+      fetchScheduledAppointments();
+
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Success"),
+            content:
+                const Text("Appointment has been rescheduled successfully."),
+            actions: [
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print("Error rescheduling appointment: $e");
+    }
+  }
+
+  Future<bool> checkIfSlotIsTaken(DateTime date, TimeOfDay time) async {
+    try {
+      String formattedDate = '${date.year}-${date.month}-${date.day}';
+      String formattedTime = time.format(context);
+
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('appointments')
+          .where('date', isEqualTo: formattedDate)
+          .where('time', isEqualTo: formattedTime)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print("Error checking if slot is taken: $e");
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,323 +216,146 @@ class UpcomingSchedule extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "About Doctor",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
+            "Upcoming Appointments",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
           ),
-          const SizedBox(
-            height: 15,
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 4,
-                  spreadRadius: 2,
+          const SizedBox(height: 15),
+          appointments.isEmpty
+              ? const Text('No scheduled appointments.')
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: appointments.length,
+                  itemBuilder: (context, index) {
+                    var appointment = appointments[index];
+
+                    return Container(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: Column(
+                          children: [
+                            ListTile(
+                              title: Text(
+                                appointment['doctor_name'] ?? 'Doctor',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(appointment['doctor_specialization'] ?? 'Specialization'),
+                              trailing: const CircleAvatar(
+                                radius: 25,
+                                backgroundImage:
+                                    AssetImage("images/doctor1.jpg"),
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 15),
+                              child: Divider(thickness: 1, height: 20),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(Icons.calendar_month,
+                                        color: Colors.black54),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      appointment['date'] ?? '',
+                                      style: const TextStyle(
+                                          color: Colors.black54),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.access_time_filled,
+                                        color: Colors.black54),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      appointment['time'] ?? '',
+                                      style: const TextStyle(
+                                          color: Colors.black54),
+                                    ),
+                                  ],
+                                ),
+                                // Upcoming indicator (Blue dot with 'Upcoming' text)
+                                const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.upcoming,
+                                      color: Colors.blue,
+                                      size: 16,
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      'Upcoming',
+                                      style: TextStyle(
+                                          color: Colors.blue, fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () =>
+                                      cancelAppointment(appointment['id']),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 201, 60, 60),
+                                    minimumSize: const Size(160, 40),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(7),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Cancel",
+                                    style: TextStyle(color: Color.fromARGB(255, 250, 247, 247)),
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () =>
+                                      rescheduleAppointment(appointment['id']),
+                                  style: ElevatedButton.styleFrom(
+                                                                        backgroundColor:
+                                        const Color.fromARGB(255, 36, 164, 166),
+                                    minimumSize: const Size(160, 40),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(7),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Reschedule",
+                                    style: TextStyle(color: Color.fromARGB(255, 1, 0, 0)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              ],
-            ),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                children: [
-                  const ListTile(
-                    title: Text("Dr. Adarsh Nalayak",
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text("Therapist"),
-                    trailing: CircleAvatar(
-                      radius: 25,
-                      backgroundImage: AssetImage("images/doctor1.jpg"),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Divider(
-                      thickness: 1,
-                      height: 20,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      const Row(
-                        children: [
-                          Icon(
-                            Icons.calendar_month,
-                            color: Colors.black54,
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            "10/11/2024",
-                            style: TextStyle(
-                              color: Colors.black54,
-                            ),
-                          )
-                        ],
-                      ),
-                      const Row(
-                        children: [
-                          Icon(
-                            Icons.access_time_filled,
-                            color: Colors.black54,
-                          ),
-                          SizedBox(width: 5),
-                          Text(
-                            "9:00 PM",
-                            style: TextStyle(
-                              color: Colors.black54,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: const BoxDecoration(
-                              color: Colors.green,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 5
-                          ),
-                          const Text(
-                            "Confirmed",
-                            style: TextStyle(
-                              color: Colors.black54,
-                            ),
-                          )
-                        ],
-                      ),
-
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 15,
-                    
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      InkWell(
-                        onTap: (){
-
-                        },
-                       child: Container(
-                        width: 150,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          
-                          ),
-                          child: const Center(
-                            child: Text("Cancel",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight : FontWeight.w500 ,
-                              color: Colors.black,
-                            ),),
-                          ),
-                        ),
-                       ), 
-                       InkWell(
-                        onTap: (){
-
-                        },
-                       child: Container(
-                        width: 150,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.teal,
-                          borderRadius: BorderRadius.circular(10),
-                          
-                          ),
-                          child: const Center(
-                            child: Text("Rescheduled",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight : FontWeight.w500 ,
-                              color: Color.fromARGB(255, 252, 252, 252),
-                            ),),
-                          ),
-                        ),
-                       ), 
-                    ],
-                  ),
-                  const SizedBox(height: 10,)
-
-                ],
-              ),
-            ),
-          ),
-           const Text(
-            "About Doctor",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 4,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                children: [
-                  const ListTile(
-                    title: Text("Dr. Adarsh Nalayak",
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text("Therapist"),
-                    trailing: CircleAvatar(
-                      radius: 25,
-                      backgroundImage: AssetImage("images/doctor1.jpg"),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Divider(
-                      thickness: 1,
-                      height: 20,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      const Row(
-                        children: [
-                          Icon(
-                            Icons.calendar_month,
-                            color: Colors.black54,
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            "10/11/2024",
-                            style: TextStyle(
-                              color: Colors.black54,
-                            ),
-                          )
-                        ],
-                      ),
-                      const Row(
-                        children: [
-                          Icon(
-                            Icons.access_time_filled,
-                            color: Colors.black54,
-                          ),
-                          SizedBox(width: 5),
-                          Text(
-                            "9:00 PM",
-                            style: TextStyle(
-                              color: Colors.black54,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: const BoxDecoration(
-                              color: Colors.green,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 5
-                          ),
-                          const Text(
-                            "Confirmed",
-                            style: TextStyle(
-                              color: Colors.black54,
-                            ),
-                          )
-                        ],
-                      ),
-
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 15,
-                    
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      InkWell(
-                        onTap: (){
-
-                        },
-                       child: Container(
-                        width: 150,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          
-                          ),
-                          child: const Center(
-                            child: Text("Cancel",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight : FontWeight.w500 ,
-                              color: Colors.black,
-                            ),),
-                          ),
-                        ),
-                       ), 
-                       InkWell(
-                        onTap: (){
-
-                        },
-                       child: Container(
-                        width: 150,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.teal,
-                          borderRadius: BorderRadius.circular(10),
-                          
-                          ),
-                          child: const Center(
-                            child: Text("Rescheduled",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight : FontWeight.w500 ,
-                              color: Color.fromARGB(255, 252, 252, 252),
-                            ),),
-                          ),
-                        ),
-                       ), 
-                    ],
-                  ),
-                  const SizedBox(height: 10,)
-
-                ],
-              ),
-            ),
-          )
         ],
       ),
     );

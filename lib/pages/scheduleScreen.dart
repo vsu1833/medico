@@ -1,5 +1,8 @@
-import 'package:login/pages/upcoming_schedule.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:login/pages/cancelledSchedule.dart';
+import 'package:login/pages/completedschedule.dart';
+import 'package:login/pages/upcoming_schedule.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -10,14 +13,33 @@ class ScheduleScreen extends StatefulWidget {
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
   int _buttonIndex = 0;
-  final _scheduleWidgets = [
-    const UpcomingSchedule(),
-    Container(), // Placeholder for Completed schedule
-    Container(), // Placeholder for Cancelled schedule
-  ];
+  String userId = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserId();
+  }
+
+  Future<void> _fetchUserId() async {
+    // Fetch the current user's ID from Firebase Auth
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        userId = user.uid; // Retrieve the user ID from the authenticated user
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Schedule widgets dynamically updated with userId
+    final scheduleWidgets = [
+      UpcomingSchedule(userId: userId), // Pass the fetched userId
+      CompletedSchedule(userId: userId,), // Placeholder for Completed schedule
+      CancelledSchedule(userId: userId,), // Placeholder for Cancelled schedule
+    ];
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.only(top: 30),
@@ -115,7 +137,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            _scheduleWidgets[_buttonIndex], // Display the selected schedule widget
+            // Display the selected schedule widget based on the button index
+            scheduleWidgets[_buttonIndex],
           ],
         ),
       ),
