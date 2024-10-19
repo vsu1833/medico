@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:login/pages/appointment_page.dart';
 import 'package:login/pages/main_screen.dart';
 import 'package:login/pop_up/app_pop_up.dart';
-
+import 'package:flutter/services.dart'; 
+import 'package:url_launcher/url_launcher.dart'; 
 
 class DoctorScreenPage extends StatelessWidget {
   final String doctorName;
@@ -17,7 +17,7 @@ class DoctorScreenPage extends StatelessWidget {
   final String doctorId;
   final String userId;
   final String consultationFee;
-  final String phone ;
+  final String phone;
 
   const DoctorScreenPage({
     super.key,
@@ -97,29 +97,45 @@ class DoctorScreenPage extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.call,
-                                color: Colors.teal,
-                                size: 25,
+                            GestureDetector(
+                              onTap: () {
+                                Clipboard.setData(ClipboardData(text: phone));
+
+                                final Uri telUri =
+                                    Uri(scheme: 'tel', path: phone);
+                                launchUrl(telUri); // Launches the phone dialer
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.call,
+                                  color: Colors.teal,
+                                  size: 25,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 20),
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                CupertinoIcons.chat_bubble_text_fill,
-                                color: Colors.teal,
-                                size: 25,
+                            GestureDetector(
+                              onTap: () {
+                                final Uri smsUri =
+                                    Uri(scheme: 'sms', path: phone);
+                                launchUrl(smsUri); 
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  CupertinoIcons.chat_bubble_text_fill,
+                                  color: Colors.teal,
+                                  size: 25,
+                                ),
                               ),
                             ),
                           ],
@@ -164,7 +180,6 @@ class DoctorScreenPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
 
-                  // Reviews Section
                   const Text(
                     "Reviews",
                     style: TextStyle(
@@ -174,7 +189,10 @@ class DoctorScreenPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 5),
-                  ReviewSection(doctorId: doctorId, doctorImage: doctorImage, doctorName: doctorName), // Add the ReviewSection here
+                  ReviewSection(
+                      doctorId: doctorId,
+                      doctorImage: doctorImage,
+                      doctorName: doctorName), 
                   const SizedBox(height: 10),
 
                   const Text(
@@ -259,7 +277,7 @@ class DoctorScreenPage extends StatelessWidget {
                     context: context,
                     builder: (context) => PopUpAppo(
                       doctorName: doctorName,
-                      phone:phone,
+                      phone: phone,
                       doctorSpecialization: doctorSpecialization,
                       doctorImage: doctorImage,
                       doctorDescription: doctorDescription,
@@ -269,8 +287,7 @@ class DoctorScreenPage extends StatelessWidget {
                       doctorImages: doctorImages,
                       consultationFee: consultationFee,
                       userId: userId,
-                      reviews: const [], // Placeholder for now
-                        // Placeholder for now
+                      reviews: const [], 
                     ),
                   );
                 },
@@ -291,7 +308,9 @@ class DoctorScreenPage extends StatelessWidget {
       ),
     );
   }
-}class ReviewSection extends StatelessWidget {
+}
+
+class ReviewSection extends StatelessWidget {
   final String doctorId;
   final String doctorImage;
   final String doctorName;
@@ -321,7 +340,6 @@ class DoctorScreenPage extends StatelessWidget {
 
         var reviews = snapshot.data!.docs;
 
-        // Calculate the average rating and total reviews count
         double totalRating = 0;
         int totalReviews = reviews.length;
 
@@ -336,18 +354,21 @@ class DoctorScreenPage extends StatelessWidget {
           children: [
             Row(
               children: [
-                buildStarRating(averageRating), // Use the buildStarRating function for average rating
+                buildStarRating(
+                    averageRating),
                 const SizedBox(width: 5),
-                Text(averageRating.toStringAsFixed(1)), // Display the average rating
+                Text(averageRating
+                    .toStringAsFixed(1)), 
                 const SizedBox(width: 5),
-                Text('($totalReviews)'), // Display the total number of reviews
+                Text('($totalReviews)'), 
                 const Spacer(),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AllReviewsScreen(doctorId: doctorId),
+                        builder: (context) =>
+                            AllReviewsScreen(doctorId: doctorId),
                       ),
                     );
                   },
@@ -360,7 +381,8 @@ class DoctorScreenPage extends StatelessWidget {
               child: Row(
                 children: List.generate(reviews.length, (index) {
                   var review = reviews[index];
-                  double starsCount = review['stars_count'].toDouble(); // Ensure it’s a double
+                  double starsCount =
+                      review['stars_count'].toDouble(); 
 
                   return Card(
                     shape: RoundedRectangleBorder(
@@ -368,7 +390,7 @@ class DoctorScreenPage extends StatelessWidget {
                     ),
                     margin: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: SizedBox(
-                      width: 250, // Set a width for the cards
+                      width: 250, 
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
@@ -384,9 +406,11 @@ class DoctorScreenPage extends StatelessWidget {
                                     fontSize: 16,
                                   ),
                                 ),
-                                buildStarRating(starsCount), // Use the updated star rating builder
+                                buildStarRating(
+                                    starsCount), 
                                 Text(
-                                  starsCount.toStringAsFixed(1), // Display decimal rating
+                                  starsCount.toStringAsFixed(
+                                      1), // Display decimal rating
                                   style: const TextStyle(fontSize: 14),
                                 ),
                               ],
@@ -412,7 +436,6 @@ class DoctorScreenPage extends StatelessWidget {
     );
   }
 
-  // Helper function to display fractional star ratings
   Widget buildStarRating(double rating) {
     List<Widget> stars = [];
     for (int i = 1; i <= 5; i++) {
@@ -428,7 +451,6 @@ class DoctorScreenPage extends StatelessWidget {
   }
 }
 
-
 class AllReviewsScreen extends StatelessWidget {
   final String doctorId;
 
@@ -439,7 +461,7 @@ class AllReviewsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("All Reviews"),
-        backgroundColor: Colors.teal, // Set a consistent app bar color
+        backgroundColor: Colors.teal, 
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -464,10 +486,11 @@ class AllReviewsScreen extends StatelessWidget {
               double stars = review['stars_count'].toDouble();
 
               return Card(
-                margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-                elevation: 4, // Added elevation for a shadow effect
+                margin: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 15.0),
+                elevation: 4,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15), // Rounded corners
+                  borderRadius: BorderRadius.circular(15), 
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),
@@ -482,7 +505,7 @@ class AllReviewsScreen extends StatelessWidget {
                               review['review_title'],
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 18, // Increased font size
+                                fontSize: 18,
                                 color: Colors.teal, // Title color
                               ),
                             ),
@@ -493,10 +516,12 @@ class AllReviewsScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10), // Increased spacing
+                      const SizedBox(height: 10),
                       Text(
                         review['review'],
-                        style: const TextStyle(fontSize: 16, color: Colors.black87), // Slightly darker text
+                        style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black87), 
                       ),
                       const SizedBox(height: 10),
                       Text(
@@ -504,7 +529,8 @@ class AllReviewsScreen extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 14,
                           color: Color.fromARGB(224, 14, 0, 0),
-                          fontStyle: FontStyle.italic, // Italicized date for distinction
+                          fontStyle: FontStyle
+                              .italic, // Italicized date for distinction
                         ),
                       ),
                     ],
@@ -523,16 +549,14 @@ class AllReviewsScreen extends StatelessWidget {
     int fullStars = rating.floor();
     bool hasHalfStar = rating - fullStars >= 0.5;
 
-    // Add full stars
     for (int i = 0; i < fullStars; i++) {
       stars.add(const Icon(
         Icons.star,
         color: Color.fromARGB(255, 255, 203, 46),
-        size: 20, // Increased size for better visibility
+        size: 20, 
       ));
     }
 
-    // Add half star if applicable
     if (hasHalfStar) {
       stars.add(const Icon(
         Icons.star_half,
@@ -541,7 +565,6 @@ class AllReviewsScreen extends StatelessWidget {
       ));
     }
 
-    // Fill remaining with empty stars (to make total 5 stars)
     while (stars.length < 5) {
       stars.add(const Icon(
         Icons.star_border,
