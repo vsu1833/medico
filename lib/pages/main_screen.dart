@@ -1,6 +1,7 @@
 // import 'package:appointmentpage/pages/doctor_screen_page.dart';
 
 // import 'package:appointmentpage/pages/home_screen.dart';
+import 'package:login/pages/profile_updation.dart';
 import 'package:login/pages/scheduleScreen.dart';
 import 'package:login/pages/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     HomeScreen(),
    const ScheduleScreen(),
-    Container(),
+    const ProfileUpdateApp(),
   ];
 
   @override

@@ -5,6 +5,7 @@ import 'pages/onboarding_page.dart';
 // import 'package:medico/firebase_options.dart';
 import 'firebase_options.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

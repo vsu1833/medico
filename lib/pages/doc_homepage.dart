@@ -295,6 +295,7 @@ class DocHomeScreen extends StatelessWidget {
                                       MaterialPageRoute(
                                         builder: (context) => DoctorScreenPage(
                                           doctorName:'',
+                                          phone: '',
                                           doctorSpecialization:    ''  ,
                                           doctorDescription: "Detailed description about the doctor...",
                                           doctorLocation: "Doctor's location",

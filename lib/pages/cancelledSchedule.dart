@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class CancelledSchedule extends StatefulWidget {
-  final String userId; // Pass the user ID to fetch cancelled appointments
+  final String userId; 
 
   const CancelledSchedule({super.key, required this.userId});
 
@@ -23,14 +23,14 @@ class _CancelledScheduleState extends State<CancelledSchedule> {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('appointments')
-          .where('patient_id', isEqualTo: widget.userId) // Fetch cancelled appointments for this user
-          .where('cancelled', isEqualTo: true) // Only fetch cancelled appointments
+          .where('patient_id', isEqualTo: widget.userId) 
+          .where('cancelled', isEqualTo: true) 
           .get();
 
       List<Map<String, dynamic>> fetchedCancelledAppointments = [];
       for (var doc in querySnapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        data['id'] = doc.id; // Add document ID for further operations
+        data['id'] = doc.id; 
         fetchedCancelledAppointments.add(data);
       }
 

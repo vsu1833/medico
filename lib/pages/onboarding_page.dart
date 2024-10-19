@@ -17,7 +17,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize the onboarding pages inside build method where context is available
+    // Initialize the onboarding pages inside the build method where context is available
     final List<Widget> onBoardingPages = [
       OnboardingCard(
         image: "assets/dcotor.jpeg",
@@ -73,8 +73,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 107, 170, 181),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 50.0),
+       body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0), // Adjusted padding
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -90,10 +90,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
               controller: _pageController,
               count: onBoardingPages.length,
               effect: const WormEffect(
-                paintStyle: PaintingStyle.stroke,
-                strokeWidth: 1.5,
-                dotColor: Color.fromARGB(255, 13, 4, 4),
-                activeDotColor: Color.fromARGB(255, 8, 10, 10),
+                paintStyle: PaintingStyle.fill,
+                strokeWidth: 4.0,
+                dotColor: Color.fromARGB(255, 200, 200, 200), // Neutral color for inactive dots
+                activeDotColor: Color.fromARGB(255, 8, 10, 10), // Dark color for active dot
               ),
               onDotClicked: (index) {
                 _pageController.animateToPage(index,
@@ -101,6 +101,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     curve: Curves.linear);
               },
             ),
+            const SizedBox(height: 20), // Add space between indicators and button
             TextButton(
               onPressed: () {
                 _pageController.jumpToPage(onBoardingPages.length - 1);
@@ -110,6 +111,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
               ),
             ),
+            const SizedBox(height: 20), // Add space before the bottom
           ],
         ),
       ),
