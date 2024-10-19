@@ -330,12 +330,14 @@ class DocHomeScreen extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+
                                 Text(
                                   snapshot.hasData ? '${snapshot.data}' : '...',
                                   style: const TextStyle(
                                     fontSize: 23,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
+
                                   ),
                                 ),
                                 const SizedBox(width: 5),

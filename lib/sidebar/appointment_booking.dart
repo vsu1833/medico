@@ -19,19 +19,33 @@ class _DoctorsPageState extends State<DoctorsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.category} Doctors'),
+        title: Text('${widget.category} Doctors',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        backgroundColor: Colors.blueAccent, // Modern color for the app bar
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0), // Consistent padding
+        child: Column(
+          children: [
+            // Search Bar with Improved Design
+            TextField(
               decoration: InputDecoration(
                 labelText: 'Search Doctor',
+                labelStyle: TextStyle(
+                  color: Colors.grey[700],
+                  fontSize: 16,
+                ),
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(12.0),
                 ),
+                filled: true,
+                fillColor: Colors.grey[100], // Subtle background for search field
+                contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
               ),
               onChanged: (query) {
                 setState(() {
@@ -39,9 +53,9 @@ class _DoctorsPageState extends State<DoctorsPage> {
                 });
               },
             ),
-          ),
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
+            const SizedBox(height: 16), // Spacing between search bar and list
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('doctors')
                     .where('specialization', isEqualTo: widget.category)
@@ -55,65 +69,102 @@ class _DoctorsPageState extends State<DoctorsPage> {
                   }
 
                   var doctors = snapshot.data!.docs
-                      .map((doc) =>
-                          Doctor.fromMap(doc.data() as Map<String, dynamic>))
+                      .map((doc) => Doctor.fromMap(doc.data() as Map<String, dynamic>))
                       .where((doctor) => doctor.name
                           .toLowerCase()
                           .contains(searchQuery.toLowerCase()))
                       .toList();
 
                   if (doctors.isEmpty) {
-                    return const Center(child: Text('No doctors found.'));
+                    return const Center(child: Text('No doctors found.',
+                        style: TextStyle(fontSize: 18, color: Colors.grey)));
                   }
 
                   return ListView.builder(
                     itemCount: doctors.length,
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(doctors[index].name),
-                        subtitle: Text(doctors[index].specialization),
-                        onTap: () async {
-                          String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-                          if (userId.isNotEmpty) {
-                            // Fetch reviews for the doctor
-                            QuerySnapshot reviewSnapshot = await FirebaseFirestore.instance
-                                .collection('reviews')
-                                .where('docId', isEqualTo: doctors[index].doctorId) // Match doctorId with docId
-                                .get();
-
-                            List<Map<String, dynamic>> reviews = reviewSnapshot.docs
-                                .map((doc) => doc.data() as Map<String, dynamic>)
-                                .toList();
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DoctorScreenPage(
-                                  doctorId: doctors[index].doctorId,
-                                  doctorName: doctors[index].name,
-                                  doctorSpecialization: doctors[index].specialization,
-                                  doctorAddress: doctors[index].address,
-                                  userId: userId, // Use fetched user ID
-                                  consultationFee: '',
-                                  doctorDescription: doctors[index].description,
-                                  doctorLocation: doctors[index].address,
-                                  doctorImage: '',
-                                  doctorImages: const [],
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          elevation: 2,
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.all(16),
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.blueAccent,
+                              radius: 30,
+                              child: Text(
+                                doctors[index].name[0],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('User not logged in')),
-                            );
-                          }
-                        },
+                            ),
+                            title: Text(
+                              doctors[index].name,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              doctors[index].specialization,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                            onTap: () async {
+                              String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+                              if (userId.isNotEmpty) {
+                                QuerySnapshot reviewSnapshot = await FirebaseFirestore.instance
+                                    .collection('reviews')
+                                    .where('docId', isEqualTo: doctors[index].doctorId)
+                                    .get();
+
+                                List<Map<String, dynamic>> reviews = reviewSnapshot.docs
+                                    .map((doc) => doc.data() as Map<String, dynamic>)
+                                    .toList();
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DoctorScreenPage(
+                                      doctorId: doctors[index].doctorId,
+                                      doctorName: doctors[index].name,
+                                      doctorSpecialization: doctors[index].specialization,
+                                      doctorAddress: doctors[index].address,
+                                      userId: userId,
+                                      consultationFee: '',
+                                      phone: doctors[index].phone,
+                                      doctorDescription: doctors[index].description,
+                                      doctorLocation: doctors[index].address,
+                                      doctorImage: '',
+                                      doctorImages: const [],
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('User not logged in')),
+                                );
+                              }
+                            },
+                          ),
+                        ),
                       );
                     },
                   );
-                }),
-          ),
-        ],
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -146,4 +197,6 @@ class Doctor {
       description: data['description'] ?? '',
     );
   }
+
+  static fromFirestore(QueryDocumentSnapshot<Map<String, dynamic>> doc) {}
 }

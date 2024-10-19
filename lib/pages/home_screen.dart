@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'package:login/components/category_card.dart';
+
 
 import 'package:login/pages/health_analytics.dart';
 import 'package:login/pages/patient_profileview.dart';
@@ -9,66 +13,190 @@ import 'package:login/components/symptoms/dentaldoc.dart';
 import 'package:login/pages/profile_updation.dart';
 import 'package:login/sidebar/category.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 import 'package:login/pages/doctor_screen_page.dart';
+import 'package:login/pages/profile_updation.dart';
 import 'package:login/pages/whom_to_review_selection.dart';
 import 'package:login/pages/upload_reports.dart';
+import 'package:login/sidebar/category.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:login/sidebar/appointment_booking.dart';
 
-// Doctor model class
+
 class Doctor {
   final String name;
   final String specialization;
   final String image;
-  final double rating;
+  final String address;
+  final String description;
+  final String phone;
+  final String id;
+  final String gender;
+  final String consultationfee;
 
   Doctor({
     required this.name,
     required this.specialization,
     required this.image,
-    required this.rating,
+    required this.address,
+    required this.description,
+    required this.phone,
+    required this.id,
+    required this.gender,
+    required this.consultationfee,
   });
 
-  // Factory method to create a Doctor from a Firestore document with null checks
   factory Doctor.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     return Doctor(
-      name: (data['first_name'] ?? 'Unknown') + ' ' + (data['last_name'] ?? ''), // Provide default values
-      specialization: data['specialization'] ?? 'Unknown', // Default value for specialization
-      image: data['image'] ?? 'https://default-image-url.com', // Provide a default image URL
-      rating: (data['stars_count'] ?? 0.0).toDouble(), // Default rating if not available
+      name: (data['first_name'] ?? 'Unknown') + ' ' + (data['last_name'] ?? ''),
+      specialization: data['specialization'] ?? 'Unknown',
+      consultationfee: data['consultationfee'] ?? '400 ₹',
+      image: data['profile_image_url'] ?? 'https://default-image-url.com',
+      address: data['address'] ?? 'Unknown Address',
+      description: data['description'] ?? 'No description available',
+      phone: data['phone'] ?? 'No phone available',
+      id: doc.id,
+      gender: data['gender'] ?? 'Unknown',
     );
   }
 }
 
-class HomeScreen extends StatelessWidget {
+
+class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
 
-  // List of categories and icons
-  final List catNames = [
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final List<String> catNames = [
     'Physician', 'Cardiologist', 'Surgeon', 'Orthopaedician', 'Pediatrician',
     'Skin Specialist', 'Gynecologist', 'ENT', 'Neurologist', 'Psychiatrist', 'Dentist',
   ];
 
-  List<Icon> catIcons = [
-    Icon(MdiIcons.hospital, color: const Color.fromARGB(255, 37, 135, 159), size: 30),
-    Icon(MdiIcons.heart, color: const Color.fromARGB(255, 48, 181, 218), size: 30),
-    Icon(MdiIcons.knife, color: const Color.fromARGB(255, 82, 212, 255), size: 30),
-    Icon(MdiIcons.bone, color: const Color.fromARGB(255, 54, 202, 205), size: 30),
-    Icon(MdiIcons.baby, color: const Color.fromARGB(255, 43, 165, 196), size: 30),
-    Icon(MdiIcons.ski, color: const Color.fromARGB(255, 37, 135, 159), size: 30),
-    Icon(MdiIcons.faceWoman, color: const Color.fromARGB(255, 48, 181, 218), size: 30),
-    Icon(MdiIcons.earHearing, color: const Color.fromARGB(255, 82, 212, 255), size: 30),
-    Icon(MdiIcons.brain, color: const Color.fromARGB(255, 54, 202, 205), size: 30),
-    Icon(MdiIcons.emoticonSad, color: const Color.fromARGB(255, 43, 165, 196), size: 30),
-    Icon(MdiIcons.toothOutline, color: const Color.fromARGB(255, 37, 135, 159), size: 30),
+  final List<Icon> catIcons = [
+    Icon(MdiIcons.hospital, size: 30),
+    Icon(MdiIcons.heart, size: 30),
+    Icon(MdiIcons.knife, size: 30),
+    Icon(MdiIcons.bone, size: 30),
+    Icon(MdiIcons.baby, size: 30),
+    Icon(MdiIcons.ski, size: 30),
+    Icon(MdiIcons.faceWoman, size: 30),
+    Icon(MdiIcons.earHearing, size: 30),
+    Icon(MdiIcons.brain, size: 30),
+    Icon(MdiIcons.emoticonSad, size: 30),
+    Icon(MdiIcons.toothOutline, size: 30),
   ];
 
-  // Function to fetch doctors from Firestore with added logging
+  String searchQuery = '';
+
   Stream<List<Doctor>> fetchDoctors() {
     return FirebaseFirestore.instance.collection('doctors').snapshots().map((snapshot) {
-      print('Fetched ${snapshot.docs.length} documents'); // Log number of documents fetched
       return snapshot.docs.map((doc) => Doctor.fromFirestore(doc)).toList();
     });
   }
+Future<String> fetchUserId(String patientPhone) async {
+  QuerySnapshot patientSnapshot = await FirebaseFirestore.instance
+      .collection('patients')
+      .where('phone', isEqualTo: patientPhone)
+      .get();
+
+  if (patientSnapshot.docs.isEmpty) {
+    return ''; // No patient found
+  }
+
+  return patientSnapshot.docs.first.id; // Returning the patient ID (userId)
+}
+
+  Future<double> fetchDoctorRating(String doctorId) async {
+    QuerySnapshot reviewsSnapshot = await FirebaseFirestore.instance
+        .collection('reviews')
+        .where('docId', isEqualTo: doctorId)
+        .get();
+
+    if (reviewsSnapshot.docs.isEmpty) {
+      return 0.0; // No reviews available
+    }
+
+    double totalStars = 0;
+    int reviewCount = reviewsSnapshot.docs.length;
+
+    reviewsSnapshot.docs.forEach((reviewDoc) {
+      double stars = reviewDoc['stars_count'] ?? 0.0;
+      totalStars += stars;
+    });
+
+    return totalStars / reviewCount; // Average rating
+  }
+// Function to fetch the current user's ID (patient ID) and username (patient name) from Firebase
+Future<Map<String, String>> fetchUserInfo() async {
+  String? phone = FirebaseAuth.instance.currentUser?.phoneNumber;  // Getting the phone of the logged-in user
+  if (phone == null) return {}; // Return empty if user is not logged in or phone is not available
+
+  QuerySnapshot patientSnapshot = await FirebaseFirestore.instance
+      .collection('patients')
+      .where('phone', isEqualTo: phone)
+      .get();
+
+  if (patientSnapshot.docs.isEmpty) {
+    return {}; // No patient found
+  }
+
+  // Fetch patient ID and name (username)
+  DocumentSnapshot patientDoc = patientSnapshot.docs.first;
+  String userId = patientDoc.id;
+  String userName = patientDoc['first_name'] ?? 'Unknown Name';  
+
+  return {
+    'userId': userId,
+    'userName': userName,
+  };
+}  String username = 'Loading...';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAndSetUserInfo();
+  }
+
+  void fetchAndSetUserInfo() async {
+    Map<String, String> userInfo = await fetchUserInfo();
+    setState(() {
+      username = userInfo['userName'] ?? 'Unknown Name';
+    });
+  }
+final List<String> bannerImages = [
+    'assets/images/appIcon.jpeg',
+
+  ];
+
+  // Banner carousel widget
+  Widget buildBannerCarousel() {
+    return SizedBox(
+      height: 150,  // Adjust height to fill the space
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: bannerImages.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                bannerImages[index],
+                fit: BoxFit.cover,
+                width: MediaQuery.of(context).size.width * 0.9,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+// Inside your ListTile onPressed, modify it to fetch and send the username
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +208,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 3, 131, 170),
+                color: Color.fromARGB(255, 3, 165, 170),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,11 +219,8 @@ class HomeScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "Hi, Rogi",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                    ),
+                "Hi , Patient",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
                 ],
               ),
@@ -153,7 +278,6 @@ class HomeScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-
                     builder: (context) => const WhomToReviewSelection(),
                   ),
                 );
@@ -170,7 +294,6 @@ class HomeScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const UploadReports(),
-
                   ),
                 );
               },
@@ -209,15 +332,20 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+              // Add the banner carousel here
+            buildBannerCarousel(
+            
+            ),
+            const SizedBox(height: 20),
             // Search Box
             Container(
               margin: const EdgeInsets.all(15),
               width: MediaQuery.of(context).size.width,
-              height: 55,
+              height: 75,  // Increased height for a bigger search box
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+                color: const Color.fromARGB(255, 189, 198, 203), // New color for the search box
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
@@ -229,15 +357,18 @@ class HomeScreen extends StatelessWidget {
               child: TextFormField(
                 decoration: InputDecoration(
                   border: InputBorder.none,
-                  hintText: "Search here...",
+                  hintText: "Search for doctors or specializations...",
                   hintStyle: TextStyle(
-                    color: Colors.black.withOpacity(0.5),
+                    color: const Color.fromARGB(255, 23, 12, 12).withOpacity(0.8),
+                    fontSize: 16,
                   ),
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    size: 25,
-                  ),
+                  prefixIcon: const Icon(Icons.search, size: 30, color: Colors.white),
                 ),
+                onChanged: (query) {
+                  setState(() {
+                    searchQuery = query;
+                  });
+                },
               ),
             ),
 
@@ -245,11 +376,11 @@ class HomeScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 15),
               child: Text(
-                "Symptoms",
+                "Categories",
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black.withOpacity(0.7),
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(187, 0, 0, 0), // Changed color for better visibility
                 ),
               ),
             ),
@@ -268,7 +399,7 @@ class HomeScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const Dentaldoc(),
+                            builder: (context) => DoctorsPage(category: catNames[index]),
                           ),
                         );
                       },
@@ -276,14 +407,14 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: 5),
-                            height: 60,
-                            width: 60,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
+                            height: 70, // Increased size of the category icons
+                            width: 70,
+                            decoration: BoxDecoration(
+                              color: Colors.teal.shade500, // Updated color for category circles
                               shape: BoxShape.circle,
-                              boxShadow: [
+                              boxShadow: const [
                                 BoxShadow(
-                                  color: Colors.black12,
+                                  color: Colors.black26,
                                   blurRadius: 4,
                                   spreadRadius: 2,
                                 ),
@@ -295,9 +426,9 @@ class HomeScreen extends StatelessWidget {
                           Text(
                             catNames[index],
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black.withOpacity(0.7),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: const Color.fromARGB(182, 1, 27, 24), // Updated text color
                             ),
                           ),
                         ],
@@ -308,155 +439,152 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            // Best Doctors Section
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
+
+            // Doctors Section
             Padding(
               padding: const EdgeInsets.only(left: 15),
               child: Text(
-                "Our Best Doctors",
+                "Doctors",
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black.withOpacity(0.7),
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(187, 0, 0, 0), // Changed color for better visibility
                 ),
               ),
             ),
-            SizedBox(
-              height: 370,
-              child: StreamBuilder<List<Doctor>>(
-                stream: fetchDoctors(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  }
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('No doctors found.'));
-                  }
+            const SizedBox(height: 10),
 
-                  final doctors = snapshot.data!;
+            // List of Doctors (StreamBuilder)
+           StreamBuilder<List<Doctor>>(
+  stream: fetchDoctors(),
+  builder: (context, snapshot) {
+    if (!snapshot.hasData) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
 
-                  return ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: doctors.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final doctor = doctors[index];
-                      return Container(
-                        margin: const EdgeInsets.all(15),
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        width: 220,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 6,
-                              spreadRadius: 4,
-                            ),
-                          ],
+    final List<Doctor> filteredDoctors = snapshot.data!.where((doctor) {
+      return doctor.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          doctor.specialization.toLowerCase().contains(searchQuery.toLowerCase());
+    }).toList();
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: filteredDoctors.length,
+      itemBuilder: (context, index) {
+        final doctor = filteredDoctors[index];
+
+        return FutureBuilder<double>(
+          future: fetchDoctorRating(doctor.id),
+          builder: (context, ratingSnapshot) {
+            double rating = ratingSnapshot.data ?? 0.0;
+
+           
+
+                // String userId = userIdSnapshot.data ?? '';
+
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 5,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(10),
+                   leading: CircleAvatar(
+  radius: 30,
+  backgroundImage: NetworkImage(doctor.image),
+  onBackgroundImageError: (exception, stackTrace) {
+    // Handle the error, maybe set a default image or log it
+    print('Error loading image: $exception');
+  },
+),
+
+                    title: Text(
+                      doctor.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: const Color.fromARGB(181, 0, 0, 0),
+                      ),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          doctor.specialization,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                          ),
                         ),
-                        child: Column(
+                        const SizedBox(height: 5),
+                        Row(
                           children: [
-                            Container(
-                              height: 120,
-                              width: 120,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 4,
-                                    spreadRadius: 2,
-                                  ),
-                                ],
-                                image: DecorationImage(
-                                  image: NetworkImage(doctor.image),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                            Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 16,
                             ),
-                            const SizedBox(height: 15),
+                            const SizedBox(width: 5),
                             Text(
-                              doctor.name,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              doctor.specialization,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black.withOpacity(0.6),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.star, color: Colors.amber),
-                                Text(
-                                  '${doctor.rating}',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            SizedBox(
-                              height: 35,
-                              width: 130,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const DoctorScreenPage( doctorId: '',
-                                  doctorName: '',
-                                  doctorSpecialization: '',
-                                  doctorAddress: '',
-                                  userId: '', // Use fetched user ID
-                                  
-                                
-                                  
-                              
-                                doctorDescription:'', doctorImage: '', doctorLocation: '', doctorImages: [], consultationFee: ''),
-                                    ),
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color.fromARGB(255, 0, 115, 150),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'View Profile',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
+                              rating.toStringAsFixed(1),
+                              style: const TextStyle(fontSize: 14),
                             ),
                           ],
                         ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
+                      ],
+                    ),
+                   trailing: IconButton(
+  icon: Icon(Icons.arrow_forward_ios, color: Colors.teal.shade800),
+  onPressed: () async {
+    String userId = FirebaseAuth.instance.currentUser?.uid ?? ''; 
+
+    if (userId.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DoctorScreenPage(
+            userId: userId,  // Pass the fetched user ID (patient ID)
+            doctorId: doctor.id,  // Pass doctor details as needed
+            doctorName: doctor.name,
+            doctorSpecialization: doctor.specialization,
+            consultationFee: doctor.consultationfee,
+            phone: doctor.phone,
+            doctorDescription: doctor.description,
+            doctorLocation: doctor.address, doctorAddress: doctor.address, doctorImage:doctor.image, doctorImages: [],
+          ),
+        ),
+      );
+    } else {
+      // Show an error message if the user is not logged in
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User not logged in')),
+      );
+    }
+  },
+),
+
+                  ),
+                );
+              },
+          
+          
+        );
+      },
+    );
+  },
+),
           ],
         ),
-      ),
+        ),
     );
   }
 }

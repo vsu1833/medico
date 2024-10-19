@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:login/pages/appointment_page.dart';
 import 'package:login/pages/main_screen.dart';
 import 'package:login/pop_up/app_pop_up.dart';
+import 'package:flutter/services.dart'; 
+import 'package:url_launcher/url_launcher.dart'; 
 
 class DoctorScreenPage extends StatelessWidget {
   final String doctorName;
@@ -16,6 +17,7 @@ class DoctorScreenPage extends StatelessWidget {
   final String doctorId;
   final String userId;
   final String consultationFee;
+  final String phone;
 
   const DoctorScreenPage({
     super.key,
@@ -28,6 +30,7 @@ class DoctorScreenPage extends StatelessWidget {
     required this.doctorImages,
     required this.consultationFee,
     required this.doctorId,
+    required this.phone,
     required this.userId,
   });
 
@@ -78,7 +81,7 @@ class DoctorScreenPage extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 23,
                             fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 2, 0, 0),
+                            color: Color.fromARGB(255, 11, 0, 0),
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -94,29 +97,45 @@ class DoctorScreenPage extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.call,
-                                color: Colors.teal,
-                                size: 25,
+                            GestureDetector(
+                              onTap: () {
+                                Clipboard.setData(ClipboardData(text: phone));
+
+                                final Uri telUri =
+                                    Uri(scheme: 'tel', path: phone);
+                                launchUrl(telUri); // Launches the phone dialer
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.call,
+                                  color: Colors.teal,
+                                  size: 25,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 20),
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                CupertinoIcons.chat_bubble_text_fill,
-                                color: Colors.teal,
-                                size: 25,
+                            GestureDetector(
+                              onTap: () {
+                                final Uri smsUri =
+                                    Uri(scheme: 'sms', path: phone);
+                                launchUrl(smsUri); 
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  CupertinoIcons.chat_bubble_text_fill,
+                                  color: Colors.teal,
+                                  size: 25,
+                                ),
                               ),
                             ),
                           ],
@@ -148,7 +167,7 @@ class DoctorScreenPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
-                      color: Color.fromARGB(178, 0, 0, 0),
+                      color: Colors.black54,
                     ),
                   ),
                   const SizedBox(height: 5),
@@ -156,22 +175,24 @@ class DoctorScreenPage extends StatelessWidget {
                     doctorDescription,
                     style: const TextStyle(
                       fontSize: 16,
-                      color: Color.fromARGB(231, 0, 0, 0),
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 10),
 
-                  // Reviews Section
                   const Text(
                     "Reviews",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black,
+                      color: Colors.black54,
                     ),
                   ),
                   const SizedBox(height: 5),
-                  ReviewSection(doctorId: doctorId, doctorImage: doctorImage, doctorName: doctorName), // Add the ReviewSection here
+                  ReviewSection(
+                      doctorId: doctorId,
+                      doctorImage: doctorImage,
+                      doctorName: doctorName), 
                   const SizedBox(height: 10),
 
                   const Text(
@@ -185,7 +206,7 @@ class DoctorScreenPage extends StatelessWidget {
                   ListTile(
                     leading: const CircleAvatar(
                       radius: 30,
-                      backgroundColor: Color.fromARGB(102, 11, 0, 0),
+                      backgroundColor: Color.fromARGB(102, 147, 124, 124),
                       child: Icon(
                         Icons.location_on,
                         color: Color.fromARGB(255, 82, 246, 255),
@@ -256,6 +277,7 @@ class DoctorScreenPage extends StatelessWidget {
                     context: context,
                     builder: (context) => PopUpAppo(
                       doctorName: doctorName,
+                      phone: phone,
                       doctorSpecialization: doctorSpecialization,
                       doctorImage: doctorImage,
                       doctorDescription: doctorDescription,
@@ -265,8 +287,7 @@ class DoctorScreenPage extends StatelessWidget {
                       doctorImages: doctorImages,
                       consultationFee: consultationFee,
                       userId: userId,
-                      reviews: const [], // Placeholder for now
-                        // Placeholder for now
+                      reviews: const [], 
                     ),
                   );
                 },
@@ -287,7 +308,9 @@ class DoctorScreenPage extends StatelessWidget {
       ),
     );
   }
-}class ReviewSection extends StatelessWidget {
+}
+
+class ReviewSection extends StatelessWidget {
   final String doctorId;
   final String doctorImage;
   final String doctorName;
@@ -317,7 +340,6 @@ class DoctorScreenPage extends StatelessWidget {
 
         var reviews = snapshot.data!.docs;
 
-        // Calculate the average rating and total reviews count
         double totalRating = 0;
         int totalReviews = reviews.length;
 
@@ -332,20 +354,21 @@ class DoctorScreenPage extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.star, color: Colors.amber),
-                Text(
-                  averageRating.toStringAsFixed(1), // Display the average rating
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
+                buildStarRating(
+                    averageRating),
                 const SizedBox(width: 5),
-                Text('($totalReviews)'), // Display the total number of reviews
+                Text(averageRating
+                    .toStringAsFixed(1)), 
+                const SizedBox(width: 5),
+                Text('($totalReviews)'), 
                 const Spacer(),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AllReviewsScreen(doctorId: doctorId),
+                        builder: (context) =>
+                            AllReviewsScreen(doctorId: doctorId),
                       ),
                     );
                   },
@@ -358,13 +381,16 @@ class DoctorScreenPage extends StatelessWidget {
               child: Row(
                 children: List.generate(reviews.length, (index) {
                   var review = reviews[index];
+                  double starsCount =
+                      review['stars_count'].toDouble(); 
+
                   return Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     margin: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: SizedBox(
-                      width: 250, // Set a width for the cards
+                      width: 250, 
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
@@ -380,18 +406,11 @@ class DoctorScreenPage extends StatelessWidget {
                                     fontSize: 16,
                                   ),
                                 ),
-                                Row(
-                                  children: List.generate(
-                                    review['stars_count'],
-                                    (index) => const Icon(
-                                      Icons.star,
-                                      color: Colors.amber,
-                                      size: 16,
-                                    ),
-                                  ),
-                                ),
+                                buildStarRating(
+                                    starsCount), 
                                 Text(
-                                  '${review['stars_count']}', 
+                                  starsCount.toStringAsFixed(
+                                      1), // Display decimal rating
                                   style: const TextStyle(fontSize: 14),
                                 ),
                               ],
@@ -400,8 +419,8 @@ class DoctorScreenPage extends StatelessWidget {
                             Text(
                               review['review'],
                               style: const TextStyle(fontSize: 14),
-                              maxLines: 3, 
-                              overflow: TextOverflow.ellipsis, 
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
@@ -416,16 +435,13 @@ class DoctorScreenPage extends StatelessWidget {
       },
     );
   }
-}
 
-
-  // Helper function to display fractional star ratings
   Widget buildStarRating(double rating) {
     List<Widget> stars = [];
     for (int i = 1; i <= 5; i++) {
       if (i <= rating) {
         stars.add(const Icon(Icons.star, color: Colors.amber, size: 16));
-      } else if (i - rating == 0.5) {
+      } else if (i - rating < 1 && i - rating > 0) {
         stars.add(const Icon(Icons.star_half, color: Colors.amber, size: 16));
       } else {
         stars.add(const Icon(Icons.star_border, color: Colors.amber, size: 16));
@@ -433,8 +449,7 @@ class DoctorScreenPage extends StatelessWidget {
     }
     return Row(children: stars);
   }
-
-
+}
 
 class AllReviewsScreen extends StatelessWidget {
   final String doctorId;
@@ -446,13 +461,14 @@ class AllReviewsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("All Reviews"),
+        backgroundColor: Colors.teal, 
       ),
-      body: StreamBuilder(
+      body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('reviews')
             .where('docId', isEqualTo: doctorId)
             .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -467,47 +483,54 @@ class AllReviewsScreen extends StatelessWidget {
             itemCount: reviews.length,
             itemBuilder: (context, index) {
               var review = reviews[index];
+              double stars = review['stars_count'].toDouble();
+
               return Card(
                 margin: const EdgeInsets.symmetric(
                     vertical: 10.0, horizontal: 15.0),
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15), 
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(15.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded( // Let the title take up as much space as needed
+                          Expanded(
                             child: Text(
-                              review['review_title'], // Show full review title
+                              review['review_title'],
                               style: const TextStyle(
-                                fontWeight: FontWeight.bold, 
-                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: Colors.teal, // Title color
                               ),
                             ),
                           ),
-                          const SizedBox(width: 10), // Space between title and stars
+                          const SizedBox(width: 10),
                           Row(
-                            children: List.generate(
-                              review['stars_count'],
-                              (index) => const Icon(
-                                Icons.star,
-                                color: Color.fromARGB(255, 255, 203, 46),
-                                size: 16,
-                              ),
-                            ),
+                            children: _buildStarRating(stars),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 5),
-                      Text(review['review'], style: const TextStyle(fontSize: 14)),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 10),
                       Text(
-                        review['review_date'], // Show review date
+                        review['review'],
                         style: const TextStyle(
-                          fontSize: 12,
-                          color: Color.fromARGB(186, 14, 0, 0),
+                            fontSize: 16,
+                            color: Colors.black87), 
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        review['review_date'],
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color.fromARGB(224, 14, 0, 0),
+                          fontStyle: FontStyle
+                              .italic, // Italicized date for distinction
                         ),
                       ),
                     ],
@@ -519,5 +542,37 @@ class AllReviewsScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  List<Widget> _buildStarRating(double rating) {
+    List<Widget> stars = [];
+    int fullStars = rating.floor();
+    bool hasHalfStar = rating - fullStars >= 0.5;
+
+    for (int i = 0; i < fullStars; i++) {
+      stars.add(const Icon(
+        Icons.star,
+        color: Color.fromARGB(255, 255, 203, 46),
+        size: 20, 
+      ));
+    }
+
+    if (hasHalfStar) {
+      stars.add(const Icon(
+        Icons.star_half,
+        color: Color.fromARGB(255, 255, 203, 46),
+        size: 20,
+      ));
+    }
+
+    while (stars.length < 5) {
+      stars.add(const Icon(
+        Icons.star_border,
+        color: Color.fromARGB(255, 255, 203, 46),
+        size: 20,
+      ));
+    }
+
+    return stars;
   }
 }

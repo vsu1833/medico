@@ -12,8 +12,9 @@ class PopUpAppo extends StatefulWidget {
   final String doctorImage;
   final List<String> doctorImages;
   final String doctorId;
-  final String userId;  // Only userId, no UserId
+  final String userId; 
   final String consultationFee;
+  final String phone ;
   final List<Map<String, dynamic>> reviews;
 
   const PopUpAppo({
@@ -28,7 +29,8 @@ class PopUpAppo extends StatefulWidget {
     required this.consultationFee,
     required this.reviews,
     required this.doctorId,
-    required this.userId, // Removed 'UserId' for consistency
+    required this.userId, 
+    required this.phone,
   });
 
   @override
@@ -47,15 +49,30 @@ class _PopUpAppoState extends State<PopUpAppo> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Row(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0), // Rounded corners for modern look
+          ),
+          title: Row(
             children: [
-              Icon(Icons.info, color: Colors.blue),
-              SizedBox(width: 10),
-              Text('Appointment Fees'),
+              const Icon(Icons.info, color: Colors.blue, size: 28), // Larger icon for better emphasis
+              const SizedBox(width: 10),
+              Text(
+                'Appointment Fees',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800], // Modern, dark color for text
+                ),
+              ),
             ],
           ),
-          content: const Text(
-              'Rs. 400 should be paid at the medical center before the appointment.'),
+          content: Text(
+            'Rs. 400 should be paid at the medical center before the appointment.',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () {
@@ -64,12 +81,13 @@ class _PopUpAppoState extends State<PopUpAppo> {
                   MaterialPageRoute(
                     builder: (context) => DoctorScreenPage(
                       doctorName: widget.doctorName,
+                      phone: widget.phone,
                       doctorSpecialization: widget.doctorSpecialization,
                       doctorAddress: widget.doctorAddress,
                       doctorImage: widget.doctorImage,
                       consultationFee: widget.consultationFee,
                       doctorId: widget.doctorId,
-                      userId: widget.userId,  // Passing userId
+                      userId: widget.userId,
                       doctorDescription: widget.doctorDescription,
                       doctorLocation: widget.doctorLocation,
                       doctorImages: widget.doctorImages,
@@ -77,9 +95,18 @@ class _PopUpAppoState extends State<PopUpAppo> {
                   ),
                 );
               },
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(fontSize: 16), // Consistent font size
+              ),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Consistent padding
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -89,17 +116,17 @@ class _PopUpAppoState extends State<PopUpAppo> {
                       doctorName: widget.doctorName,
                       doctorSpecialization: widget.doctorSpecialization,
                       doctorImage: widget.doctorImage,
-                      phone: '', // Placeholder for actual phone number
+                      phone: '',
                       description: widget.doctorDescription,
                       doctorAddress: widget.doctorAddress,
                       consultationFee: widget.consultationFee,
-                      userId: widget.userId,  // Using consistent userId
+                      userId: widget.userId,
                       reviews: widget.reviews,
                     ),
                   ),
                 );
               },
-              child: const Text('OK'),
+              child: const Text('OK', style: TextStyle(fontSize: 16)),
             ),
           ],
         );
@@ -111,10 +138,27 @@ class _PopUpAppoState extends State<PopUpAppo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Appointment Reminder'),
+        title: const Text(
+          'Appointment Reminder',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.blueAccent, // Modern color for app bar
       ),
-      body: const Center(
-        child: Text('Reminder: You need to pay appointment fees.'),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0), // Consistent padding
+          child: Text(
+            'Reminder: You need to pay appointment fees.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.grey[800], // Modern color for body text
+            ),
+          ),
+        ),
       ),
     );
   }

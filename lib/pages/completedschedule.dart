@@ -24,7 +24,7 @@ class _CompletedScheduleState extends State<CompletedSchedule> {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('appointments')
           .where('patient_id', isEqualTo: widget.userId)
-          .where('status', isEqualTo: true) // Fetch completed appointments
+          .where('status', isEqualTo: true) 
           .get();
 
       List<Map<String, dynamic>> fetchedAppointments = [];
@@ -66,7 +66,7 @@ class _CompletedScheduleState extends State<CompletedSchedule> {
                     var appointment = completedAppointments[index];
 
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 20), // Increased spacing
+                      margin: const EdgeInsets.only(bottom: 20), 
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),

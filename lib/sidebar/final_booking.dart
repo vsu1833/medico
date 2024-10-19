@@ -1,5 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:login/pages/doctor_screen_page.dart';
 
 class AppointmentPage1 extends StatefulWidget {
   final String doctorId;
@@ -42,65 +46,83 @@ class _AppointmentPageState extends State<AppointmentPage1> {
     super.initState();
   }
 
-  Future<void> fetchBookedTimes() async {
-    if (selectedDate.isEmpty) {
-      setState(() {
-        bookedTimes = [];
-      });
-      return;
-    }
-
-    try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('appointments')
-          .where('date', isEqualTo: selectedDate)
-          .where('doctor_id', isEqualTo: widget.doctorId)
-          .get();
-
-      List<String> times = [];
-      for (var doc in querySnapshot.docs) {
-        times.add(doc['time']);
-      }
-
-      setState(() {
-        bookedTimes = times;
-      });
-    } catch (e) {
-      print("Error fetching booked times: $e");
-    }
+Future<void> fetchBookedTimes() async {
+  if (selectedDate.isEmpty) {
+    setState(() {
+      bookedTimes = [];
+    });
+    return;
   }
 
+  try {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('appointments')
+        .where('date', isEqualTo: selectedDate)
+        .where('doctor_id', isEqualTo: widget.doctorId)
+        .get();
+
+    List<String> times = [];
+    for (var doc in querySnapshot.docs) {
+      times.add(doc['time']);
+    }
+
+    setState(() {
+      bookedTimes = times;
+    });
+
+    print("Booked times for $selectedDate: $bookedTimes"); // Add this line
+  } catch (e) {
+    print("Error fetching booked times: $e");
+  }
+}
+
   Future<void> bookAppointment() async {
-    if (selectedTime == null) {
+  if (selectedTime == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please select a time!')),
+    );
+    return;
+  }
+
+  try {
+    setState(() {
+      isBooking = true;
+    });
+
+    // Ensure that the user doesn't already have an appointment on the same day with the doctor
+    QuerySnapshot<Map<String, dynamic>> existingAppointmentSnapshot =
+        await FirebaseFirestore.instance
+            .collection('appointments')
+            .where('patient_id', isEqualTo: widget.userId)
+            .where('doctor_id', isEqualTo: widget.doctorId)
+            .where('date', isEqualTo: selectedDate)
+            .get();
+
+    if (existingAppointmentSnapshot.docs.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a time!')),
+        const SnackBar(content: Text('You already have an appointment with this doctor on this date! You cannot have more than one appointment in one day')),
       );
+      setState(() {
+        isBooking = false;
+      });
       return;
     }
 
-    try {
-      setState(() {
-        isBooking = true;
-      });
+    // Generate a document reference for the specific appointment (doctor + date + time)
+    DocumentReference appointmentRef = FirebaseFirestore.instance
+        .collection('appointments')
+        .doc('${widget.doctorId}_$selectedDate$selectedTime');
 
-      if (bookedTimes.contains(selectedTime)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Time slot already booked!')),
-        );
-        setState(() {
-          isBooking = false;
-        });
-        return;
+    // Transaction to ensure atomic booking
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
+      DocumentSnapshot docSnapshot = await transaction.get(appointmentRef);
+
+      if (docSnapshot.exists) {
+        throw Exception("Time slot already booked!");
       }
 
-      if (widget.userId.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User ID is missing!')),
-        );
-        return;
-      }
-
-      await FirebaseFirestore.instance.collection('appointments').add({
+      // If the slot is available, book it
+      transaction.set(appointmentRef, {
         'date': selectedDate,
         'time': selectedTime,
         'patient_id': widget.userId,
@@ -112,26 +134,28 @@ class _AppointmentPageState extends State<AppointmentPage1> {
         'doctorImage': widget.doctorImage,
         'spacialization': widget.doctorSpecialization,
       });
+    });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Appointment booked for $selectedTime on $selectedDate')),
-      );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Appointment booked for $selectedTime on $selectedDate')),
+    );
 
-      await fetchBookedTimes();
+    // Update booked times after the transaction
+    await fetchBookedTimes();
 
-      setState(() {
-        selectedTime = null;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to book appointment: $e')),
-      );
-    } finally {
-      setState(() {
-        isBooking = false;
-      });
-    }
+    setState(() {
+      selectedTime = null;
+    });
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to book appointment: $e')),
+    );
+  } finally {
+    setState(() {
+      isBooking = false;
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +171,24 @@ class _AppointmentPageState extends State<AppointmentPage1> {
                 children: [
                   InkWell(
                     onTap: () {
-                      Navigator.pop(context);
+                       Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DoctorScreenPage(
+                      doctorName: widget.doctorName,
+                      phone:  widget.phone,
+                      doctorSpecialization: widget.doctorSpecialization,
+                      doctorAddress: widget.doctorAddress,
+                      doctorImage: widget.doctorImage,
+                      consultationFee: widget.consultationFee,
+                      doctorId: widget.doctorId,
+                      userId: widget.userId, 
+                      doctorDescription: widget.description,
+                      doctorLocation: widget.doctorAddress,
+                      doctorImages: [widget.doctorImage],
+                    ),
+                  ),
+                );
                     },
                     child: const Icon(
                       Icons.arrow_back_ios_new_outlined,
@@ -162,50 +203,92 @@ class _AppointmentPageState extends State<AppointmentPage1> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircleAvatar(
-                    radius: 80,
-                    backgroundImage: AssetImage(widget.doctorImage),
-                  ),
-                  const SizedBox(height: 15),
-                  Text(
-                    widget.doctorName,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.teal,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    widget.doctorSpecialization,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.85,
+                    width: MediaQuery.of(context).size.width * 0.9,
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: Colors.teal.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(15),
+                      color: const Color.fromARGB(16, 255, 255, 255),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          spreadRadius: 3,
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      widget.description,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black.withOpacity(0.8),
-                      ),
-                      textAlign: TextAlign.center,
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          radius: 80,
+                          backgroundImage: AssetImage(widget.doctorImage),
+                          backgroundColor: Colors.teal.withOpacity(0.1),
+                        ),
+                        Text(
+                          widget.doctorName,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.teal,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          widget.doctorSpecialization,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Color.fromARGB(141, 0, 0, 0),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.location_on, color: Colors.teal),
+                            const SizedBox(width: 5),
+                            Text(
+                              widget.doctorAddress,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Color.fromARGB(127, 7, 1, 1),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            color: Colors.teal.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.teal.withOpacity(0.2),
+                                blurRadius: 6,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            widget.description,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black.withOpacity(0.8),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Column(
@@ -219,7 +302,6 @@ class _AppointmentPageState extends State<AppointmentPage1> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
                   SizedBox(
                     height: 70,
                     child: ListView.builder(
@@ -227,13 +309,16 @@ class _AppointmentPageState extends State<AppointmentPage1> {
                       scrollDirection: Axis.horizontal,
                       itemCount: 10,
                       itemBuilder: (context, index) {
-                        String date = '2024-10-${index + 4}';
-                        bool isSelected = selectedDate == date;
+                        DateTime currentDate = DateTime.now();
+                        DateTime date = currentDate.add(Duration(days: index));
+                        String formattedDate =
+                            "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+                        bool isSelected = selectedDate == formattedDate;
 
                         return InkWell(
                           onTap: () {
                             setState(() {
-                              selectedDate = date;
+                              selectedDate = formattedDate;
                               selectedTime = null;
                               fetchBookedTimes();
                             });
@@ -244,125 +329,129 @@ class _AppointmentPageState extends State<AppointmentPage1> {
                             decoration: BoxDecoration(
                               color: isSelected ? Colors.teal : Colors.white,
                               borderRadius: BorderRadius.circular(10),
-                              boxShadow: const [
+                              boxShadow
+: [
                                 BoxShadow(
-                                  color: Colors.black12,
+                                  color: Colors.black.withOpacity(0.1),
                                   blurRadius: 4,
                                   spreadRadius: 2,
                                 ),
                               ],
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "${index + 4}",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: isSelected ? Colors.white : Colors.black.withOpacity(0.6),
-                                  ),
+                            child: Center(
+                              child: Text(
+                                formattedDate,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: isSelected ? Colors.white : Colors.teal,
                                 ),
-                                const Text(
-                                  "OCT",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         );
                       },
                     ),
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 10),
                   const Text(
-                    "Booking Time",
+                    "Select Time Slot",
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.teal,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 70,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        String time = "${index + 8}:00 PM";
-                        bool isBooked = bookedTimes.contains(time);
-                        bool isSelected = selectedTime == time;
+                 SizedBox(
+  height: 70,
+  child: ListView.builder(
+    shrinkWrap: true,
+    scrollDirection: Axis.horizontal,
+    itemCount: 5,
+    itemBuilder: (context, index) {
+      List<String> times = [
+        '08:00 AM',
+        '09:00 AM',
+        '10:00 AM',
+        '11:00 AM',
+        '12:00 PM',
+      ];
 
-                        return InkWell(
-                          onTap: isBooked
-                              ? null
-                              : () {
-                                  setState(() {
-                                    selectedTime = time;
-                                  });
-                                },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 25),
-                            decoration: BoxDecoration(
-                              color: isSelected ? Colors.teal : isBooked ? Colors.red.withOpacity(0.3) : Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 4,
-                                  spreadRadius: 2,
-                                ),
-                              ],
+      String time = times[index];
+      bool isBooked = bookedTimes.contains(time);
+      bool isSelected = selectedTime == time;
+
+      return InkWell(
+        onTap: isBooked
+            ? null  // Disable onTap if the slot is booked
+            : () {
+                setState(() {
+                  selectedTime = time;
+                });
+              },
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 25),
+          decoration: BoxDecoration(
+            color: isBooked
+                ? const Color.fromARGB(255, 255, 5, 5)  // Red for booked slots
+                : isSelected
+                    ? Colors.teal  // Highlight selected time slot
+                    : Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 4,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              time,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: isBooked
+                    ? Colors.white  // White text for booked slots
+                    : isSelected
+                        ? Colors.white
+                        : Colors.teal,
+              ),
+            ),
+          ),
+        ),
+      );
+    },
+  ),
+),
+SizedBox(height: 20,),
+                SizedBox(
+  width: double.infinity, // This will make the button take up the whole width
+  child: ElevatedButton(
+    onPressed: isBooking ? null : bookAppointment,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.teal,
+      padding: const EdgeInsets.symmetric(vertical: 15), // Remove horizontal padding for full width
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+    ),
+                      child: isBooking
+                          ? const CircularProgressIndicator(
+                              color: Color.fromARGB(255, 49, 200, 15),
+                            )
+                          : const Text(
+                              "Book Now",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  time,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: isSelected ? Colors.white : isBooked ? Colors.red : Colors.black.withOpacity(0.6),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
                     ),
                   ),
-                  const SizedBox(height: 30),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: isBooking
-                          ? null
-                          : () {
-                              bookAppointment();
-                            },
-                      style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
-                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: isBooking
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
-                        : const Text(
-                            "Book Appointment",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                  ),
-                  
-                  ),
-                  const SizedBox(height: 20,)
                 ],
               ),
             ),
