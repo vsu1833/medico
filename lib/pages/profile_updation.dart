@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 // To handle the file object
@@ -5,8 +6,13 @@ import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:login/pages/main_screen.dart';
+import 'package:path/path.dart' as path;
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class ProfileUpdateApp extends StatelessWidget {
+  //DO NOT TOUCH
+
   const ProfileUpdateApp({super.key});
 
   @override
@@ -27,8 +33,18 @@ class ProfileUpdatePage extends StatefulWidget {
 }
 
 class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
+  //DO NOT TOUCH
   final _formKey = GlobalKey<FormState>();
+  String? uid;
+  String? email;
+  File? _imageFile;
+  String? _imageUrl;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  String? _bloodGroup;
+
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _middleNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -39,11 +55,279 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
   final TextEditingController _stateController = TextEditingController();
   final TextEditingController _pincodeController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  TextEditingController _heightController = TextEditingController();
+  TextEditingController _weightController = TextEditingController();
 
   DateTime? _selectedDate;
   String _gender = 'Male';
   bool _showNameFields = false;
   bool _showAddressFields = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserDetails(); // Fetch UID and email when the page is initialized
+    fetchPatientDetails();
+  }
+
+  Future<void> _pickImage() async {
+    //DO NOT TOUCH
+    try {
+      final pickedFile =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _imageFile = File(pickedFile.path);
+        });
+        print('Chalo img toh select ho gaya');
+        await _uploadImage();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No image selected.')),
+        );
+        print('No image selected.');
+      }
+    } catch (e) {
+      print('Error picking image: $e');
+    }
+  }
+
+  Future<void> _uploadImage() async {
+    if (_imageFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No img selected for upload.')),
+      );
+      print('No image selected for upload.');
+      return;
+    }
+
+    try {
+      // Upload the file to Firebase Storage
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      Reference storageRef = _storage.ref().child('uploads/$fileName');
+      UploadTask uploadTask = storageRef.putFile(_imageFile!);
+
+      // Wait until the upload is complete
+      TaskSnapshot snapshot = await uploadTask;
+
+      // Get the image URL
+      String imageUrl = await snapshot.ref.getDownloadURL();
+      setState(() {
+        _imageUrl = imageUrl;
+      });
+      print('Image URL: $imageUrl');
+
+      // Store the image URL in Firestore
+      await _firestore.collection('images').add({
+        'imageUrl': imageUrl,
+        'uploadedAt': Timestamp.now(),
+      });
+
+      print('Image uploaded and URL stored in Firestore');
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
+  }
+
+  /*Future<void> uploadImage() async {
+    if (_imageFile == null) {
+      print('No image selected for upload.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select an image first.')),
+      );
+      return;
+    }
+
+    try {
+      // Get the file extension (jpg, jpeg, png)
+      String fileExtension =
+          path.extension(_imageFile!.path); // Extracts the extension
+
+      // Check if the selected file is in supported formats
+      if (fileExtension != '.jpg' ||
+          fileExtension != '.jpeg' ||
+          fileExtension != '.png') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Unsupported file format. Please select a JPG, JPEG, or PNG image.')),
+        );
+        return;
+      }
+
+      // Create a unique file name using the current timestamp and the file extension
+      String fileName =
+          'profile_${DateTime.now().millisecondsSinceEpoch}$fileExtension';
+
+      // Reference to Firebase Storage
+      Reference storageRef =
+          FirebaseStorage.instance.ref().child('profile_pictures/$fileName');
+
+      // Upload the file
+      UploadTask uploadTask = storageRef.putFile(_imageFile!);
+      TaskSnapshot snapshot = await uploadTask;
+
+      // Get the download URL after the upload completes
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+
+      // Print the download URL for debugging
+      print('Image uploaded successfully. Download URL: $downloadUrl');
+
+      // Set the _imageUrl state with the retrieved URL
+      setState(() {
+        _imageUrl = downloadUrl; // Storing the download URL in _imageUrl
+      });
+
+      // Show a success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Image uploaded successfully!')),
+      );
+    } catch (e) {
+      print('Error uploading image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload image.')),
+      );
+    }
+  }*/
+
+  /*Future<void> _uploadImage(File imageFile) async {
+    try {
+      // Get the file name
+      String fileName = path.basename(imageFile.path);
+
+      // Reference to Firebase Storage
+      Reference ref =
+          FirebaseStorage.instance.ref().child('profile_pictures/$fileName');
+
+      // Upload the file
+      UploadTask uploadTask = ref.putFile(imageFile);
+
+      // Get the download URL
+      TaskSnapshot snapshot = await uploadTask;
+      _imageUrl = await snapshot.ref.getDownloadURL(); // Consistent naming
+
+      print('Image uploaded successfully: $_imageUrl');
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
+  }*/
+
+  /*Future<void> _uploadImage() async {                                          //SOMETHING WORNG
+    if (_imageFile == null) {
+      print('No image selected for upload.');
+      return;
+    }
+
+    try {
+      // Use path.basename to get the file name
+      String fileName = path.basename(_imageFile!.path);
+
+      // Reference to Firebase Storage
+      Reference ref =
+          FirebaseStorage.instance.ref().child('profile_pictures/$fileName');
+
+      // Upload the file to Firebase Storage
+      await ref.putFile(_imageFile!);
+
+      // Get the download URL and assign it to imageUrl
+      _imageUrl = await ref.getDownloadURL();
+
+      setState(() {
+      _imageUrl = _imageUrl;  // Ensure _imageUrl is correctly updated
+    });
+
+      print('Image uploaded successfully. URL: $_imageUrl');
+
+      await FirebaseFirestore.instance.collection('patients').doc(uid).update({
+        'profilePicUrl': _imageUrl,
+      });
+      print('Image URL saved to Firestore.');
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
+  }*/
+
+  // Function to upload the image to Firebase Storage and get the download URL
+  /*Future<String?> _uploadImage(File imageFile) async {
+    try {
+      String fileName = Path.basename(_imageFile!.path);
+      Reference storageRef =
+          FirebaseStorage.instance.ref().child('profile_pics/$fileName');
+
+      // Upload the image file
+      await storageRef.putFile(imageFile);
+
+      // Get the download URL
+      String downloadUrl = await storageRef.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null;
+    }
+  }*/
+
+  Future<void> fetchUserDetails() async {
+    //DO NOT TOUCH
+    // Get the current logged-in user from Firebase Authentication
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null) {
+      // Extract UID and email
+      setState(() {
+        uid = currentUser.uid;
+        email = currentUser.email;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('User is not logged in.')),
+      );
+    }
+  }
+
+  Future<void> fetchPatientDetails() async {
+    //DO NOT TOUCH
+    // Get the current logged-in user from Firebase Authentication
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null) {
+      // Extract UID and email
+      setState(() {
+        uid = currentUser.uid;
+        email = currentUser.email;
+      });
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(uid)
+          .get();
+      if (doc.exists) {
+        var data = doc.data() as Map<String, dynamic>;
+        _nameController.text =
+            '${data['first_name'] ?? ''} ${data['middle_name'] ?? ''} ${data['last_name'] ?? ''}';
+        _lastNameController.text = data['last_name'] ?? '';
+        _middleNameController.text = data['middle_name'] ?? '';
+        _firstNameController.text = data['first_name'] ?? '';
+
+        _houseNoController.text = data['house_no'] ?? '';
+        _cityController.text = data['city'] ?? '';
+        _pincodeController.text = data['pincode']?.toString() ?? '';
+        _phoneController.text = data['phone'] ?? '';
+        _gender = data['gender'] ?? 'Male';
+        _heightController = data['height'] ?? '';
+        _weightController = data['weight'] ?? '';
+        _bloodGroup = data['bloodgrp'];
+        _selectedDate = data['dob'];
+
+        setState(() {});
+      }
+      print('ID fetched successfully $uid');
+      print('email fteched successfully $email');
+      print('img fetched successfully $_imageUrl');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('User is not logged in.')),
+      );
+    }
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -59,7 +343,9 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
       });
     }
   }
-   void showSuccessDialog() {
+
+  void showSuccessDialog() {
+    //FUNC RIGHT BUT NOT WORKING DUE TO DEPENDABILITY
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -86,6 +372,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
   }
 
   Future<void> savePatientProfile() async {
+    //SOMETHING WRONG (POSSIBLY)
     // Get the current user's ID
     print('Entered the  patient function');
     User? currentUser = FirebaseAuth.instance.currentUser;
@@ -96,6 +383,28 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User is not logged in.')),
       );
+      return;
+    }
+
+    // Check if the image URL has been set
+    /*if (_imageUrl == null) {
+    print('No image URL found. Make sure the image is uploaded.');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please upload an image first.')),
+    );
+    return;
+  }*/
+
+    /*if (_imageFile != null) {
+      await _uploadImage(_imageFile!); // Uploads and sets _imageUrl
+    }*/
+
+    // Check if the image has been uploaded and the URL is available
+    if (_imageUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please upload an image first.')),
+      );
+      print('Img hi nahi hai tum kya karega bhaiya??');
       return;
     }
 
@@ -120,19 +429,28 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
       },
       'phone': _phoneController.text,
       'gender': _gender,
-      'dob': _selectedDate?.toIso8601String(), // Store DOB if selected
+
+      'profile_image_url': _imageUrl,
+      'bloodgrp': _bloodGroup,
+      'height': _heightController.text,
+      'weight': _weightController.text,
+      'dob': _selectedDate != null
+          ? _selectedDate!.toIso8601String()
+          : null, // Store DOB if selected
     });
 
     print(' Patient Profile has been updated successfully');
 
     // Show a success message after saving the profile
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile updated successfully!')),
-
+      SnackBar(content: Text('Profile updated successfully!')),
     );
     showSuccessDialog();
-  }
 
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to save patient profile.')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -150,36 +468,60 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 const SizedBox(height: 30),
                 Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      // Handle view/change profile picture
-                    },
-                    child: const CircleAvatar(
-                      radius: 56,
-                      backgroundColor: Color.fromARGB(255, 107, 170, 181),
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundImage: AssetImage('assets/doc1.jpg'),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(height: 30),
+                      GestureDetector(
+                        onTap: _pickImage, // Tap triggers image picking
+                        child: Container(
+                          width: 112, // 2 * 56 (Outer Radius)
+                          height: 112,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Color.fromARGB(
+                                  255, 107, 170, 181), // Border Color
+                              width: 6.0, // Border Width
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            radius: 50, // Inner Circle Radius
+                            backgroundImage: _imageFile == null
+                                ? AssetImage('assets/doc1.jpg') as ImageProvider
+                                : FileImage(_imageFile!), // Profile Image Logic
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                const Center(
+
+                /*SizedBox(height: 20),
+ElevatedButton(
+  onPressed: _uploadImage,  // Trigger the upload function on press
+  child: Text('Upload Image'),
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color.fromARGB(255, 107, 170, 181),
+  ),
+),*/
+                SizedBox(height: 10),
+                Center(
                   child: Text(
-                    'Patient ID: name@xyz',
+                    'Patient ID: $uid',
                     style: TextStyle(
                       color: Color.fromARGB(255, 107, 170, 181),
                       fontSize: 16,
                     ),
                   ),
                 ),
+                SizedBox(height: 32),
                 TextFormField(
-                  initialValue:
-                      'user@example.com', // Replace with the actual email.
+                  initialValue: '$email', // Replace with the actual email.
                   readOnly: true,
                   decoration: const InputDecoration(
                     labelText: 'Email',
@@ -537,6 +879,109 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 20),
+                  // Dropdown for Blood Group
+                  DropdownButtonFormField<String>(
+                    value:
+                        _bloodGroup, // Initialize this variable in your state
+                    decoration: InputDecoration(
+                      labelText: 'Blood Group',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(
+                        Icons.bloodtype,
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                    ),
+                    items: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _bloodGroup = newValue!;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Blood group is required';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+
+// Height field with validation
+                  TextFormField(
+                    controller: _heightController, // Initialize in your state
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Height (cm)',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(
+                        Icons.height,
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Height is required';
+                      }
+                      final height = double.tryParse(value);
+                      if (height == null || height < 50 || height > 250) {
+                        return 'Please enter a valid height between 50 and 250 cm';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+
+// Weight field with validation
+                  TextFormField(
+                    controller: _weightController, // Initialize in your state
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Weight (kg)',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(
+                        Icons.fitness_center,
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Weight is required';
+                      }
+                      final weight = double.tryParse(value);
+                      if (weight == null || weight < 10 || weight > 300) {
+                        return 'Please enter a valid weight between 10 and 300 kg';
+                      }
+                      return null;
+                    },
+                  ),
                 ],
                 const SizedBox(height: 20),
                 Row(
@@ -546,7 +991,6 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
                           savePatientProfile();
-
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -564,7 +1008,6 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                             builder: (context) => const MainScreen(),
                           ),
                         );
-                        
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey,
