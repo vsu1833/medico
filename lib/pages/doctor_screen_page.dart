@@ -1,22 +1,35 @@
-// import 'package:login/pages/appointment_page.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:login/pages/appointment_page.dart';
-import 'package:login/pages/home_screen.dart';
-import 'package:login/pop_up/app_pop_up.dart';
-import 'package:login/pages/doctor_screen_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:login/pages/appointment_page.dart';
 import 'package:login/pages/main_screen.dart';
-class DoctorScreenPage extends StatelessWidget {
-  DoctorScreenPage({super.key});
+import 'package:login/pop_up/app_pop_up.dart';
 
-  // Define the images list here
-  final List<String> imgs = [
-    'assets/images/doctor1.jpg',
-    'assets/images/doctor2.jpeg',
-    'assets/images/doct3.jpeg',
-    'assets/images/doct4.jpg',
-  ];
+class DoctorScreenPage extends StatelessWidget {
+  final String doctorName;
+  final String doctorSpecialization;
+  final String doctorDescription;
+  final String doctorLocation;
+  final String doctorAddress;
+  final String doctorImage;
+  final List<String> doctorImages;
+  final String doctorId;
+  final String userId;
+  final String consultationFee;
+
+  const DoctorScreenPage({
+    super.key,
+    required this.doctorName,
+    required this.doctorSpecialization,
+    required this.doctorDescription,
+    required this.doctorLocation,
+    required this.doctorAddress,
+    required this.doctorImage,
+    required this.doctorImages,
+    required this.consultationFee,
+    required this.doctorId,
+    required this.userId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,12 +48,12 @@ class DoctorScreenPage extends StatelessWidget {
                     children: [
                       InkWell(
                         onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const MainScreen(),
-                          ),
-                        );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const MainScreen(),
+                            ),
+                          );
                         },
                         child: const Icon(
                           Icons.arrow_back,
@@ -55,24 +68,23 @@ class DoctorScreenPage extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        const CircleAvatar(
+                        CircleAvatar(
                           radius: 50,
-                          backgroundImage:
-                              AssetImage("assets/images/doct1.jpg"),
+                          backgroundImage: AssetImage(doctorImage),
                         ),
                         const SizedBox(height: 15),
-                        const Text(
-                          "Dr. Adarsh Nayak",
-                          style: TextStyle(
+                        Text(
+                          doctorName,
+                          style: const TextStyle(
                             fontSize: 23,
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 2, 0, 0),
                           ),
                         ),
                         const SizedBox(height: 10),
-                        const Text(
-                          "Surgeon",
-                          style: TextStyle(
+                        Text(
+                          doctorSpecialization,
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w200,
                             color: Color.fromARGB(255, 5, 0, 0),
@@ -136,139 +148,32 @@ class DoctorScreenPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black54,
+                      color: Color.fromARGB(178, 0, 0, 0),
                     ),
                   ),
                   const SizedBox(height: 5),
-                  const Text(
-                    "Dr. Adarsh Nayak is a highly skilled and compassionate medical professional with over 10 years of experience in the field of surgery. Specializing in general surgery.....",
-                    style: TextStyle(
+                  Text(
+                    doctorDescription,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Color.fromARGB(231, 0, 0, 0),
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    children: [
-                   const Row(
-                        children: [
-                           Text(
-                            "Reviews",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
-                           SizedBox(width: 10),
-                           Icon(Icons.star, color: Colors.amber),
-                           Text(
-                            "4.9",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                           SizedBox(
-                            width: 15,
-                          ),
-                           Text(
-                            "(124)",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Color.fromARGB(255, 29, 171, 219),
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const Spacer(),
-                      TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            "See all",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: Colors.teal,
-                            ),
-                          ))
-                    ],
-                  ),
-                  SizedBox(
-                    height: 160,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: imgs.length, // Use the length of the imgs list
-                      itemBuilder: (context, index) {
-                        return Container(
-                          margin: const EdgeInsets.all(10),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 4,
-                                  spreadRadius: 2,
-                                )
-                              ]),
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width / 1.4,
-                            child: Column(
-                              children: [
-                                ListTile(
-                                  leading: CircleAvatar(
-                                    radius: 25,
-                                    backgroundImage: AssetImage(
-                                      imgs[index], // Correctly use imgs list here
-                                    ),
-                                  ),
-                                  title: const Text(
-                                    "Dr. Adarsh Nayak",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  subtitle: const Text("1 day ago"),
-                                  trailing:const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children:  [
-                                      Icon(
-                                        Icons.star,
-                                        color: Colors.amber,
-                                      ),
-                                      Text(
-                                        "4.9",
-                                        style: TextStyle(
-                                          color: Colors.black54,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  child: Text(
-                                    "Many thanks to Dr. Nayak, he is a great and professional doctor.",
-                                    style: TextStyle(
-                                      color: Colors.black54,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+
+                  // Reviews Section
+                  const Text(
+                    "Reviews",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
                     ),
                   ),
+                  const SizedBox(height: 5),
+                  ReviewSection(doctorId: doctorId, doctorImage: doctorImage, doctorName: doctorName), // Add the ReviewSection here
                   const SizedBox(height: 10),
+
                   const Text(
                     "Location",
                     style: TextStyle(
@@ -277,10 +182,10 @@ class DoctorScreenPage extends StatelessWidget {
                       color: Colors.black54,
                     ),
                   ),
-                  const ListTile(
-                    leading: CircleAvatar(
+                  ListTile(
+                    leading: const CircleAvatar(
                       radius: 30,
-                      backgroundColor: Color.fromARGB(23, 11, 0, 0),
+                      backgroundColor: Color.fromARGB(102, 11, 0, 0),
                       child: Icon(
                         Icons.location_on,
                         color: Color.fromARGB(255, 82, 246, 255),
@@ -288,19 +193,19 @@ class DoctorScreenPage extends StatelessWidget {
                       ),
                     ),
                     title: Text(
-                      "New Delhi, Medical Center",
-                      style: TextStyle(
+                      doctorLocation,
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Color.fromARGB(255, 0, 0, 0),
                       ),
-                      
                     ),
-subtitle: Text(
-    "1234 Health St, Block C, Sector 9, New Delhi, Delhi 110001, India",
-    style: TextStyle(
-      color: Color.fromARGB(255, 0, 0, 0),
-    ),
-  ),                  ),
+                    subtitle: Text(
+                      doctorAddress,
+                      style: const TextStyle(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -322,53 +227,296 @@ subtitle: Text(
         ),
         child: Column(
           children: [
-          const  Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Row(
               children: [
-                 Text(
-                  "Consultation fee",
+                const Text(
+                  "Consultation Fee",
                   style: TextStyle(
-                    color: Color.fromARGB(221, 0, 0, 0),
+                    color: Colors.black54,
+                    fontSize: 20,
                   ),
                 ),
-                Spacer(),
-                 Text(
-                  "₹400",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.teal,
+                const Spacer(),
+                Text(
+                  consultationFee,
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
-                )
+                ),
               ],
             ),
             const SizedBox(height: 15),
-            InkWell(
-              onTap: () {
-                // Navigate to appointment popup page
-                Navigator.push(context, MaterialPageRoute(builder: (context) => PopUpAppo()));
-              },
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                decoration: BoxDecoration(
-                  color: Colors.teal,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Center(
-                  child: Text(
-                    "Book Appointment",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => PopUpAppo(
+                      doctorName: doctorName,
+                      doctorSpecialization: doctorSpecialization,
+                      doctorImage: doctorImage,
+                      doctorDescription: doctorDescription,
+                      doctorAddress: doctorAddress,
+                      doctorId: doctorId,
+                      doctorLocation: doctorAddress,
+                      doctorImages: doctorImages,
+                      consultationFee: consultationFee,
+                      userId: userId,
+                      reviews: const [], // Placeholder for now
+                        // Placeholder for now
                     ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal[200],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                ),
+                child: const Text(
+                  "Book Appointment",
+                  style: TextStyle(fontSize: 20),
                 ),
               ),
             )
           ],
         ),
+      ),
+    );
+  }
+}class ReviewSection extends StatelessWidget {
+  final String doctorId;
+  final String doctorImage;
+  final String doctorName;
+
+  const ReviewSection({
+    super.key,
+    required this.doctorId,
+    required this.doctorImage,
+    required this.doctorName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('reviews')
+          .where('docId', isEqualTo: doctorId)
+          .snapshots(),
+      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Text("No reviews available");
+        }
+
+        var reviews = snapshot.data!.docs;
+
+        // Calculate the average rating and total reviews count
+        double totalRating = 0;
+        int totalReviews = reviews.length;
+
+        for (var review in reviews) {
+          totalRating += review['stars_count'];
+        }
+
+        double averageRating = totalRating / totalReviews;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.star, color: Colors.amber),
+                Text(
+                  averageRating.toStringAsFixed(1), // Display the average rating
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(width: 5),
+                Text('($totalReviews)'), // Display the total number of reviews
+                const Spacer(),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AllReviewsScreen(doctorId: doctorId),
+                      ),
+                    );
+                  },
+                  child: const Text('See all'),
+                ),
+              ],
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(reviews.length, (index) {
+                  var review = reviews[index];
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: SizedBox(
+                      width: 250, // Set a width for the cards
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  doctorName,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Row(
+                                  children: List.generate(
+                                    review['stars_count'],
+                                    (index) => const Icon(
+                                      Icons.star,
+                                      color: Colors.amber,
+                                      size: 16,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  '${review['stars_count']}', 
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              review['review'],
+                              style: const TextStyle(fontSize: 14),
+                              maxLines: 3, 
+                              overflow: TextOverflow.ellipsis, 
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+
+  // Helper function to display fractional star ratings
+  Widget buildStarRating(double rating) {
+    List<Widget> stars = [];
+    for (int i = 1; i <= 5; i++) {
+      if (i <= rating) {
+        stars.add(const Icon(Icons.star, color: Colors.amber, size: 16));
+      } else if (i - rating == 0.5) {
+        stars.add(const Icon(Icons.star_half, color: Colors.amber, size: 16));
+      } else {
+        stars.add(const Icon(Icons.star_border, color: Colors.amber, size: 16));
+      }
+    }
+    return Row(children: stars);
+  }
+
+
+
+class AllReviewsScreen extends StatelessWidget {
+  final String doctorId;
+
+  const AllReviewsScreen({super.key, required this.doctorId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("All Reviews"),
+      ),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('reviews')
+            .where('docId', isEqualTo: doctorId)
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text("No reviews available"));
+          }
+
+          var reviews = snapshot.data!.docs;
+
+          return ListView.builder(
+            itemCount: reviews.length,
+            itemBuilder: (context, index) {
+              var review = reviews[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 15.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded( // Let the title take up as much space as needed
+                            child: Text(
+                              review['review_title'], // Show full review title
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold, 
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10), // Space between title and stars
+                          Row(
+                            children: List.generate(
+                              review['stars_count'],
+                              (index) => const Icon(
+                                Icons.star,
+                                color: Color.fromARGB(255, 255, 203, 46),
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Text(review['review'], style: const TextStyle(fontSize: 14)),
+                      const SizedBox(height: 5),
+                      Text(
+                        review['review_date'], // Show review date
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color.fromARGB(186, 14, 0, 0),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

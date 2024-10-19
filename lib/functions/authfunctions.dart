@@ -1,11 +1,10 @@
-import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // import 'package:login/pages/homepage.dart';
 // import 'package:login/pages/doc_homepage.dart';
-import 'package:login/pages/home_screen.dart';
 import 'package:login/pages/doc_homepage.dart';
+import 'package:login/pages/main_screen.dart';
 
 signup(
     BuildContext context, String email, String password, bool isDoctor) async {
@@ -29,9 +28,9 @@ signup(
     print('User data saved successfully.');
 
     // Show success feedback
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Sign Up Successful! Log in Now')));
-          showDialog(
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sign Up Successful! Log in Now')));
+    showDialog(
         context: context,
         builder: (context) {
           return const AlertDialog(
@@ -76,7 +75,7 @@ signin(BuildContext context, String email, password) async {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                HomeScreen()), // If patient, navigate to PatientHomepage
+                const MainScreen()), // If patient, navigate to PatientHomepage
       );
     }
 

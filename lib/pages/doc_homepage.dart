@@ -1,53 +1,103 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import 'package:login/components/symptoms/dentaldoc.dart';
 import 'package:login/pages/doc_profileview.dart';
 import 'package:login/pages/profile_updation.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:login/pages/doctor_screen_page.dart';
+
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+
 import 'package:login/pages/doc_profile_update.dart';
+import 'package:login/pages/doctors_view_of_appointments.dart';
 
+void main() {
+  runApp(MyApp());
+}
 
-class DocHomeScreen extends StatelessWidget {
-  // List of categories and icons
-  List catNames = ["Dental", "Health", "Eye", "Brain", "Ear", "Bone"];
-
-  List<Icon> catIcons = [
-    Icon(MdiIcons.toothOutline,
-        color: const Color.fromARGB(255, 37, 135, 159), size: 30),
-    Icon(MdiIcons.heartPlus,
-        color: const Color.fromARGB(255, 48, 181, 218), size: 30),
-    Icon(MdiIcons.eye,
-        color: const Color.fromARGB(255, 82, 212, 255), size: 30),
-    Icon(MdiIcons.brain,
-        color: const Color.fromARGB(255, 54, 202, 205), size: 30),
-    Icon(MdiIcons.earHearing,
-        color: const Color.fromARGB(255, 43, 165, 196), size: 30),
-    Icon(MdiIcons.bone,
-        color: const Color.fromARGB(255, 37, 135, 159), size: 30),
-  ];
-
-  List imgs = [
-    "images/doct1.jpg",
-    "images/doct2.jpg",
-    "images/doct3.jpeg",
-    "images/doctor1.jpg",
-    "images/doctor2.jpeg",
-  ];
+class MyApp extends StatelessWidget {
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // AppBar with Drawer icon
-      appBar: AppBar(),
+    return MaterialApp(
+      title: 'Doctor Home Screen',
+      theme: ThemeData(
+        primarySwatch: Colors.teal,
+      ),
+      home: DocHomeScreen(),
+    );
+  }
+}
 
+class DocHomeScreen extends StatelessWidget {
+  final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
+  DocHomeScreen({super.key});
+
+  Future<int> getTotalAppointments() async {
+    print('Fetching total appointments...');
+    print('Fetching appointmnets for $currentUserId');
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('appointments')
+        .where('doctor_id', isEqualTo: currentUserId)
+        .get();
+
+    print('Total appointments fetched: ${querySnapshot.size}');
+    return querySnapshot
+        .size; // Returns the total number of documents that match
+  }
+
+  Future<double> getAverageRating() async {
+    print('Fetching average rating...');
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('reviews')
+        .where('docId', isEqualTo: currentUserId)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      print('No reviews found.');
+      return 0.0; // No reviews found
+    }
+
+    double totalStars = 0.0;
+    for (var doc in querySnapshot.docs) {
+      totalStars += doc['stars_count'];
+    }
+
+    final average = totalStars / querySnapshot.docs.length;
+    print('Average rating calculated: $average');
+    return average;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      backgroundColor: Colors.black87,
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: Colors.black87,
+        title: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 120),
+          child: Text(
+            'M E D I C O',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.teal,
-              ),
+              decoration: BoxDecoration(color: Colors.teal),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -58,10 +108,7 @@ class DocHomeScreen extends StatelessWidget {
                   SizedBox(height: 10),
                   Text(
                     "Hi, Doctor",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
                 ],
               ),
@@ -88,32 +135,35 @@ class DocHomeScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.update, color: Colors.teal),
-              title: Text('Update Profile'),
+              leading: const Icon(Icons.update, color: Colors.teal),
+              title: const Text('Update Profile'),
               onTap: () {
                 Navigator.push(
                   context,
-
                   MaterialPageRoute(
-                    builder: (context) => DoctorProfileUpdateApp(),
+                    builder: (context) => const DoctorProfileUpdateApp(),
                   ),
-
                 );
               },
             ),
             ListTile(
+
               leading: Icon(Icons.calendar_today_sharp, color: Colors.teal),
               title: Text('See Appointments Scheduled'),
+
               onTap: () {
-                // Add appointments navigation logic here
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DoctorsViewOfAppointments(),
+                  ),
+                );
               },
             ),
             ListTile(
-              leading: Icon(Icons.logout, color: Colors.teal),
-              title: Text('Logout'),
+              leading: const Icon(Icons.logout, color: Colors.teal),
+              title: const Text('Logout'),
               onTap: () {
-                // Add logout logic here
                 Navigator.pop(context);
               },
             ),
@@ -121,266 +171,210 @@ class DocHomeScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(top: 30),
+        padding: const EdgeInsets.only(top: 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Search Box
-            Container(
-              margin: EdgeInsets.only(top: 20, bottom: 20, left: 15, right: 15),
-              width: MediaQuery.of(context).size.width,
-              height: 55,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    spreadRadius: 3,
-                    blurRadius: 6,
+            const SizedBox(height: 10),
+            Center(
+              child: Container(
+                height: screenHeight * 0.35,
+                width: screenWidth * 0.90,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Colors.blue, Colors.lightBlue],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
                   ),
-                ],
-              ),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: "Search here...",
-                  hintStyle: TextStyle(
-                    color: Colors.black.withOpacity(0.5),
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    size: 25,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 3,
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Hello Doctor',
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundImage: AssetImage("assets/doc2.jpg"),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-
-            // Symptoms Section
-            Padding(
-              padding: EdgeInsets.only(left: 15),
-              child: Text(
-                "Symptoms",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black.withOpacity(0.7),
-                ),
-              ),
-            ),
-            SizedBox(height: 15),
-            Container(
-              height: 110,
-              child: ListView.builder(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: catNames.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 10.0), // Increased horizontal gap
-                    child: InkWell(
-                      onTap: () {
-                        // Show dialog here
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Notice'),
-                            content: Text(
-                                'Work is in progress on doc page. This is just a trial'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context); // Close the dialog
-                                },
-                                child: Text('OK'),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: 5),
-                            height: 60,
-                            width: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 4,
-                                  spreadRadius: 2,
-                                ),
-                              ],
-                            ),
-                            child: Center(child: catIcons[index]),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            catNames[index],
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black.withOpacity(0.7),
-                            ),
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                FutureBuilder<int>(
+                  future: getTotalAppointments(),
+                  builder: (context, snapshot) {
+                    print(
+                        'Total appointments FutureBuilder state: ${snapshot.connectionState}');
+                    return Container(
+                      height: screenHeight * 0.25,
+                      width: screenWidth * 0.45,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Colors.green, Colors.lightGreen],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 3,
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            // Best Doctors Section
-            SizedBox(height: 30),
-            Padding(
-              padding: EdgeInsets.only(left: 15),
-              child: Text(
-                "Our Best Doctors",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black.withOpacity(0.7),
-                ),
-              ),
-            ),
-            Container(
-              height: 370,
-              child: ListView.builder(
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: imgs.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      Container(
-                        height: 300,
-                        width: 200,
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
+                      child: Center(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Stack(
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    // Navigate to DoctorScreenPage on tap
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            DoctorScreenPage(),
-                                      ),
-                                    );
-                                  },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(15),
-                                      topRight: Radius.circular(15),
-                                    ),
-                                    child: Image.asset(
-                                      imgs[index],
-                                      height: 200,
-                                      width: 200,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                Align(
-                                  alignment: Alignment.topRight,
-                                  child: Container(
-                                    margin: EdgeInsets.all(8),
-                                    height: 45,
-                                    width: 45,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black12,
-                                            blurRadius: 4,
-                                            spreadRadius: 2,
-                                          ),
-                                        ]),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.favorite_outline,
-                                        color: Colors.teal,
-                                        size: 28,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
+
+                            const Text(
+                              'Appointments',
+                              style: TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+
                             ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 5),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Dr. Tanish Hede",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black.withOpacity(0.6),
-                                    ),
-                                  ),
-                                  Text(
-                                    "Surgeon",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black.withOpacity(0.5),
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.star,
-                                        color: Colors.amber,
-                                        size: 20,
-                                      ),
-                                      SizedBox(width: 5),
-                                      Text(
-                                        "4.9",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black.withOpacity(0.6),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                            Text(
+                              snapshot.hasData ? '${snapshot.data}' : '...',
+                              style: const TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
                             ),
                           ],
                         ),
                       ),
+                    );
+                  },
+                ),
+                FutureBuilder<double>(
+                  future: getAverageRating(),
+                  builder: (context, snapshot) {
+                    print(
+                        'Average rating FutureBuilder state: ${snapshot.connectionState}');
+                    return Container(
+                      height: screenHeight * 0.25,
+                      width: screenWidth * 0.45,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Colors.green, Colors.lightGreen],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 3,
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Ratings',
+                              style: TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              snapshot.hasData
+                                  ? snapshot.data!.toStringAsFixed(1)
+                                  : '...',
+                              style: const TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DoctorsViewOfAppointments(),
+                  ),
+                );
+              },
+              child: Center(
+                child: Container(
+                  height: screenHeight * 0.15,
+                  width: screenWidth * 0.90,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.grey.shade600, Colors.grey.shade400],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        spreadRadius: 3,
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
                     ],
-                  );
-                },
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'See Appointments Scheduled',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

@@ -1,21 +1,23 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:io'; // To handle the file object
-import 'package:image_picker/image_picker.dart'; // To pick image from gallery/camera
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+// To handle the file object
+// To pick image from gallery/camera
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:login/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:login/pages/main_screen.dart';
 import 'package:path/path.dart' as path;
 
 class ProfileUpdateApp extends StatelessWidget {
+
   //DO NOT TOUCH
+
+  const ProfileUpdateApp({super.key});
+
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Patient Profile Updation',
       home: ProfileUpdatePage(),
       debugShowCheckedModeBanner: false,
@@ -24,6 +26,8 @@ class ProfileUpdateApp extends StatelessWidget {
 }
 
 class ProfileUpdatePage extends StatefulWidget {
+  const ProfileUpdatePage({super.key});
+
   @override
   _ProfileUpdatePageState createState() => _ProfileUpdatePageState();
 }
@@ -346,7 +350,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: Column(
+          content: const Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.check_circle, color: Colors.green, size: 50),
@@ -356,7 +360,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('OK'),
+              child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
@@ -377,7 +381,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
       print('patient not detected');
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('User is not logged in.')),
+        const SnackBar(content: Text('User is not logged in.')),
       );
       return;
     }
@@ -425,6 +429,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
       },
       'phone': _phoneController.text,
       'gender': _gender,
+
       'profile_image_url': _imageUrl,
       'bloodgrp': _bloodGroup,
       'height': _heightController.text,
@@ -432,13 +437,16 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
       'dob': _selectedDate != null
           ? _selectedDate!.toIso8601String()
           : null, // Store DOB if selected
+
     });
 
     print(' Patient Profile has been updated successfully');
 
     // Show a success message after saving the profile
     ScaffoldMessenger.of(context).showSnackBar(
+
       SnackBar(content: Text('Profile updated successfully!')),
+
     );
     showSuccessDialog();
 
@@ -452,7 +460,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Patient Profile'),
+        title: const Text('Patient Profile'),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 107, 170, 181),
       ),
@@ -465,8 +473,9 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 Center(
+
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -491,10 +500,12 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                                 : FileImage(_imageFile!), // Profile Image Logic
                           ),
                         ),
+
                       ),
                     ],
                   ),
                 ),
+
 
                 /*SizedBox(height: 20),
 ElevatedButton(
@@ -506,10 +517,11 @@ ElevatedButton(
 ),*/
                 SizedBox(height: 10),
                 Center(
+
                   child: Text(
                     'Patient ID: $uid',
                     style: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
+                      color: Color.fromARGB(255, 107, 170, 181),
                       fontSize: 16,
                     ),
                   ),
@@ -518,22 +530,22 @@ ElevatedButton(
                 TextFormField(
                   initialValue: '$email', // Replace with the actual email.
                   readOnly: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                     labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
+                      color: Color.fromARGB(255, 107, 170, 181),
                     ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
                     prefixIcon: Icon(Icons.email,
-                        color: const Color.fromARGB(255, 107, 170, 181)),
+                        color: Color.fromARGB(255, 107, 170, 181)),
                   ),
                 ),
-                SizedBox(height: 20),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
+                const SizedBox(height: 20),
                 if (!_showNameFields)
                   TextFormField(
                     onTap: () {
@@ -541,18 +553,18 @@ ElevatedButton(
                         _showNameFields = true;
                       });
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Name',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                       prefixIcon: Icon(Icons.person,
-                          color: const Color.fromARGB(255, 107, 170, 181)),
+                          color: Color.fromARGB(255, 107, 170, 181)),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -562,21 +574,21 @@ ElevatedButton(
                     },
                   ),
                 if (_showNameFields) ...[
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _firstNameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'First Name',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                       prefixIcon: Icon(Icons.person,
-                          color: const Color.fromARGB(255, 107, 170, 181)),
+                          color: Color.fromARGB(255, 107, 170, 181)),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -585,38 +597,38 @@ ElevatedButton(
                       return null;
                     },
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _middleNameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Middle Name (Optional)',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                       prefixIcon: Icon(Icons.person_outline,
-                          color: const Color.fromARGB(255, 107, 170, 181)),
+                          color: Color.fromARGB(255, 107, 170, 181)),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _lastNameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Last Name',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                       prefixIcon: Icon(Icons.person,
-                          color: const Color.fromARGB(255, 107, 170, 181)),
+                          color: Color.fromARGB(255, 107, 170, 181)),
                     ),
                     validator: (value) {
                       if (_firstNameController.text.isEmpty) {
@@ -629,22 +641,22 @@ ElevatedButton(
                     },
                   ),
                 ],
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextFormField(
                   readOnly: true,
                   onTap: () => _selectDate(context),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Date of Birth',
                     labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
+                      color: Color.fromARGB(255, 107, 170, 181),
                     ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
                     prefixIcon: Icon(Icons.cake,
-                        color: const Color.fromARGB(255, 107, 170, 181)),
+                        color: Color.fromARGB(255, 107, 170, 181)),
                     suffixIcon: Icon(Icons.calendar_today),
                   ),
                   controller: TextEditingController(
@@ -659,13 +671,13 @@ ElevatedButton(
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text('Gender:',
+                    const Text('Gender:',
                         style: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         )),
                     Radio(
                       value: 'Male',
@@ -676,9 +688,9 @@ ElevatedButton(
                         });
                       },
                     ),
-                    Text('Male',
+                    const Text('Male',
                         style: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         )),
                     Radio(
                       value: 'Female',
@@ -689,13 +701,13 @@ ElevatedButton(
                         });
                       },
                     ),
-                    Text('Female',
+                    const Text('Female',
                         style: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         )),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 if (!_showAddressFields)
                   TextFormField(
                     onTap: () {
@@ -703,18 +715,18 @@ ElevatedButton(
                         _showAddressFields = true;
                       });
                     },
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Address',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                       prefixIcon: Icon(Icons.home,
-                          color: const Color.fromARGB(255, 107, 170, 181)),
+                          color: Color.fromARGB(255, 107, 170, 181)),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -724,21 +736,21 @@ ElevatedButton(
                     },
                   ),
                 if (_showAddressFields) ...[
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _houseNoController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Line-1: House No., StreetName',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                       prefixIcon: Icon(Icons.home_outlined,
-                          color: const Color.fromARGB(255, 107, 170, 181)),
+                          color: Color.fromARGB(255, 107, 170, 181)),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -768,17 +780,17 @@ ElevatedButton(
                       return null;
                     },
                   ),*/
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _cityController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Line-2: City/District, State',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
@@ -831,21 +843,21 @@ ElevatedButton(
                       return null;
                     },
                   ),*/
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _pincodeController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Pincode',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                       prefixIcon: Icon(Icons.location_on,
-                          color: const Color.fromARGB(255, 107, 170, 181)),
+                          color: Color.fromARGB(255, 107, 170, 181)),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -854,23 +866,23 @@ ElevatedButton(
                       return null;
                     },
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextField(
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Phone',
                       labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                       prefixIcon: Icon(
                         Icons.phone,
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
                   ),
@@ -978,7 +990,7 @@ ElevatedButton(
                     },
                   ),
                 ],
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -988,13 +1000,13 @@ ElevatedButton(
                           savePatientProfile();
                         }
                       },
-                      child: Text('Save'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             const Color.fromARGB(255, 107, 170, 181),
                       ),
+                      child: const Text('Save'),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
@@ -1004,10 +1016,10 @@ ElevatedButton(
                           ),
                         );
                       },
-                      child: Text('Cancel'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey,
                       ),
+                      child: const Text('Cancel'),
                     ),
                   ],
                 ),

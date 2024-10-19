@@ -3,14 +3,18 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:login/firebase_options.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+
 class DoctorProfileUpdateApp extends StatelessWidget {
+  const DoctorProfileUpdateApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Doctor Profile Updation',
       home: DoctorProfileUpdatePage(),
       debugShowCheckedModeBanner: false,
@@ -19,6 +23,8 @@ class DoctorProfileUpdateApp extends StatelessWidget {
 }
 
 class DoctorProfileUpdatePage extends StatefulWidget {
+  const DoctorProfileUpdatePage({super.key});
+
   @override
   _DoctorProfileUpdatePageState createState() =>
       _DoctorProfileUpdatePageState();
@@ -189,7 +195,9 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
       print('Doctor not detected');
 
       ScaffoldMessenger.of(context).showSnackBar(
+
         SnackBar(content: Text('Doctor is not logged in.')),
+
       );
       return;
       // Exit if no user is logged in
@@ -234,7 +242,9 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
 
     // Show a success message after saving the profile
     ScaffoldMessenger.of(context).showSnackBar(
+
       SnackBar(content: Text('Your profile has been updated successfully!')),
+
     );
     showSuccessDialog();
 
@@ -248,7 +258,7 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Doctor Profile'),
+        title: const Text('Doctor Profile'),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 107, 170, 181),
         leading: Row(
@@ -271,7 +281,7 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 GestureDetector(
                   onTap: _pickImage,
                   child: CircleAvatar(
@@ -279,6 +289,7 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                     backgroundColor: Colors.grey.shade300,
                     backgroundImage: _profileImage != null
                         ? FileImage(_profileImage!)
+
                         : AssetImage('assets/doc1.jpg') as ImageProvider,
                   ),
                 ),
@@ -304,18 +315,22 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                   readOnly: true,
                   decoration: InputDecoration(
                     labelText: 'Email',
+
                     labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
+                      color: Color.fromARGB(255, 107, 170, 181),
                     ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
+
                     prefixIcon: Icon(Icons.email,
                         color: const Color.fromARGB(255, 107, 170, 181)),
+
                   ),
                 ),
+
                 SizedBox(height: 20),
                 if (!_showNameFields)
                   TextFormField(
@@ -352,6 +367,7 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                       labelText: 'First Name',
                       labelStyle: TextStyle(
                         color: const Color.fromARGB(255, 107, 170, 181),
+
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
@@ -366,6 +382,7 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                       return null;
                     },
                   ),
+
                   SizedBox(height: 10),
                   TextFormField(
                     controller: _middleNameController,
@@ -388,6 +405,7 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                       labelText: 'Last Name',
                       labelStyle: TextStyle(
                         color: const Color.fromARGB(255, 107, 170, 181),
+
                       ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
@@ -405,18 +423,20 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                       return null;
                     },
                   ),
+
                 ],
                 SizedBox(height: 20),
                 TextFormField(
                   controller: _clinicAddressController,
                   decoration: InputDecoration(
                     labelText: 'Clinic Address',
+
                     labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
+                      color: Color.fromARGB(255, 107, 170, 181),
                     ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
                     prefixIcon: Icon(Icons.home,
@@ -429,22 +449,26 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextFormField(
+
                   controller: _clinicPhoneController,
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     labelText: 'Clinic Phone',
+
                     labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
+                      color: Color.fromARGB(255, 107, 170, 181),
                     ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
+
                     prefixIcon: Icon(Icons.phone,
                         color: const Color.fromARGB(255, 107, 170, 181)),
+
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -453,23 +477,25 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _minConsultFeeController,
                   keyboardType: TextInputType.phone,
+
                   decoration: InputDecoration(
                     labelText:
                         'Consultation Fee: enter a minimum consultation fee',
+
                     labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
+                      color: Color.fromARGB(255, 107, 170, 181),
                     ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
                     prefixIcon: Icon(Icons.phone,
-                        color: const Color.fromARGB(255, 107, 170, 181)),
+                        color: Color.fromARGB(255, 107, 170, 181)),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -478,14 +504,14 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text(
+                    const Text(
                       'Gender:',
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
                     Radio(
@@ -497,9 +523,9 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                         });
                       },
                     ),
-                    Text('Male',
+                    const Text('Male',
                         style: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         )),
                     Radio(
                       value: 'Female',
@@ -510,32 +536,32 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                         });
                       },
                     ),
-                    Text('Female',
+                    const Text('Female',
                         style: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         )),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text('Qualification:',
+                    const Text('Qualification:',
                         style: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         )),
                     ToggleButtons(
                       isSelected: [
                         !_isSpecializationSelected,
                         _isSpecializationSelected
                       ],
-                      children: [
+                      children: const [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(8.0),
                           child: Text('MBBS'),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(8.0),
                           child: Text('Postgraduate/Specialization'),
                         ),
                       ],
@@ -550,12 +576,12 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                   ],
                 ),
                 if (_isSpecializationSelected) ...[
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
@@ -571,20 +597,20 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                         _selectedSpecialization = value;
                       });
                     },
-                    hint: Text(
+                    hint: const Text(
                       'Select Specialization',
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
                   ),
                 ] else ...[
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
+                          color: Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
                     ),
@@ -600,32 +626,32 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                         _selectedSpecialization = value;
                       });
                     },
-                    hint: Text(
+                    hint: const Text(
                       'Select Specialization',
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
                   ),
                 ],
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _descriptionController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Short Description (Optional)',
                     labelStyle: TextStyle(
-                      color: const Color.fromARGB(255, 107, 170, 181),
+                      color: Color.fromARGB(255, 107, 170, 181),
                     ),
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: const Color.fromARGB(255, 107, 170, 181),
+                        color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
                     prefixIcon: Icon(Icons.description,
-                        color: const Color.fromARGB(255, 107, 170, 181)),
+                        color: Color.fromARGB(255, 107, 170, 181)),
                   ),
                 ),
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
@@ -633,10 +659,10 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                       saveDoctorProfile();
                     }
                   },
-                  child: Text('Submit'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 107, 170, 181),
                   ),
+                  child: const Text('Submit'),
                 ),
               ],
             ),
