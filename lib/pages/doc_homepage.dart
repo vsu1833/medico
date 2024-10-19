@@ -1,6 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'package:login/components/symptoms/dentaldoc.dart';
+import 'package:login/pages/doc_profileview.dart';
+import 'package:login/pages/profile_updation.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:login/pages/doctor_screen_page.dart';
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
@@ -116,7 +123,16 @@ class DocHomeScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.person, color: Colors.teal),
               title: const Text('Profile'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+
+                  MaterialPageRoute(
+                    builder: (context) => DocProfileViewApp(),
+                  ),
+
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.update, color: Colors.teal),
@@ -131,8 +147,10 @@ class DocHomeScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.health_and_safety, color: Colors.teal),
-              title: const Text('See Appointments Scheduled'),
+
+              leading: Icon(Icons.calendar_today_sharp, color: Colors.teal),
+              title: Text('See Appointments Scheduled'),
+
               onTap: () {
                 Navigator.push(
                   context,
