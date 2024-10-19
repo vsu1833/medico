@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  fl_chart: ^0.69.0
   smooth_page_indicator: ^1.2.0+3
   intl: ^0.18.0  # Check for the latest version on pub.dev
 
@@ -86,7 +87,7 @@ flutter:
     - assets/hii.png  
     - assets/google.png
     - assets/cognitive_training.png   
-    - assets/brain_question_mark.jpg 
+    - assets/brain_question_mark.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

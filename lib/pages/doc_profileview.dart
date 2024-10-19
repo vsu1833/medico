@@ -34,6 +34,7 @@ class _DocProfileViewPageState extends State<DocProfileViewPage> {
   String? description;
   String? specialization;
   DateTime? dob;
+  String? profileImageUrl;
 
   bool _isLoading = true;
 
@@ -67,9 +68,10 @@ class _DocProfileViewPageState extends State<DocProfileViewPage> {
           address = docSnapshot['address'];
           phone = docSnapshot['phone'];
           gender = docSnapshot['gender'];
-          dob = DateTime.parse(docSnapshot['dob']);
+          //dob = DateTime.parse(docSnapshot['dob']);
           specialization = docSnapshot['specialization'];
           description = docSnapshot['description'];
+          profileImageUrl = docSnapshot['profile_image_url'];
           _isLoading = false; // Data is loaded
         });
       } else {
@@ -116,7 +118,7 @@ class _DocProfileViewPageState extends State<DocProfileViewPage> {
               backgroundColor: Color.fromARGB(
                   255, 9, 43, 101), // Change button color here // Text color
               padding: EdgeInsets.symmetric(
-                  horizontal: 12, vertical: 8), // Padding for button
+                  horizontal: 10, vertical: 6), // Padding for button
             ),
             child: Row(
               children: [
@@ -129,7 +131,7 @@ class _DocProfileViewPageState extends State<DocProfileViewPage> {
                   'Edit Profile',
                   style: TextStyle(
                     color: Colors.white, // Text color for the button
-                    fontSize: 16, // Font size for the text
+                    fontSize: 14, // Font size for the text
                   ),
                 ),
               ],
@@ -169,8 +171,9 @@ class _DocProfileViewPageState extends State<DocProfileViewPage> {
                   backgroundColor: const Color.fromARGB(255, 107, 170, 181),
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundImage:
-                        AssetImage('assets/doc1.jpg'), // Placeholder image
+                    backgroundImage: profileImageUrl != null
+                    ? NetworkImage(profileImageUrl!)
+                       : AssetImage('assets/doc1.jpg'), // Placeholder image
                   ),
                 ),
               ),
@@ -185,10 +188,10 @@ class _DocProfileViewPageState extends State<DocProfileViewPage> {
               Text('Middle Name: $middleName', style: TextStyle(fontSize: 16)),
               SizedBox(height: 10),
               Text('Last Name: $lastName', style: TextStyle(fontSize: 16)),
-              SizedBox(height: 10),
+              /*SizedBox(height: 10),
               Text(
                   'Date of Birth: ${dob != null ? DateFormat('dd/MM/yyyy').format(dob!) : 'Not provided'}',
-                  style: TextStyle(fontSize: 16)),
+                  style: TextStyle(fontSize: 16)),*/
               SizedBox(height: 10),
               Text('Gender: $gender', style: TextStyle(fontSize: 16)),
               SizedBox(height: 10),
@@ -196,7 +199,8 @@ class _DocProfileViewPageState extends State<DocProfileViewPage> {
               SizedBox(height: 10),
               Text('Phone: $phone', style: TextStyle(fontSize: 16)),
               SizedBox(height: 10),
-              Text('Specialization: $specialization', style: TextStyle(fontSize: 16)),
+              Text('Specialization: $specialization',
+                  style: TextStyle(fontSize: 16)),
               SizedBox(height: 10),
               Text('Description: $description', style: TextStyle(fontSize: 16)),
               SizedBox(height: 20),

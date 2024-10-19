@@ -35,9 +35,12 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
   String? email;
   File? _imageFile;
   String? _imageUrl;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String? _bloodGroup;
 
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _middleNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -60,8 +63,8 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
   void initState() {
     super.initState();
     fetchUserDetails(); // Fetch UID and email when the page is initialized
+    fetchPatientDetails();
   }
-
 
   Future<void> _pickImage() async {
     //DO NOT TOUCH
@@ -72,7 +75,12 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
         setState(() {
           _imageFile = File(pickedFile.path);
         });
+        print('Chalo img toh select ho gaya');
+        await _uploadImage();
       } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No image selected.')),
+        );
         print('No image selected.');
       }
     } catch (e) {
@@ -80,8 +88,44 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
     }
   }
 
+  Future<void> _uploadImage() async {
+    if (_imageFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No img selected for upload.')),
+      );
+      print('No image selected for upload.');
+      return;
+    }
 
-  Future<void> uploadImage() async {
+    try {
+      // Upload the file to Firebase Storage
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      Reference storageRef = _storage.ref().child('uploads/$fileName');
+      UploadTask uploadTask = storageRef.putFile(_imageFile!);
+
+      // Wait until the upload is complete
+      TaskSnapshot snapshot = await uploadTask;
+
+      // Get the image URL
+      String imageUrl = await snapshot.ref.getDownloadURL();
+      setState(() {
+        _imageUrl = imageUrl;
+      });
+      print('Image URL: $imageUrl');
+
+      // Store the image URL in Firestore
+      await _firestore.collection('images').add({
+        'imageUrl': imageUrl,
+        'uploadedAt': Timestamp.now(),
+      });
+
+      print('Image uploaded and URL stored in Firestore');
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
+  }
+
+  /*Future<void> uploadImage() async {
     if (_imageFile == null) {
       print('No image selected for upload.');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -140,7 +184,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
         SnackBar(content: Text('Failed to upload image.')),
       );
     }
-  }
+  }*/
 
   /*Future<void> _uploadImage(File imageFile) async {
     try {
@@ -236,7 +280,50 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
     }
   }
 
-  
+  Future<void> fetchPatientDetails() async {
+    //DO NOT TOUCH
+    // Get the current logged-in user from Firebase Authentication
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null) {
+      // Extract UID and email
+      setState(() {
+        uid = currentUser.uid;
+        email = currentUser.email;
+      });
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(uid)
+          .get();
+      if (doc.exists) {
+        var data = doc.data() as Map<String, dynamic>;
+        _nameController.text =
+            '${data['first_name'] ?? ''} ${data['middle_name'] ?? ''} ${data['last_name'] ?? ''}';
+        _lastNameController.text = data['last_name'] ?? '';
+        _middleNameController.text = data['middle_name'] ?? '';
+        _firstNameController.text = data['first_name'] ?? '';
+
+        _houseNoController.text = data['house_no'] ?? '';
+        _cityController.text = data['city'] ?? '';
+        _pincodeController.text = data['pincode']?.toString() ?? '';
+        _phoneController.text = data['phone'] ?? '';
+        _gender = data['gender'] ?? 'Male';
+        _heightController = data['height'] ?? '';
+        _weightController = data['weight'] ?? '';
+        _bloodGroup = data['bloodgrp'];
+        _selectedDate = data['dob'];
+
+        setState(() {});
+      }
+      print('ID fetched successfully $uid');
+      print('email fteched successfully $email');
+      print('img fetched successfully $_imageUrl');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('User is not logged in.')),
+      );
+    }
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -309,13 +396,13 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
     }*/
 
     // Check if the image has been uploaded and the URL is available
-    if (_imageUrl == null || _imageUrl!.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Please upload an image first.')),
-    );
-    return;
-  }
-  
+    if (_imageUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please upload an image first.')),
+      );
+      print('Img hi nahi hai tum kya karega bhaiya??');
+      return;
+    }
 
     // Create a new document reference in Firestore using the user's UID
     DocumentReference docRef =
@@ -360,45 +447,56 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
     );
   }
 
-    @override
-    Widget build(BuildContext context) {
-      return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Text('Patient Profile'),
-          centerTitle: true,
-          backgroundColor: const Color.fromARGB(255, 107, 170, 181),
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(height: 30),
-                  Center(
-                    child: GestureDetector(
-                      onTap: _pickImage,
-                      child: CircleAvatar(
-                        radius: 56,
-                        backgroundColor:
-                            const Color.fromARGB(255, 107, 170, 181),
-                        child: _imageFile == null
-                            ? CircleAvatar(
-                                radius: 50,
-                                backgroundImage: AssetImage('assets/doc1.jpg'),
-                              )
-                            : CircleAvatar(
-                                radius: 50,
-                                backgroundImage: FileImage(_imageFile!),
-                              ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('Patient Profile'),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 107, 170, 181),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(height: 30),
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(height: 30),
+                      GestureDetector(
+                        onTap: _pickImage, // Tap triggers image picking
+                        child: Container(
+                          width: 112, // 2 * 56 (Outer Radius)
+                          height: 112,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Color.fromARGB(
+                                  255, 107, 170, 181), // Border Color
+                              width: 6.0, // Border Width
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            radius: 50, // Inner Circle Radius
+                            backgroundImage: _imageFile == null
+                                ? AssetImage('assets/doc1.jpg') as ImageProvider
+                                : FileImage(_imageFile!), // Profile Image Logic
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  /*SizedBox(height: 20),
+                ),
+
+                /*SizedBox(height: 20),
 ElevatedButton(
   onPressed: _uploadImage,  // Trigger the upload function on press
   child: Text('Upload Image'),
@@ -406,22 +504,45 @@ ElevatedButton(
     backgroundColor: const Color.fromARGB(255, 107, 170, 181),
   ),
 ),*/
-                  SizedBox(height: 10),
-                  Center(
-                    child: Text(
-                      'Patient ID: $uid',
-                      style: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
-                        fontSize: 16,
-                      ),
+                SizedBox(height: 10),
+                Center(
+                  child: Text(
+                    'Patient ID: $uid',
+                    style: TextStyle(
+                      color: const Color.fromARGB(255, 107, 170, 181),
+                      fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 32),
+                ),
+                SizedBox(height: 32),
+                TextFormField(
+                  initialValue: '$email', // Replace with the actual email.
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    labelStyle: TextStyle(
+                      color: const Color.fromARGB(255, 107, 170, 181),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                    ),
+                    prefixIcon: Icon(Icons.email,
+                        color: const Color.fromARGB(255, 107, 170, 181)),
+                  ),
+                ),
+                SizedBox(height: 20),
+                SizedBox(height: 20),
+                if (!_showNameFields)
                   TextFormField(
-                    initialValue: '$email', // Replace with the actual email.
-                    readOnly: true,
+                    onTap: () {
+                      setState(() {
+                        _showNameFields = true;
+                      });
+                    },
                     decoration: InputDecoration(
-                      labelText: 'Email',
+                      labelText: 'Name',
                       labelStyle: TextStyle(
                         color: const Color.fromARGB(255, 107, 170, 181),
                       ),
@@ -430,226 +551,203 @@ ElevatedButton(
                           color: const Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
-                      prefixIcon: Icon(Icons.email,
+                      prefixIcon: Icon(Icons.person,
                           color: const Color.fromARGB(255, 107, 170, 181)),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  SizedBox(height: 20),
-                  if (!_showNameFields)
-                    TextFormField(
-                      onTap: () {
-                        setState(() {
-                          _showNameFields = true;
-                        });
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Name',
-                        labelStyle: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          ),
-                        ),
-                        prefixIcon: Icon(Icons.person,
-                            color: const Color.fromARGB(255, 107, 170, 181)),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Name is required';
-                        }
-                        return null;
-                      },
-                    ),
-                  if (_showNameFields) ...[
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _firstNameController,
-                      decoration: InputDecoration(
-                        labelText: 'First Name',
-                        labelStyle: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          ),
-                        ),
-                        prefixIcon: Icon(Icons.person,
-                            color: const Color.fromARGB(255, 107, 170, 181)),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'First Name is required';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _middleNameController,
-                      decoration: InputDecoration(
-                        labelText: 'Middle Name (Optional)',
-                        labelStyle: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          ),
-                        ),
-                        prefixIcon: Icon(Icons.person_outline,
-                            color: const Color.fromARGB(255, 107, 170, 181)),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _lastNameController,
-                      decoration: InputDecoration(
-                        labelText: 'Last Name',
-                        labelStyle: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          ),
-                        ),
-                        prefixIcon: Icon(Icons.person,
-                            color: const Color.fromARGB(255, 107, 170, 181)),
-                      ),
-                      validator: (value) {
-                        if (_firstNameController.text.isEmpty) {
-                          return 'Please enter First Name before Last Name';
-                        }
-                        if (value == null || value.isEmpty) {
-                          return 'Last Name is required';
-                        }
-                        return null;
-                      },
-                    ),
-                  ],
-                  SizedBox(height: 20),
-                  TextFormField(
-                    readOnly: true,
-                    onTap: () => _selectDate(context),
-                    decoration: InputDecoration(
-                      labelText: 'Date of Birth',
-                      labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
-                      ),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                      ),
-                      prefixIcon: Icon(Icons.cake,
-                          color: const Color.fromARGB(255, 107, 170, 181)),
-                      suffixIcon: Icon(Icons.calendar_today),
-                    ),
-                    controller: TextEditingController(
-                      text: _selectedDate == null
-                          ? ''
-                          : DateFormat('dd/MM/yyyy').format(_selectedDate!),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Date of Birth is required';
+                        return 'Name is required';
                       }
                       return null;
                     },
                   ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text('Gender:',
-                          style: TextStyle(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          )),
-                      Radio(
-                        value: 'Male',
-                        groupValue: _gender,
-                        onChanged: (value) {
-                          setState(() {
-                            _gender = value.toString();
-                          });
-                        },
+                if (_showNameFields) ...[
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _firstNameController,
+                    decoration: InputDecoration(
+                      labelText: 'First Name',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
                       ),
-                      Text('Male',
-                          style: TextStyle(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          )),
-                      Radio(
-                        value: 'Female',
-                        groupValue: _gender,
-                        onChanged: (value) {
-                          setState(() {
-                            _gender = value.toString();
-                          });
-                        },
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        ),
                       ),
-                      Text('Female',
-                          style: TextStyle(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          )),
-                    ],
+                      prefixIcon: Icon(Icons.person,
+                          color: const Color.fromARGB(255, 107, 170, 181)),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'First Name is required';
+                      }
+                      return null;
+                    },
                   ),
-                  SizedBox(height: 20),
-                  if (!_showAddressFields)
-                    TextFormField(
-                      onTap: () {
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _middleNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Middle Name (Optional)',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(Icons.person_outline,
+                          color: const Color.fromARGB(255, 107, 170, 181)),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _lastNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Last Name',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(Icons.person,
+                          color: const Color.fromARGB(255, 107, 170, 181)),
+                    ),
+                    validator: (value) {
+                      if (_firstNameController.text.isEmpty) {
+                        return 'Please enter First Name before Last Name';
+                      }
+                      if (value == null || value.isEmpty) {
+                        return 'Last Name is required';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+                SizedBox(height: 20),
+                TextFormField(
+                  readOnly: true,
+                  onTap: () => _selectDate(context),
+                  decoration: InputDecoration(
+                    labelText: 'Date of Birth',
+                    labelStyle: TextStyle(
+                      color: const Color.fromARGB(255, 107, 170, 181),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                    ),
+                    prefixIcon: Icon(Icons.cake,
+                        color: const Color.fromARGB(255, 107, 170, 181)),
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                  controller: TextEditingController(
+                    text: _selectedDate == null
+                        ? ''
+                        : DateFormat('dd/MM/yyyy').format(_selectedDate!),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Date of Birth is required';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text('Gender:',
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        )),
+                    Radio(
+                      value: 'Male',
+                      groupValue: _gender,
+                      onChanged: (value) {
                         setState(() {
-                          _showAddressFields = true;
+                          _gender = value.toString();
                         });
                       },
-                      decoration: InputDecoration(
-                        labelText: 'Address',
-                        labelStyle: TextStyle(
+                    ),
+                    Text('Male',
+                        style: TextStyle(
                           color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          ),
-                        ),
-                        prefixIcon: Icon(Icons.home,
-                            color: const Color.fromARGB(255, 107, 170, 181)),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Address is required';
-                        }
-                        return null;
+                        )),
+                    Radio(
+                      value: 'Female',
+                      groupValue: _gender,
+                      onChanged: (value) {
+                        setState(() {
+                          _gender = value.toString();
+                        });
                       },
                     ),
-                  if (_showAddressFields) ...[
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _houseNoController,
-                      decoration: InputDecoration(
-                        labelText: 'Line-1: House No., StreetName',
-                        labelStyle: TextStyle(
+                    Text('Female',
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        )),
+                  ],
+                ),
+                SizedBox(height: 20),
+                if (!_showAddressFields)
+                  TextFormField(
+                    onTap: () {
+                      setState(() {
+                        _showAddressFields = true;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Address',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
                           color: const Color.fromARGB(255, 107, 170, 181),
                         ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          ),
-                        ),
-                        prefixIcon: Icon(Icons.home_outlined,
-                            color: const Color.fromARGB(255, 107, 170, 181)),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Line-1 is required';
-                        }
-                        return null;
-                      },
+                      prefixIcon: Icon(Icons.home,
+                          color: const Color.fromARGB(255, 107, 170, 181)),
                     ),
-                    /*SizedBox(height: 10),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Address is required';
+                      }
+                      return null;
+                    },
+                  ),
+                if (_showAddressFields) ...[
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _houseNoController,
+                    decoration: InputDecoration(
+                      labelText: 'Line-1: House No., StreetName',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(Icons.home_outlined,
+                          color: const Color.fromARGB(255, 107, 170, 181)),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Line-1 is required';
+                      }
+                      return null;
+                    },
+                  ),
+                  /*SizedBox(height: 10),
                   TextFormField(
                     controller: _streetNameController,
                     decoration: InputDecoration(
@@ -670,28 +768,28 @@ ElevatedButton(
                       return null;
                     },
                   ),*/
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _cityController,
-                      decoration: InputDecoration(
-                        labelText: 'Line-2: City/District, State',
-                        labelStyle: TextStyle(
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _cityController,
+                    decoration: InputDecoration(
+                      labelText: 'Line-2: City/District, State',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
                           color: const Color.fromARGB(255, 107, 170, 181),
                         ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          ),
-                        ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Line-2 is required';
-                        }
-                        return null;
-                      },
                     ),
-                    /*SizedBox(height: 10),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Line-2 is required';
+                      }
+                      return null;
+                    },
+                  ),
+                  /*SizedBox(height: 10),
                   TextFormField(
                     controller: _districtController,
                     decoration: InputDecoration(
@@ -712,7 +810,7 @@ ElevatedButton(
                       return null;
                     },
                   ),*/
-                    /*SizedBox(height: 10),
+                  /*SizedBox(height: 10),
                   TextFormField(
                     controller: _stateController,
                     decoration: InputDecoration(
@@ -733,193 +831,191 @@ ElevatedButton(
                       return null;
                     },
                   ),*/
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _pincodeController,
-                      decoration: InputDecoration(
-                        labelText: 'Pincode',
-                        labelStyle: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          ),
-                        ),
-                        prefixIcon: Icon(Icons.location_on,
-                            color: const Color.fromARGB(255, 107, 170, 181)),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _pincodeController,
+                    decoration: InputDecoration(
+                      labelText: 'Pincode',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Pincode is required';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 10),
-                    TextField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: 'Phone',
-                        labelStyle: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          ),
-                        ),
-                        prefixIcon: Icon(
-                          Icons.phone,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
                           color: const Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
+                      prefixIcon: Icon(Icons.location_on,
+                          color: const Color.fromARGB(255, 107, 170, 181)),
                     ),
-                    SizedBox(height: 20),
-                    // Dropdown for Blood Group
-                    DropdownButtonFormField<String>(
-                      value:
-                          _bloodGroup, // Initialize this variable in your state
-                      decoration: InputDecoration(
-                        labelText: 'Blood Group',
-                        labelStyle: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          ),
-                        ),
-                        prefixIcon: Icon(
-                          Icons.bloodtype,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Pincode is required';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  TextField(
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      labelText: 'Phone',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
                           color: const Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
-                      items: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _bloodGroup = newValue!;
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Blood group is required';
-                        }
-                        return null;
-                      },
+                      prefixIcon: Icon(
+                        Icons.phone,
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
                     ),
-                    SizedBox(height: 20),
+                  ),
+                  SizedBox(height: 20),
+                  // Dropdown for Blood Group
+                  DropdownButtonFormField<String>(
+                    value:
+                        _bloodGroup, // Initialize this variable in your state
+                    decoration: InputDecoration(
+                      labelText: 'Blood Group',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: const Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(
+                        Icons.bloodtype,
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                    ),
+                    items: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _bloodGroup = newValue!;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Blood group is required';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
 
 // Height field with validation
-                    TextFormField(
-                      controller: _heightController, // Initialize in your state
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Height (cm)',
-                        labelStyle: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          ),
-                        ),
-                        prefixIcon: Icon(
-                          Icons.height,
+                  TextFormField(
+                    controller: _heightController, // Initialize in your state
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Height (cm)',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
                           color: const Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Height is required';
-                        }
-                        final height = double.tryParse(value);
-                        if (height == null || height < 50 || height > 250) {
-                          return 'Please enter a valid height between 50 and 250 cm';
-                        }
-                        return null;
-                      },
+                      prefixIcon: Icon(
+                        Icons.height,
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
                     ),
-                    SizedBox(height: 20),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Height is required';
+                      }
+                      final height = double.tryParse(value);
+                      if (height == null || height < 50 || height > 250) {
+                        return 'Please enter a valid height between 50 and 250 cm';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
 
 // Weight field with validation
-                    TextFormField(
-                      controller: _weightController, // Initialize in your state
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Weight (kg)',
-                        labelStyle: TextStyle(
-                          color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(255, 107, 170, 181),
-                          ),
-                        ),
-                        prefixIcon: Icon(
-                          Icons.fitness_center,
+                  TextFormField(
+                    controller: _weightController, // Initialize in your state
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: 'Weight (kg)',
+                      labelStyle: TextStyle(
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
                           color: const Color.fromARGB(255, 107, 170, 181),
                         ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Weight is required';
-                        }
-                        final weight = double.tryParse(value);
-                        if (weight == null || weight < 10 || weight > 300) {
-                          return 'Please enter a valid weight between 10 and 300 kg';
-                        }
-                        return null;
-                      },
+                      prefixIcon: Icon(
+                        Icons.fitness_center,
+                        color: const Color.fromARGB(255, 107, 170, 181),
+                      ),
                     ),
-                  ],
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState?.validate() ?? false) {
-                            savePatientProfile();
-                          }
-                        },
-                        child: Text('Save'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const MainScreen(),
-                            ),
-                          );
-                        },
-                        child: Text('Cancel'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey,
-                        ),
-                      ),
-                    ],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Weight is required';
+                      }
+                      final weight = double.tryParse(value);
+                      if (weight == null || weight < 10 || weight > 300) {
+                        return 'Please enter a valid weight between 10 and 300 kg';
+                      }
+                      return null;
+                    },
                   ),
                 ],
-              ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          savePatientProfile();
+                        }
+                      },
+                      child: Text('Save'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(255, 107, 170, 181),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MainScreen(),
+                          ),
+                        );
+                      },
+                      child: Text('Cancel'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
-      );
-    }
+      ),
+    );
   }
-
-
+}

@@ -33,6 +33,7 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
   String? phone;
   String? gender;
   DateTime? dob;
+  String? profileImageUrl;
 
   bool _isLoading = true;
 
@@ -69,6 +70,7 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
           phone = docSnapshot['phone'];
           gender = docSnapshot['gender'];
           dob = DateTime.parse(docSnapshot['dob']);
+          profileImageUrl = docSnapshot['profile_image_url'];
           _isLoading = false; // Data is loaded
         });
       } else {
@@ -101,7 +103,7 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
         title: Text('Patient Profile'),
         centerTitle: true,
         backgroundColor: Color.fromARGB(255, 107, 170, 181),
-         actions: [
+        actions: [
           TextButton(
             onPressed: () {
               // Navigate to the Profile Update Page
@@ -111,8 +113,10 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
               );
             },
             style: TextButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 9, 43, 101), // Change button color here // Text color
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), // Padding for button
+              backgroundColor: Color.fromARGB(
+                  255, 9, 43, 101), // Change button color here // Text color
+              padding: EdgeInsets.symmetric(
+                  horizontal: 12, vertical: 8), // Padding for button
             ),
             child: Row(
               children: [
@@ -131,7 +135,7 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
               ],
             ),
           ),
-        /*TextButton.icon(
+          /*TextButton.icon(
             onPressed: () {
               // Navigate to the Profile Update Page
               Navigator.push(
@@ -151,7 +155,7 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
               ),
             ),
           ),*/
-      ],
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -165,7 +169,9 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
                   backgroundColor: const Color.fromARGB(255, 107, 170, 181),
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundImage: AssetImage('assets/doc1.jpg'), // Placeholder image
+                    backgroundImage: profileImageUrl != null
+                    ? NetworkImage(profileImageUrl!)
+                       : AssetImage('assets/doc1.jpg'), // Placeholder image
                   ),
                 ),
               ),
@@ -180,11 +186,14 @@ class _ProfileViewPageState extends State<ProfileViewPage> {
               SizedBox(height: 10),
               Text('Last Name: $lastName', style: TextStyle(fontSize: 16)),
               SizedBox(height: 10),
-              Text('Date of Birth: ${dob != null ? DateFormat('dd/MM/yyyy').format(dob!) : 'Not provided'}', style: TextStyle(fontSize: 16)),
+              Text(
+                  'Date of Birth: ${dob != null ? DateFormat('dd/MM/yyyy').format(dob!) : 'Not provided'}',
+                  style: TextStyle(fontSize: 16)),
               SizedBox(height: 10),
               Text('Gender: $gender', style: TextStyle(fontSize: 16)),
               SizedBox(height: 10),
-              Text('Address: $houseNo, $city, Pincode: $pincode', style: TextStyle(fontSize: 16)),
+              Text('Address: $houseNo, $city, Pincode: $pincode',
+                  style: TextStyle(fontSize: 16)),
               SizedBox(height: 10),
               Text('Phone: $phone', style: TextStyle(fontSize: 16)),
               SizedBox(height: 20),

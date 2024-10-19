@@ -102,7 +102,7 @@ class DocHomeScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.health_and_safety, color: Colors.teal),
+              leading: Icon(Icons.calendar_today_sharp, color: Colors.teal),
               title: Text('See Appointments Scheduled'),
               onTap: () {
                 // Add appointments navigation logic here

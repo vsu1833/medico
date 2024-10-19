@@ -2,6 +2,7 @@ import 'package:login/category.dart';
 
 import 'package:login/components/symptoms/dentaldoc.dart';
 import 'package:flutter/material.dart';
+import 'package:login/pages/health_analytics.dart';
 import 'package:login/pages/patient_profileview.dart';
 import 'package:login/pages/profile_updation.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -99,6 +100,19 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             ListTile(
+              leading:
+                  const Icon(Icons.meeting_room_outlined, color: Colors.teal),
+              title: const Text('Book Appointment'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CategoryPage(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
               leading: Icon(Icons.health_and_safety, color: Colors.teal),
               title: Text('Ratings and Reviews'),
               onTap: () {
@@ -112,13 +126,13 @@ class HomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading:
-                  const Icon(Icons.meeting_room_outlined, color: Colors.teal),
-              title: const Text('Book Appointment'),
+                  const Icon(Icons.favorite, color: Colors.teal),
+              title: const Text('Health Analytics'),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CategoryPage(),
+                    builder: (context) => HealthAnalyticsPage(),
                   ),
                 );
               },
