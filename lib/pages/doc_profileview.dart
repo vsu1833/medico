@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:login/pages/doc_profile.dart';
 import 'package:login/pages/main_screen.dart';
 import 'package:login/pages/profile_updation.dart';
+import 'package:login/pages/doc_homepage.dart';
 
 class DocProfileViewApp extends StatelessWidget {
   @override
@@ -172,8 +173,8 @@ class _DocProfileViewPageState extends State<DocProfileViewPage> {
                   child: CircleAvatar(
                     radius: 50,
                     backgroundImage: profileImageUrl != null
-                    ? NetworkImage(profileImageUrl!)
-                       : AssetImage('assets/doc1.jpg'), // Placeholder image
+                        ? NetworkImage(profileImageUrl!)
+                        : AssetImage('assets/doc1.jpg'), // Placeholder image
                   ),
                 ),
               ),
@@ -210,7 +211,7 @@ class _DocProfileViewPageState extends State<DocProfileViewPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const MainScreen(),
+                        builder: (context) => DocHomeScreen(),
                       ),
                     );
                   },

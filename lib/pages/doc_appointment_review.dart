@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 import 'package:login/pages/healthanalytics_update.dart';
+import 'package:login/pages/PDF_view_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DocAppointmentReview extends StatefulWidget {
   final String patientId;
@@ -24,6 +27,45 @@ class _DocAppointmentReviewState extends State<DocAppointmentReview> {
     super.initState();
     _fetchPatientDetails();
     _fetchLatestReport();
+  }
+
+  Future<void> _cancelAppointment() async {
+    try {
+      String currentUserId = FirebaseAuth.instance.currentUser!
+          .uid; // Get the current doctor's ID from your auth state or context
+      print('////////////UserId ' + currentUserId + '////////////');
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('appointments')
+          .where('doctor_id', isEqualTo: currentUserId)
+          .where('patient_id',
+              isEqualTo: widget.patientId) // Add this condition
+          .where('status',
+              isEqualTo:
+                  false) // Assuming you only want to cancel active appointments
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Iterate through the documents and update the cancelled field
+        for (var doc in querySnapshot.docs) {
+          await doc.reference
+              .update({'cancelled': true}); // Set the cancelled field to true
+        }
+
+        // Show confirmation message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Appointment cancelled successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No active appointment found to cancel.')),
+        );
+      }
+    } catch (e) {
+      print('Error cancelling appointment: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error cancelling appointment: $e')),
+      );
+    }
   }
 
   Future<void> _fetchPatientDetails() async {
@@ -208,7 +250,7 @@ class _DocAppointmentReviewState extends State<DocAppointmentReview> {
                               ),
                         SizedBox(height: 20),
                         Divider(color: Colors.white60, thickness: 1),
-                        SizedBox(height: 10),
+                        SizedBox(height: 5),
                         // Latest Reports Section
                         ExpansionTile(
                           title: Text(
@@ -222,12 +264,40 @@ class _DocAppointmentReviewState extends State<DocAppointmentReview> {
                             _latestReport != null &&
                                     _latestReport!['fileUrl'] != null
                                 ? ElevatedButton(
-                                    onPressed: () {
-                                      // Navigate to or open the report URL
-                                      // For example, using url_launcher:
-                                      // launch(_latestReport!['fileUrl']);
+                                    onPressed: () async {
+                                      final url = _latestReport!['fileUrl'];
+                                      print(
+                                          'URL to launch: $url'); // Debugging line
+                                      try {
+                                        final Uri uri = Uri.parse(
+                                            url); // Parse the URL once
+
+                                        if (await canLaunchUrl(uri)) {
+                                          //remove the ! in the if condition if there are any errors while displaying
+                                          await launchUrl(uri,
+                                              mode: LaunchMode
+                                                  .externalApplication);
+                                        } else {
+                                          print(
+                                              'Could not launch $url'); // Better error message
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'Could not launch $url')),
+                                          );
+                                        }
+                                      } catch (e) {
+                                        print('Error launching URL: $e');
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                              content: Text(
+                                                  'Error launching URL: $e')),
+                                        );
+                                      }
                                     },
-                                    child: Text('Download Report'),
+                                    child: Text('View Report'),
                                   )
                                 : Text(
                                     'No latest report available',
@@ -235,6 +305,36 @@ class _DocAppointmentReviewState extends State<DocAppointmentReview> {
                                         color: Colors.white, fontSize: 16),
                                   ),
                             SizedBox(height: 4),
+                          ],
+                        ),
+                        SizedBox(height: 5),
+                        ExpansionTile(
+                          title: Text(
+                            'More Options',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Colors.red, // Background color
+                                      foregroundColor:
+                                          Colors.white, // Text color
+                                    ),
+                                    onPressed: () {
+                                      print(
+                                          'Cancel appointment button was pressed');
+                                      _cancelAppointment();
+                                    },
+                                    child: Text('Cancel Appointment'))
+                              ],
+                            )
                           ],
                         ),
                         SizedBox(height: 10),

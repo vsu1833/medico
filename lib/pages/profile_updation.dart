@@ -7,13 +7,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:login/pages/main_screen.dart';
 import 'package:path/path.dart' as path;
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class ProfileUpdateApp extends StatelessWidget {
-
   //DO NOT TOUCH
 
   const ProfileUpdateApp({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -437,16 +437,13 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
       'dob': _selectedDate != null
           ? _selectedDate!.toIso8601String()
           : null, // Store DOB if selected
-
     });
 
     print(' Patient Profile has been updated successfully');
 
     // Show a success message after saving the profile
     ScaffoldMessenger.of(context).showSnackBar(
-
       SnackBar(content: Text('Profile updated successfully!')),
-
     );
     showSuccessDialog();
 
@@ -475,7 +472,6 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
               children: <Widget>[
                 const SizedBox(height: 30),
                 Center(
-
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -500,12 +496,10 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                                 : FileImage(_imageFile!), // Profile Image Logic
                           ),
                         ),
-
                       ),
                     ],
                   ),
                 ),
-
 
                 /*SizedBox(height: 20),
 ElevatedButton(
@@ -517,7 +511,6 @@ ElevatedButton(
 ),*/
                 SizedBox(height: 10),
                 Center(
-
                   child: Text(
                     'Patient ID: $uid',
                     style: TextStyle(

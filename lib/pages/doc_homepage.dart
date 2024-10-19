@@ -1,18 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:login/components/symptoms/dentaldoc.dart';
 import 'package:login/pages/doc_profileview.dart';
 import 'package:login/pages/profile_updation.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:login/pages/doctor_screen_page.dart';
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-
 import 'package:login/pages/doc_profile_update.dart';
 import 'package:login/pages/doctors_view_of_appointments.dart';
+import 'package:login/pages/login_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -38,28 +34,52 @@ class DocHomeScreen extends StatelessWidget {
 
   DocHomeScreen({super.key});
 
+  // Fetching doctor's first name from Firestore
+  Future<String?> getDoctorFirstName() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('doctors')
+        .doc(currentUserId)
+        .get();
+
+    if (snapshot.exists) {
+      return snapshot.data()?['first_name'] as String?;
+    } else {
+      print('No doctor found');
+      return null;
+    }
+  }
+
+  // Fetching profile image URL from Firestore
+  Future<String?> getProfileImageUrl() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('doctors')
+        .doc(currentUserId)
+        .get();
+
+    if (snapshot.exists) {
+      return snapshot.data()?['profile_image_url'] as String?;
+    } else {
+      print('No profile image found for doctor');
+      return null;
+    }
+  }
+
   Future<int> getTotalAppointments() async {
-    print('Fetching total appointments...');
-    print('Fetching appointmnets for $currentUserId');
     final querySnapshot = await FirebaseFirestore.instance
         .collection('appointments')
         .where('doctor_id', isEqualTo: currentUserId)
         .get();
 
-    print('Total appointments fetched: ${querySnapshot.size}');
-    return querySnapshot
-        .size; // Returns the total number of documents that match
+    return querySnapshot.size;
   }
 
   Future<double> getAverageRating() async {
-    print('Fetching average rating...');
     final querySnapshot = await FirebaseFirestore.instance
         .collection('reviews')
         .where('docId', isEqualTo: currentUserId)
         .get();
 
     if (querySnapshot.docs.isEmpty) {
-      print('No reviews found.');
       return 0.0; // No reviews found
     }
 
@@ -68,9 +88,7 @@ class DocHomeScreen extends StatelessWidget {
       totalStars += doc['stars_count'];
     }
 
-    final average = totalStars / querySnapshot.docs.length;
-    print('Average rating calculated: $average');
-    return average;
+    return totalStars / querySnapshot.docs.length;
   }
 
   @override
@@ -83,8 +101,8 @@ class DocHomeScreen extends StatelessWidget {
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.black87,
-        title: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 120),
+        title: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 55),
           child: Text(
             'M E D I C O',
             textAlign: TextAlign.center,
@@ -96,17 +114,31 @@ class DocHomeScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.teal),
+            DrawerHeader(
+              decoration: const BoxDecoration(color: Colors.teal),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundImage: AssetImage("images/patient1.jpeg"),
+                  FutureBuilder<String?>(
+                    future: getProfileImageUrl(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+                      if (snapshot.hasError || !snapshot.hasData) {
+                        return const CircleAvatar(
+                          radius: 30,
+                          backgroundImage: AssetImage("assets/doc2.jpg"),
+                        );
+                      }
+                      return CircleAvatar(
+                        radius: 30,
+                        backgroundImage: NetworkImage(snapshot.data!),
+                      );
+                    },
                   ),
-                  SizedBox(height: 10),
-                  Text(
+                  const SizedBox(height: 10),
+                  const Text(
                     "Hi, Doctor",
                     style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
@@ -126,11 +158,9 @@ class DocHomeScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-
                   MaterialPageRoute(
                     builder: (context) => DocProfileViewApp(),
                   ),
-
                 );
               },
             ),
@@ -147,10 +177,9 @@ class DocHomeScreen extends StatelessWidget {
               },
             ),
             ListTile(
-
-              leading: Icon(Icons.calendar_today_sharp, color: Colors.teal),
-              title: Text('See Appointments Scheduled'),
-
+              leading:
+                  const Icon(Icons.calendar_today_sharp, color: Colors.teal),
+              title: const Text('See Appointments Scheduled'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -163,8 +192,15 @@ class DocHomeScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.teal),
               title: const Text('Logout'),
-              onTap: () {
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
                 Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginPage(),
+                  ),
+                );
               },
             ),
           ],
@@ -178,7 +214,7 @@ class DocHomeScreen extends StatelessWidget {
             const SizedBox(height: 10),
             Center(
               child: Container(
-                height: screenHeight * 0.35,
+                height: screenHeight * 0.33,
                 width: screenWidth * 0.90,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
@@ -196,27 +232,59 @@ class DocHomeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Hello Doctor',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(width: 20),
-                        CircleAvatar(
-                          radius: 40,
-                          backgroundImage: AssetImage("assets/doc2.jpg"),
-                        ),
-                      ],
-                    ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FutureBuilder<String?>(
+                        future: getDoctorFirstName(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          }
+                          if (snapshot.hasError || !snapshot.hasData) {
+                            return const Text(
+                              'Hello Doctor',
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            );
+                          }
+                          return Text(
+                            'Hello ${snapshot.data}',
+                            style: const TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 20),
+                      FutureBuilder<String?>(
+                        future: getProfileImageUrl(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          }
+                          if (snapshot.hasError || !snapshot.hasData) {
+                            return const CircleAvatar(
+                              radius: 40,
+                              backgroundImage: AssetImage("assets/doc2.jpg"),
+                            );
+                          }
+                          return CircleAvatar(
+                            radius: 40,
+                            backgroundImage: NetworkImage(snapshot.data!),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -228,8 +296,6 @@ class DocHomeScreen extends StatelessWidget {
                 FutureBuilder<int>(
                   future: getTotalAppointments(),
                   builder: (context, snapshot) {
-                    print(
-                        'Total appointments FutureBuilder state: ${snapshot.connectionState}');
                     return Container(
                       height: screenHeight * 0.25,
                       width: screenWidth * 0.45,
@@ -253,7 +319,6 @@ class DocHomeScreen extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-
                             const Text(
                               'Appointments',
                               style: TextStyle(
@@ -261,15 +326,25 @@ class DocHomeScreen extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
-
                             ),
-                            Text(
-                              snapshot.hasData ? '${snapshot.data}' : '...',
-                              style: const TextStyle(
-                                fontSize: 23,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  snapshot.hasData ? '${snapshot.data}' : '...',
+                                  style: const TextStyle(
+                                    fontSize: 23,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                const Icon(
+                                  Icons.calendar_today,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -280,8 +355,6 @@ class DocHomeScreen extends StatelessWidget {
                 FutureBuilder<double>(
                   future: getAverageRating(),
                   builder: (context, snapshot) {
-                    print(
-                        'Average rating FutureBuilder state: ${snapshot.connectionState}');
                     return Container(
                       height: screenHeight * 0.25,
                       width: screenWidth * 0.45,
@@ -313,15 +386,26 @@ class DocHomeScreen extends StatelessWidget {
                                 color: Colors.white,
                               ),
                             ),
-                            Text(
-                              snapshot.hasData
-                                  ? snapshot.data!.toStringAsFixed(1)
-                                  : '...',
-                              style: const TextStyle(
-                                fontSize: 23,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  snapshot.hasData
+                                      ? snapshot.data!.toStringAsFixed(1)
+                                      : '...',
+                                  style: const TextStyle(
+                                    fontSize: 23,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                const Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                  size: 30.0,
+                                ),
+                              ],
                             ),
                           ],
                         ),

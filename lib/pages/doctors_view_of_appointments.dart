@@ -32,6 +32,7 @@ class _DoctorsViewOfAppointmentsState extends State<DoctorsViewOfAppointments> {
         .collection('appointments')
         .where('doctor_id', isEqualTo: currentUserId)
         .where('status', isEqualTo: false)
+        .where('cancelled', isEqualTo: false)
         .get();
 
     setState(() {
