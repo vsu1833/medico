@@ -6,6 +6,7 @@ import 'package:login/components/category_card.dart';
 
 
 import 'package:login/pages/health_analytics.dart';
+import 'package:login/pages/login_page.dart';
 import 'package:login/pages/patient_profileview.dart';
 
 import 'package:login/components/symptoms/dentaldoc.dart';
@@ -251,7 +252,7 @@ final List<String> bannerImages = [
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ProfileUpdateApp(),
+                    builder: (context) => const ProfileUpdatePage(),
                   ),
                 );
               },
@@ -319,7 +320,7 @@ final List<String> bannerImages = [
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Container(),
+                    builder: (context) => LoginPage(),
                   ),
                 );
               },
