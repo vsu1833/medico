@@ -146,6 +146,7 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
         _gender = data['gender'] ?? 'Male';
         _isSpecializationSelected = data['isSpecializationSelected'] ?? false;
         _selectedSpecialization = data['specialization'] ?? '';
+        _imageUrl = data['profile_image_url'] ?? '';
 
         setState(() {});
       }
@@ -280,10 +281,33 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                 const SizedBox(height: 30),
                 GestureDetector(
                   onTap: _pickImage,
+                  child: Container(
+                          width: 112, // 2 * 56 (Outer Radius)
+                          height: 112,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Color.fromARGB(
+                                  255, 107, 170, 181), // Border Color
+                              width: 6.0, // Border Width
+                            ),
+                          ),
                   child: CircleAvatar(
                     radius: 50,
                     backgroundColor: const Color.fromARGB(255, 107, 170, 181),
-                    backgroundImage: _profileImage != null
+                     backgroundImage: _profileImage != null
+        ? FileImage(_profileImage!)
+        : (_imageUrl != null && _imageUrl!.isNotEmpty 
+            ? NetworkImage(_imageUrl!) 
+            : null),
+    child: _profileImage == null && (_imageUrl == null || _imageUrl!.isEmpty)
+        ? const Icon(
+            Icons.camera_alt,
+            color: Colors.white,
+            size: 30,
+          )
+        : null,
+                    /*backgroundImage: _profileImage != null
                         ? FileImage(_profileImage!)
                         : null,
                     child: _profileImage == null
@@ -292,8 +316,9 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                             color: Colors.white,
                             size: 30,
                           )
-                        : null,
+                        : null,*/
                   ),
+                ),
                 ),
                 const SizedBox(height: 20),
                 SwitchListTile(
