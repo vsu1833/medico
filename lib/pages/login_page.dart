@@ -31,8 +31,6 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -220,7 +218,7 @@ class _LoginPageState extends State<LoginPage> {
                         _formkey.currentState!.save();
                         !isLogin
                             ? signin(context, email, password)
-                            : signup(context, email, password,isDoctor);
+                            : signup(context, email, password, isDoctor);
                       }
                     },
                     buttonname: isLogin ? "Sign up" : "Login",
@@ -253,7 +251,8 @@ class _LoginPageState extends State<LoginPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const ForgotPasswordPage()),
+                                  builder: (context) =>
+                                      const ForgotPasswordPage()),
                             );
                           },
                           child: const Text(
@@ -268,7 +267,7 @@ class _LoginPageState extends State<LoginPage> {
                     color: Color.fromARGB(255, 244, 235, 235),
                     thickness: 1,
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
                   // Expanded container with image
                   Container(
                     decoration: const BoxDecoration(
@@ -288,17 +287,25 @@ class _LoginPageState extends State<LoginPage> {
                             onTap: () {
                               print("Tapped on the button");
                             },
-                            child: const Text(
-                              "Sign In With Google",
-                              style: TextStyle(color: Colors.black),
+                            child: Row(
+                              children: [
+                                const Text(
+                                  "Made with ",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 15),
+                                ),
+                                Icon(
+                                  Icons.favorite_sharp,
+                                  color: Colors.red,
+                                  size: 30,
+                                ),
+                                const Text(
+                                  " in India",
+                                  style: TextStyle(
+                                      color: Colors.black, fontSize: 15),
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(width: 15),
-                          Image.asset(
-                            'assets/img3.jpg',
-                            fit: BoxFit.cover,
-                            height: 75,
-                            width: 75,
                           ),
                         ],
                       ),

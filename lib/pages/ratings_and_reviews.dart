@@ -114,6 +114,8 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ratings And Reviews'),
@@ -267,9 +269,9 @@ class _RatingsAndReviewsState extends State<RatingsAndReviews> {
                       'Dr Name- ${widget.drName}', // Access drName using widget
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(width: 100),
+                    SizedBox(width: screenWidth * 0.15),
                     Text(
-                      'Date of Appointment- ${widget.appointmentDate}', // Access appointmentDate using widget
+                      'Date- ${widget.appointmentDate}', // Access appointmentDate using widget
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
