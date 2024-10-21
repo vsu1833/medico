@@ -23,6 +23,10 @@ import 'package:login/sidebar/category.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:login/sidebar/appointment_booking.dart';
 
+
+import 'package:login/pages/login_page.dart';
+
+
 class Doctor {
   final String name;
   final String specialization;
@@ -79,11 +83,13 @@ class _HomeScreenState extends State<HomeScreen> {
     'Skin Specialist',
     'Gynecologist',
     'ENT',
+
     'Ophthalmologist',
     'Neurologist',
     'Psychiatrist',
     'Dentist',
     
+
   ];
 
   final List<Icon> catIcons = [
@@ -167,6 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
         .where('phone', isEqualTo: phone)
         .get();
 
+
     if (patientSnapshot.docs.isEmpty) {
       return {}; // No patient found
     }
@@ -181,6 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'userName': userName,
     };
   }
+
 
   String username = 'Loading...';
 
@@ -198,6 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+
   Future<void> fetchBannerImage() async {
     try {
       final ref = FirebaseStorage.instance.ref('appicon/withCompanyName.png');
@@ -214,6 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
 //     'assets/images/appIcon.jpeg',
 
 //   ];
+
 
   // Banner carousel widget
   Widget buildBannerCarousel() {
@@ -353,7 +363,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.logout_outlined, color: Colors.teal),
               title: const Text('Logout'),
-              onTap: () {
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -451,7 +463,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 70, // Increased size of the category icons
                             width: 70,
                             decoration: BoxDecoration(
+
                               color: Color.fromARGB(255, 38, 187, 213), // Updated color for category circles
+
                               shape: BoxShape.circle,
                               boxShadow: const [
                                 BoxShadow(
@@ -614,7 +628,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         doctorLocation: doctor.address,
                                         doctorAddress: doctor.address,
                                         doctorImage: doctor.image,
+
                                         // doctorImages: [],
+
                                       ),
                                     ),
                                   );
