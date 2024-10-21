@@ -9,8 +9,8 @@ class PopUpAppo extends StatefulWidget {
   final String doctorDescription;
   final String doctorLocation;
   final String doctorAddress;
-  final String doctorImage;
-  final List<String> doctorImages;
+  final String image;
+  // final List<String> doctorImages;
   final String doctorId;
   final String userId; 
   final String consultationFee;
@@ -24,13 +24,13 @@ class PopUpAppo extends StatefulWidget {
     required this.doctorDescription,
     required this.doctorLocation,
     required this.doctorAddress,
-    required this.doctorImage,
-    required this.doctorImages,
+    required this.image,
+    // required this.doctorImages,
     required this.consultationFee,
     required this.reviews,
     required this.doctorId,
     required this.userId, 
-    required this.phone,
+    required this.phone, required String doctorImage, 
   });
 
   @override
@@ -84,13 +84,14 @@ class _PopUpAppoState extends State<PopUpAppo> {
                       phone: widget.phone,
                       doctorSpecialization: widget.doctorSpecialization,
                       doctorAddress: widget.doctorAddress,
-                      doctorImage: widget.doctorImage,
+                      doctorImage: widget.image,
                       consultationFee: widget.consultationFee,
                       doctorId: widget.doctorId,
                       userId: widget.userId,
                       doctorDescription: widget.doctorDescription,
-                      doctorLocation: widget.doctorLocation,
-                      doctorImages: widget.doctorImages,
+                      doctorLocation: widget.doctorLocation, 
+                      
+                      // doctorImages: widget.doctorImages,
                     ),
                   ),
                 );
@@ -115,7 +116,7 @@ class _PopUpAppoState extends State<PopUpAppo> {
                       doctorId: widget.doctorId,
                       doctorName: widget.doctorName,
                       doctorSpecialization: widget.doctorSpecialization,
-                      doctorImage: widget.doctorImage,
+                      doctorImage: widget.image,
                       phone: '',
                       description: widget.doctorDescription,
                       doctorAddress: widget.doctorAddress,

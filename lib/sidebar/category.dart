@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login/sidebar/appointment_booking.dart';
+
 // 1s this
 class CategoryPage extends StatelessWidget {
   final List<String> categories = [
@@ -11,12 +12,13 @@ class CategoryPage extends StatelessWidget {
     'Skin Specialist',
     'Gynecologist',
     'ENT',
+    'Ophthalmologist',
     'Neurologist',
     'Psychiatrist',
     'Dentist',
   ];
 
-   CategoryPage({super.key});
+  CategoryPage({super.key});
 
   Widget getCategoryIcon(String category) {
     switch (category.toLowerCase()) {
@@ -36,10 +38,13 @@ class CategoryPage extends StatelessWidget {
         return const Text('🤰', style: TextStyle(fontSize: 50)); // Pregnant woman
       case 'ent':
         return const Text('👂', style: TextStyle(fontSize: 50)); // Ear
+      case 'ophthalmologist':
+        return const Text('👁️', style: TextStyle(fontSize: 50)); // Eye
       case 'neurologist':
         return const Text('🧠', style: TextStyle(fontSize: 50)); // Brain
       case 'psychiatrist':
-        return const Text('🧘', style: TextStyle(fontSize: 50)); // Meditation pose
+        return const Text('🧘',
+            style: TextStyle(fontSize: 50)); // Meditation pose
       case 'dentist':
         return const Text('🦷', style: TextStyle(fontSize: 50)); // Tooth
       default:
@@ -65,14 +70,16 @@ class CategoryPage extends StatelessWidget {
         itemCount: categories.length,
         itemBuilder: (context, index) {
           String category = categories[index];
-          Widget icon = getCategoryIcon(category); // Get icon widget based on category name
+          Widget icon = getCategoryIcon(
+              category); // Get icon widget based on category name
           return GestureDetector(
             onTap: () {
               // Navigate to the doctors page for the selected category
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DoctorsPage(category: category), // Ensure this page exists
+                  builder: (context) => DoctorsPage(
+                      category: category), // Ensure this page exists
                 ),
               );
             },

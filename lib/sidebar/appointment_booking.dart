@@ -144,8 +144,8 @@ class _DoctorsPageState extends State<DoctorsPage> {
                                       phone: doctors[index].phone,
                                       doctorDescription: doctors[index].description,
                                       doctorLocation: doctors[index].address,
-                                      doctorImage: '',
-                                      doctorImages: const [],
+                                      doctorImage: 'doctors[index].image',
+                                      
                                     ),
                                   ),
                                 );
