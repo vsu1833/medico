@@ -36,8 +36,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     // Schedule widgets dynamically updated with userId
     final scheduleWidgets = [
       UpcomingSchedule(userId: userId), // Pass the fetched userId
-      CompletedSchedule(userId: userId,), // Placeholder for Completed schedule
-      CancelledSchedule(userId: userId,), // Placeholder for Cancelled schedule
+      CompletedSchedule(
+        userId: userId,
+      ), // Placeholder for Completed schedule
+      CancelledSchedule(
+        userId: userId,
+      ), // Placeholder for Cancelled schedule
     ];
 
     return SingleChildScrollView(
@@ -51,7 +55,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               child: Text(
                 "Schedule",
                 style: TextStyle(
-                  fontSize: 25,
+                  fontSize: 20,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -67,68 +71,92 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        _buttonIndex = 0; // Upcoming
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 25),
-                      decoration: BoxDecoration(
-                        color: _buttonIndex == 0 ? Colors.teal : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        "Upcoming",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: _buttonIndex == 0 ? Colors.white : Colors.black38,
+                  Flexible(
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _buttonIndex = 0; // Upcoming
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 25),
+                        decoration: BoxDecoration(
+                          color: _buttonIndex == 0
+                              ? Colors.teal
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          "Upcoming",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: _buttonIndex == 0
+                                ? Colors.white
+                                : Colors.black38,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
                   ),
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        _buttonIndex = 1; // Completed
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 25),
-                      decoration: BoxDecoration(
-                        color: _buttonIndex == 1 ? Colors.teal : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        "Completed",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: _buttonIndex == 1 ? Colors.white : Colors.black38,
+                  Flexible(
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _buttonIndex = 1; // Completed
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 25),
+                        decoration: BoxDecoration(
+                          color: _buttonIndex == 1
+                              ? Colors.teal
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          "Completed",
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: _buttonIndex == 1
+                                ? Colors.white
+                                : Colors.black38,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
                   ),
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        _buttonIndex = 2; // Cancelled
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 25),
-                      decoration: BoxDecoration(
-                        color: _buttonIndex == 2 ? Colors.teal : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        "Cancelled",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: _buttonIndex == 2 ? Colors.white : Colors.black38,
+                  Flexible(
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _buttonIndex = 2; // Cancelled
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 25),
+                        decoration: BoxDecoration(
+                          color: _buttonIndex == 2
+                              ? Colors.teal
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          "Cancelled",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: _buttonIndex == 2
+                                ? Colors.white
+                                : Colors.black38,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),

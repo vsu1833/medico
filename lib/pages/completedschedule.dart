@@ -24,13 +24,13 @@ class _CompletedScheduleState extends State<CompletedSchedule> {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('appointments')
           .where('patient_id', isEqualTo: widget.userId)
-          .where('status', isEqualTo: true) 
+          .where('status', isEqualTo: true) // Completed appointments
           .get();
 
       List<Map<String, dynamic>> fetchedAppointments = [];
       for (var doc in querySnapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        data['id'] = doc.id;
+        data['id'] = doc.id; // Add document ID for further operations
         fetchedAppointments.add(data);
       }
 
@@ -66,7 +66,7 @@ class _CompletedScheduleState extends State<CompletedSchedule> {
                     var appointment = completedAppointments[index];
 
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 20), 
+                      margin: const EdgeInsets.only(bottom: 20),
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
@@ -88,12 +88,20 @@ class _CompletedScheduleState extends State<CompletedSchedule> {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold),
                               ),
-                              subtitle: Text(appointment['specialization'] ?? 
+                              subtitle: Text(appointment['spacialization'] ??
                                   'Specialization not available'),
-                              trailing: const CircleAvatar(
+                              trailing: CircleAvatar(
                                 radius: 25,
-                                backgroundImage:
-                                    AssetImage("images/doctor1.jpg"),
+                                backgroundImage: appointment['doctorImage'] !=
+                                            null &&
+                                        appointment['doctorImage'].isNotEmpty
+                                    ? NetworkImage(appointment['doctorImage'])
+                                    : const AssetImage(
+                                            'assets/images/default_doctor.png')
+                                        as ImageProvider,
+                                onBackgroundImageError: (error, stackTrace) {
+                                  print("Error loading doctor's image: $error");
+                                },
                               ),
                             ),
                             const Padding(
@@ -130,25 +138,25 @@ class _CompletedScheduleState extends State<CompletedSchedule> {
                                     ),
                                   ],
                                 ),
-                                 const Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Icon(Icons.check_circle,
-                                    color: Colors.green, size: 18),
-                                SizedBox(width: 5),
-                                Text(
-                                  "Completed",
-                                  style: TextStyle(
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                // Completed indicator (Green check with 'Completed' text)
+                                const Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Icon(Icons.check_circle,
+                                        color: Colors.green, size: 18),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      "Completed",
+                                      style: TextStyle(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                              ],
-                            ),
                             const SizedBox(height: 10),
-                           
                           ],
                         ),
                       ),

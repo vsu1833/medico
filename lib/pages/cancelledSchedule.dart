@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class CancelledSchedule extends StatefulWidget {
-  final String userId; 
+  final String userId;
 
   const CancelledSchedule({super.key, required this.userId});
 
@@ -23,14 +23,14 @@ class _CancelledScheduleState extends State<CancelledSchedule> {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('appointments')
-          .where('patient_id', isEqualTo: widget.userId) 
-          .where('cancelled', isEqualTo: true) 
+          .where('patient_id', isEqualTo: widget.userId)
+          .where('cancelled', isEqualTo: true)
           .get();
 
       List<Map<String, dynamic>> fetchedCancelledAppointments = [];
       for (var doc in querySnapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        data['id'] = doc.id; 
+        data['id'] = doc.id;
         fetchedCancelledAppointments.add(data);
       }
 
@@ -66,7 +66,8 @@ class _CancelledScheduleState extends State<CancelledSchedule> {
                     var appointment = cancelledAppointments[index];
 
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 20), // Increased spacing
+                      margin: const EdgeInsets.only(
+                          bottom: 20), // Increased spacing
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
@@ -85,12 +86,29 @@ class _CancelledScheduleState extends State<CancelledSchedule> {
                             ListTile(
                               title: Text(
                                 appointment['doctor_name'] ?? 'Doctor',
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
-                              subtitle: Text(appointment['specialization'] ?? 'Specialization'),
-                              trailing: const CircleAvatar(
+                              subtitle: Text(
+                                appointment['spacialization'] != null &&
+                                        appointment['spacialization'].isNotEmpty
+                                    ? appointment['spacialization']
+                                    : 'Specialization not available',
+                              ),
+                              trailing: CircleAvatar(
                                 radius: 25,
-                                backgroundImage: AssetImage("images/doctor1.jpg"),
+                                backgroundImage: appointment['doctorImage'] !=
+                                        null
+                                    ? NetworkImage(appointment['doctorImage']
+                                        .toString()) // Fetch image from URL
+                                    : const AssetImage(
+                                            'assets/images/default_doctor.png')
+                                        as ImageProvider, // Default image if the URL is missing
+                                onBackgroundImageError: (error, stackTrace) {
+                                  print("Error loading doctor's image: $error");
+                                  print(
+                                      "Doctor Image URL: ${appointment['doctorImage']}");
+                                },
                               ),
                             ),
                             const Padding(
@@ -105,40 +123,45 @@ class _CancelledScheduleState extends State<CancelledSchedule> {
                               children: [
                                 Row(
                                   children: [
-                                    const Icon(Icons.calendar_month, color: Colors.black54),
+                                    const Icon(Icons.calendar_month,
+                                        color: Colors.black54),
                                     const SizedBox(width: 5),
                                     Text(
                                       appointment['date'] ?? '',
-                                      style: const TextStyle(color: Colors.black54),
+                                      style: const TextStyle(
+                                          color: Colors.black54),
                                     ),
                                   ],
                                 ),
                                 Row(
                                   children: [
-                                    const Icon(Icons.access_time_filled, color: Colors.black54),
+                                    const Icon(Icons.access_time_filled,
+                                        color: Colors.black54),
                                     const SizedBox(width: 5),
                                     Text(
                                       appointment['time'] ?? '',
-                                      style: const TextStyle(color: Colors.black54),
+                                      style: const TextStyle(
+                                          color: Colors.black54),
                                     ),
                                   ],
                                 ),
-                                  const Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Icon(Icons.cancel, color: Colors.red, size: 18),
-                                SizedBox(width: 5),
-                                Text(
-                                  "Cancelled",
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                const Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Icon(Icons.cancel,
+                                        color: Colors.red, size: 18),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      "Cancelled",
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                              ],
-                            ),                          
                           ],
                         ),
                       ),

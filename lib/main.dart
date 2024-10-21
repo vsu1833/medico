@@ -32,6 +32,7 @@ class AuthenticationWrapper extends StatelessWidget {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
+      
       // Check Firestore for user type (doctor or patient)
       return FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance.collection('users').doc(user.uid).get(),

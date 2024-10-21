@@ -69,6 +69,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String firstName = "User";
+  String? profileImageUrl = "";
   final List<String> catNames = [
     'Physician',
     'Cardiologist',
@@ -106,6 +108,30 @@ class _HomeScreenState extends State<HomeScreen> {
         .map((snapshot) {
       return snapshot.docs.map((doc) => Doctor.fromFirestore(doc)).toList();
     });
+  }
+
+  Future<void> fetchPatientName() async {
+    try {
+      User? currentUser =
+          FirebaseAuth.instance.currentUser; // Get the current user
+      if (currentUser != null) {
+        // Get the document from the patients collection where docID = currentUser.uid
+        DocumentSnapshot patientDoc = await FirebaseFirestore.instance
+            .collection('patients')
+            .doc(currentUser.uid)
+            .get();
+
+        if (patientDoc.exists) {
+          // Extract first name
+          setState(() {
+            firstName = patientDoc['first_name'];
+            profileImageUrl = patientDoc['profile_image_url']; // Assuming 'first_name' is the field name
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching patient name: $e");
+    }
   }
 
   Future<String> fetchUserId(String patientPhone) async {
@@ -175,6 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     fetchAndSetUserInfo();
+    fetchPatientName();
   }
 
   void fetchAndSetUserInfo() async {
@@ -222,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
+            DrawerHeader(
               decoration: BoxDecoration(
                 color: Color.fromARGB(255, 3, 165, 170),
               ),
@@ -231,11 +258,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundImage: AssetImage("images/patient1.jpeg"),
+                    backgroundImage: profileImageUrl != null && profileImageUrl!.isNotEmpty
+                        ? NetworkImage(profileImageUrl!) // Load from Firestore if available
+                        : AssetImage("images/patient1.jpeg") as ImageProvider,
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "Hi , Patient",
+                    "Namaste! ${firstName ?? 'Patient'}",
                     style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
                 ],
