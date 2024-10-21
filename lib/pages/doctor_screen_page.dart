@@ -1,10 +1,12 @@
+// import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:login/pages/main_screen.dart';
 import 'package:login/pop_up/app_pop_up.dart';
-import 'package:flutter/services.dart'; 
-import 'package:url_launcher/url_launcher.dart'; 
+import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DoctorScreenPage extends StatelessWidget {
   final String doctorName;
@@ -13,7 +15,8 @@ class DoctorScreenPage extends StatelessWidget {
   final String doctorLocation;
   final String doctorAddress;
   final String doctorImage;
-  final List<String> doctorImages;
+  // final List<String> doctorImages;
+  // File
   final String doctorId;
   final String userId;
   final String consultationFee;
@@ -26,14 +29,36 @@ class DoctorScreenPage extends StatelessWidget {
     required this.doctorDescription,
     required this.doctorLocation,
     required this.doctorAddress,
-    required this.doctorImage,
-    required this.doctorImages,
+    // required this.image,
+    // required this.doctorImages,
     required this.consultationFee,
     required this.doctorId,
     required this.phone,
     required this.userId,
+    required this.doctorImage,
+    //required List doctorImages,
   });
+  factory DoctorScreenPage.fromFirestore(DocumentSnapshot doc) {
+    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    return DoctorScreenPage(
+      doctorName:
+          (data['first_name'] ?? 'Unknown') + ' ' + (data['last_name'] ?? ''),
+      doctorSpecialization: data['specialization'] ?? 'Unknown',
+      consultationFee: data['consultationfee'] ?? '400 ₹',
+      // image: data['profile_image_url'] ?? 'https://via.placeholder.com/150',
 
+      doctorLocation: data['address'] ?? 'Unknown Address',
+      doctorDescription: data['description'] ?? 'No description available',
+      phone: data['phone'] ?? 'No phone available',
+      userId: doc.id,
+      doctorAddress: '',
+      doctorId: '',
+      doctorImage: data['profile_image_url'] ??
+          'https://default-image-url.com, doctorImages: []',
+      
+      // gender: data['gender'] ?? 'Unknown',
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,10 +96,28 @@ class DoctorScreenPage extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundImage: AssetImage(doctorImage),
-                        ),
+                       CircleAvatar(
+  radius: 50,
+  backgroundColor: Colors.grey[200], // Background for placeholder
+  child: ClipOval(
+    child: FadeInImage.assetNetwork(
+      placeholder: 'assets/placeholder.png', // Ensure you have a valid placeholder image in assets
+      image: doctorImage,
+      fit: BoxFit.cover, // Ensures the image fills the space properly
+      width: 100,
+      height: 100,
+      imageErrorBuilder: (context, error, stackTrace) {
+        // Handle error gracefully by showing a default icon
+        return const Icon(
+          Icons.person,
+          size: 50,
+          color: Colors.grey,
+        );
+      },
+    ),
+  ),
+),
+
                         const SizedBox(height: 15),
                         Text(
                           doctorName,
@@ -123,7 +166,7 @@ class DoctorScreenPage extends StatelessWidget {
                               onTap: () {
                                 final Uri smsUri =
                                     Uri(scheme: 'sms', path: phone);
-                                launchUrl(smsUri); 
+                                launchUrl(smsUri);
                               },
                               child: Container(
                                 padding: const EdgeInsets.all(10),
@@ -179,7 +222,6 @@ class DoctorScreenPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-
                   const Text(
                     "Reviews",
                     style: TextStyle(
@@ -192,9 +234,8 @@ class DoctorScreenPage extends StatelessWidget {
                   ReviewSection(
                       doctorId: doctorId,
                       doctorImage: doctorImage,
-                      doctorName: doctorName), 
+                      doctorName: doctorName),
                   const SizedBox(height: 10),
-
                   const Text(
                     "Location",
                     style: TextStyle(
@@ -284,10 +325,10 @@ class DoctorScreenPage extends StatelessWidget {
                       doctorAddress: doctorAddress,
                       doctorId: doctorId,
                       doctorLocation: doctorAddress,
-                      doctorImages: doctorImages,
+                      // doctorImages: doctorImage,
                       consultationFee: consultationFee,
                       userId: userId,
-                      reviews: const [], 
+                      reviews: const [], image: '',
                     ),
                   );
                 },
@@ -354,13 +395,11 @@ class ReviewSection extends StatelessWidget {
           children: [
             Row(
               children: [
-                buildStarRating(
-                    averageRating),
+                buildStarRating(averageRating),
                 const SizedBox(width: 5),
-                Text(averageRating
-                    .toStringAsFixed(1)), 
+                Text(averageRating.toStringAsFixed(1)),
                 const SizedBox(width: 5),
-                Text('($totalReviews)'), 
+                Text('($totalReviews)'),
                 const Spacer(),
                 TextButton(
                   onPressed: () {
@@ -381,8 +420,7 @@ class ReviewSection extends StatelessWidget {
               child: Row(
                 children: List.generate(reviews.length, (index) {
                   var review = reviews[index];
-                  double starsCount =
-                      review['stars_count'].toDouble(); 
+                  double starsCount = review['stars_count'].toDouble();
 
                   return Card(
                     shape: RoundedRectangleBorder(
@@ -390,7 +428,7 @@ class ReviewSection extends StatelessWidget {
                     ),
                     margin: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: SizedBox(
-                      width: 250, 
+                      width: 250,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
@@ -406,8 +444,7 @@ class ReviewSection extends StatelessWidget {
                                     fontSize: 16,
                                   ),
                                 ),
-                                buildStarRating(
-                                    starsCount), 
+                                buildStarRating(starsCount),
                                 Text(
                                   starsCount.toStringAsFixed(
                                       1), // Display decimal rating
@@ -461,7 +498,7 @@ class AllReviewsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("All Reviews"),
-        backgroundColor: Colors.teal, 
+        backgroundColor: Colors.teal,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -490,7 +527,7 @@ class AllReviewsScreen extends StatelessWidget {
                     vertical: 10.0, horizontal: 15.0),
                 elevation: 4,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15), 
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),
@@ -520,8 +557,7 @@ class AllReviewsScreen extends StatelessWidget {
                       Text(
                         review['review'],
                         style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black87), 
+                            fontSize: 16, color: Colors.black87),
                       ),
                       const SizedBox(height: 10),
                       Text(
@@ -553,7 +589,7 @@ class AllReviewsScreen extends StatelessWidget {
       stars.add(const Icon(
         Icons.star,
         color: Color.fromARGB(255, 255, 203, 46),
-        size: 20, 
+        size: 20,
       ));
     }
 

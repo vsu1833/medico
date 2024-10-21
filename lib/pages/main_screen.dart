@@ -56,7 +56,7 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Scheduled',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.person_2_outlined),
             label: 'Profile',
           ),
         ],

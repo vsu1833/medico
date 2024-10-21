@@ -98,7 +98,6 @@ flutter:
     - assets/brain_question_mark.jpg 
     - assets/images/appIcon.jpeg
 
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

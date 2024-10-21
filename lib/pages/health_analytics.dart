@@ -506,7 +506,7 @@ class _HealthAnalyticsPageState extends State<HealthAnalyticsPage> {
     return ExpansionTile(
       title: _buildAnalyticsTile(
         icon: Icons.fitness_center,
-        title: 'Body-Mass Index',
+        title: 'Body-Mass Index (in kg/m*m)',
         value: _bmiResult.isEmpty ? '-N.A.-' : _bmiResult,
       ),
       children: [
@@ -557,13 +557,13 @@ class _HealthAnalyticsPageState extends State<HealthAnalyticsPage> {
       title: _buildAnalyticsTile(
         icon: Icons.monitor_heart,
         title: 'Blood Pressure (Last Recorded)',
-        value: bloodPressure.isEmpty ? '-N.A.-' : bloodPressure,
+        value: bloodPressure.isEmpty ? '-N.A.-' : '$bloodPressure mmHg' ,
       ),
       children: [
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: _buildDataCard(
-              'Blood Pressure', bloodPressure, Color.fromARGB(255, 38, 187, 213)
+              'Blood Pressure', '$bloodPressure mmHg', Color.fromARGB(255, 38, 187, 213)
               //Icons.monitor_heart,
               ),
         ),
@@ -576,12 +576,12 @@ class _HealthAnalyticsPageState extends State<HealthAnalyticsPage> {
       title: _buildAnalyticsTile2(
         icon: Icons.monitor_heart,
         title: 'Last Recorded Pulse',
-        value: lastRecordedPulse.isEmpty ? '-N.A.-' : lastRecordedPulse,
+        value: lastRecordedPulse.isEmpty ? '-N.A.-' : '$lastRecordedPulse bpm',
       ),
       children: [
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: _buildDataCard('Last Recorded Pulse', lastRecordedPulse,
+          child: _buildDataCard('Last Recorded Pulse', '$lastRecordedPulse bpm',
               Color.fromARGB(255, 218, 112, 188)
               //Icons.monitor_heart,
               ),
