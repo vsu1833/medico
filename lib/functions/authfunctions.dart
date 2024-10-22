@@ -27,6 +27,23 @@ signup(
     });
     print('User data saved successfully.');
 
+    // If the user is a patient (isDoctor is false), create a health_analytics document
+    if (!isDoctor) {
+      print('Creating health_analytics document for the patient...');
+      await FirebaseFirestore.instance
+          .collection('health_analytics')
+          .doc(credential.user!.uid)
+          .set({
+        'BMI': null,
+        'blood_pressure': null,
+        'blood_sugar': null,
+        'health_analysis': null,
+        'last_recorded_pulse': null,
+        'note': null,
+      });
+      print('health_analytics document created successfully.');
+    }
+
     // Show success feedback
     ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Sign Up Successful! Log in Now')));
@@ -34,7 +51,7 @@ signup(
         context: context,
         builder: (context) {
           return const AlertDialog(
-            content: Text('Successful Sign Up . You can Log in now'),
+            content: Text('Successful Sign Up. You can Log in now'),
           );
         });
   } on FirebaseAuthException catch (e) {

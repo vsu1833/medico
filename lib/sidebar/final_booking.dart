@@ -209,7 +209,9 @@ class _AppointmentPageState extends State<AppointmentPage1> {
                             userId: widget.userId,
                             doctorDescription: widget.description,
                             doctorLocation: widget.doctorAddress,
-                            //doctorImages: [widget.doctorImage],
+
+                            doctorImages: [widget.doctorImage],
+
                           ),
                         ),
                       );

@@ -82,7 +82,8 @@ class _UpcomingScheduleState extends State<UpcomingSchedule> {
           builder: (context) {
             return AlertDialog(
               title: const Text("Success"),
-              content: const Text("Appointment has been cancelled successfully."),
+              content:
+                  const Text("Appointment has been cancelled successfully."),
               actions: [
                 TextButton(
                   child: const Text("OK"),
@@ -250,11 +251,23 @@ class _UpcomingScheduleState extends State<UpcomingSchedule> {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold),
                               ),
-                              subtitle: Text(appointment['doctor_specialization'] ?? 'Specialization'),
-                              trailing: const CircleAvatar(
+                              subtitle: Text(
+                                appointment['spacialization'] != null
+                                    ? appointment['spacialization']
+                                    : 'Specialization not available',
+                              ),
+                              trailing: CircleAvatar(
                                 radius: 25,
-                                backgroundImage:
-                                    AssetImage("images/doctor1.jpg"),
+                                backgroundImage: appointment['doctorImage'] !=
+                                            null &&
+                                        appointment['doctorImage'].isNotEmpty
+                                    ? NetworkImage(appointment['doctorImage'])
+                                    : const AssetImage(
+                                            'assets/images/default_doctor.png')
+                                        as ImageProvider,
+                                onBackgroundImageError: (error, stackTrace) {
+                                  print("Error loading doctor's image: $error");
+                                },
                               ),
                             ),
                             const Padding(
@@ -320,32 +333,33 @@ class _UpcomingScheduleState extends State<UpcomingSchedule> {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 10),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(7),
+                                      borderRadius: BorderRadius.circular(7),
                                     ),
                                   ),
                                   child: const Text(
                                     "Cancel",
-                                    style: TextStyle(color: Color.fromARGB(255, 250, 247, 247)),
+                                    style: TextStyle(
+                                        color:
+                                            Color.fromARGB(255, 250, 247, 247)),
                                   ),
                                 ),
                                 ElevatedButton(
                                   onPressed: () =>
                                       rescheduleAppointment(appointment['id']),
                                   style: ElevatedButton.styleFrom(
-                                                                        backgroundColor:
+                                    backgroundColor:
                                         const Color.fromARGB(255, 36, 164, 166),
                                     minimumSize: const Size(160, 40),
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 10),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(7),
+                                      borderRadius: BorderRadius.circular(7),
                                     ),
                                   ),
                                   child: const Text(
                                     "Reschedule",
-                                    style: TextStyle(color: Color.fromARGB(255, 1, 0, 0)),
+                                    style: TextStyle(
+                                        color: Color.fromARGB(255, 1, 0, 0)),
                                   ),
                                 ),
                               ],
