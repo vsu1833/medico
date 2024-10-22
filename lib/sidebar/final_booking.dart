@@ -210,8 +210,7 @@ class _AppointmentPageState extends State<AppointmentPage1> {
                             doctorDescription: widget.description,
                             doctorLocation: widget.doctorAddress,
 
-                            doctorImages: [widget.doctorImage],
-
+                            //doctorImages: [widget.doctorImage],
                           ),
                         ),
                       );
@@ -414,8 +413,8 @@ class _AppointmentPageState extends State<AppointmentPage1> {
                         bool isSelected = selectedTime == time;
 
                         return InkWell(
-                          onTap: isBooked
-                              ? null // Disable onTap if the slot is booked
+                          onTap: selectedDate.isEmpty || isBooked
+                              ? null // Disable if date is not selected or the slot is booked
                               : () {
                                   setState(() {
                                     selectedTime = time;
