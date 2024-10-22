@@ -19,7 +19,8 @@ class _DoctorsPageState extends State<DoctorsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.category} Doctors',
+        title: Text(
+          '${widget.category} Doctors',
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
@@ -44,8 +45,10 @@ class _DoctorsPageState extends State<DoctorsPage> {
                   borderRadius: BorderRadius.circular(12.0),
                 ),
                 filled: true,
-                fillColor: Colors.grey[100], // Subtle background for search field
-                contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                fillColor:
+                    Colors.grey[100], // Subtle background for search field
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
               ),
               onChanged: (query) {
                 setState(() {
@@ -69,15 +72,18 @@ class _DoctorsPageState extends State<DoctorsPage> {
                   }
 
                   var doctors = snapshot.data!.docs
-                      .map((doc) => Doctor.fromMap(doc.data() as Map<String, dynamic>))
+                      .map((doc) =>
+                          Doctor.fromMap(doc.data() as Map<String, dynamic>))
                       .where((doctor) => doctor.name
                           .toLowerCase()
                           .contains(searchQuery.toLowerCase()))
                       .toList();
 
                   if (doctors.isEmpty) {
-                    return const Center(child: Text('No doctors found.',
-                        style: TextStyle(fontSize: 18, color: Colors.grey)));
+                    return const Center(
+                        child: Text('No doctors found.',
+                            style:
+                                TextStyle(fontSize: 18, color: Colors.grey)));
                   }
 
                   return ListView.builder(
@@ -91,71 +97,87 @@ class _DoctorsPageState extends State<DoctorsPage> {
                           ),
                           elevation: 2,
                           child: ListTile(
-                            contentPadding: const EdgeInsets.all(16),
-                            leading: CircleAvatar(
-                              backgroundColor: Colors.blueAccent,
-                              radius: 30,
-                              child: Text(
-                                doctors[index].name[0],
+                              contentPadding: const EdgeInsets.all(16),
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.blueAccent,
+                                radius: 30,
+                                child: Text(
+                                  doctors[index].name[0],
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              title: Text(
+                                doctors[index].name,
                                 style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                            title: Text(
-                              doctors[index].name,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                              subtitle: Text(
+                                doctors[index].specialization,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[700],
+                                ),
                               ),
-                            ),
-                            subtitle: Text(
-                              doctors[index].specialization,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[700],
-                              ),
-                            ),
-                            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                            onTap: () async {
-                              String userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-                              if (userId.isNotEmpty) {
-                                QuerySnapshot reviewSnapshot = await FirebaseFirestore.instance
-                                    .collection('reviews')
-                                    .where('docId', isEqualTo: doctors[index].doctorId)
-                                    .get();
+                              trailing:
+                                  const Icon(Icons.arrow_forward_ios, size: 16),
+                              onTap: () async {
+                                print(
+                                    'Doctor Image URL: ${doctors[index].image} and Fee : ${doctors[index].consultationfee}');
+                                String userId =
+                                    FirebaseAuth.instance.currentUser?.uid ??
+                                        '';
+                                if (userId.isNotEmpty) {
+                                  QuerySnapshot reviewSnapshot =
+                                      await FirebaseFirestore.instance
+                                          .collection('reviews')
+                                          .where('docId',
+                                              isEqualTo:
+                                                  doctors[index].doctorId)
+                                          .get();
 
-                                List<Map<String, dynamic>> reviews = reviewSnapshot.docs
-                                    .map((doc) => doc.data() as Map<String, dynamic>)
-                                    .toList();
+                                  List<Map<String, dynamic>> reviews =
+                                      reviewSnapshot.docs
+                                          .map((doc) => doc.data()
+                                              as Map<String, dynamic>)
+                                          .toList();
 
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DoctorScreenPage(
-                                      doctorId: doctors[index].doctorId,
-                                      doctorName: doctors[index].name,
-                                      doctorSpecialization: doctors[index].specialization,
-                                      doctorAddress: doctors[index].address,
-                                      userId: userId,
-                                      consultationFee: '',
-                                      phone: doctors[index].phone,
-                                      doctorDescription: doctors[index].description,
-                                      doctorLocation: doctors[index].address,
-                                      doctorImage: 'doctors[index].image',
-                                      
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DoctorScreenPage(
+                                        userId:
+                                            userId, // Pass the fetched user ID (patient ID)
+                                        doctorId: doctors[index]
+                                            .doctorId, // Pass doctor details as needed
+                                        doctorName: doctors[index].name,
+                                        doctorSpecialization:
+                                            doctors[index].specialization,
+                                        consultationFee:
+                                            doctors[index].consultationfee,
+                                        phone: doctors[index].phone,
+                                        doctorDescription:
+                                            doctors[index].description,
+                                        doctorLocation: doctors[index].address,
+                                        doctorAddress: doctors[index].address,
+                                        doctorImage: doctors[index].image,
+
+                                        // doctorImages: [],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('User not logged in')),
-                                );
-                              }
-                            },
-                          ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text('User not logged in')),
+                                  );
+                                }
+                              }),
                         ),
                       );
                     },
@@ -177,6 +199,8 @@ class Doctor {
   final String address;
   final String phone;
   final String description;
+  final String image; // Added image field
+  final String consultationfee;
 
   Doctor({
     required this.doctorId,
@@ -185,6 +209,8 @@ class Doctor {
     required this.address,
     required this.phone,
     required this.description,
+    required this.image, // Initialize image
+    required this.consultationfee,
   });
 
   factory Doctor.fromMap(Map<String, dynamic> data) {
@@ -195,8 +221,9 @@ class Doctor {
       address: data['address'] ?? '',
       phone: data['phone'] ?? '',
       description: data['description'] ?? '',
+      image: data['profile_image_url'] ??
+          'assets/images/default_doctor.png', // Fetch image or use default
+      consultationfee: data['consultationfee'] ?? "N/A",
     );
   }
-
-  static fromFirestore(QueryDocumentSnapshot<Map<String, dynamic>> doc) {}
 }
