@@ -417,7 +417,7 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                     return null;
                   },
                   inputFormatters: [
-                    LengthLimitingTextInputFormatter(100),
+                    LengthLimitingTextInputFormatter(35),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -635,7 +635,7 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                         color: Color.fromARGB(255, 107, 170, 181)),
                   ),
                   inputFormatters: [
-                    LengthLimitingTextInputFormatter(100),
+                    LengthLimitingTextInputFormatter(150),
                   ],
                 ),
                 const SizedBox(height: 30),

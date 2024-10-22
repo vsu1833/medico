@@ -23,9 +23,7 @@ import 'package:login/sidebar/category.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:login/sidebar/appointment_booking.dart';
 
-
 import 'package:login/pages/login_page.dart';
-
 
 class Doctor {
   final String name;
@@ -85,13 +83,10 @@ class _HomeScreenState extends State<HomeScreen> {
     'Skin Specialist',
     'Gynecologist',
     'ENT',
-
     'Ophthalmologist',
     'Neurologist',
     'Psychiatrist',
     'Dentist',
-    
-
   ];
 
   final List<Icon> catIcons = [
@@ -103,11 +98,10 @@ class _HomeScreenState extends State<HomeScreen> {
     Icon(MdiIcons.lotionPlus, size: 30),
     Icon(MdiIcons.humanPregnant, size: 30),
     Icon(MdiIcons.earHearing, size: 30),
-    Icon(MdiIcons.eye,size:30),
+    Icon(MdiIcons.eye, size: 30),
     Icon(MdiIcons.brain, size: 30),
     Icon(MdiIcons.emoticon, size: 30),
     Icon(MdiIcons.toothOutline, size: 30),
-    
   ];
 
   String searchQuery = '';
@@ -144,7 +138,8 @@ class _HomeScreenState extends State<HomeScreen> {
           // Extract first name
           setState(() {
             firstName = patientDoc['first_name'];
-            profileImageUrl = patientDoc['profile_image_url']; // Assuming 'first_name' is the field name
+            profileImageUrl = patientDoc[
+                'profile_image_url']; // Assuming 'first_name' is the field name
           });
         }
       }
@@ -199,7 +194,6 @@ class _HomeScreenState extends State<HomeScreen> {
         .where('phone', isEqualTo: phone)
         .get();
 
-
     if (patientSnapshot.docs.isEmpty) {
       return {}; // No patient found
     }
@@ -215,7 +209,6 @@ class _HomeScreenState extends State<HomeScreen> {
     };
   }
 
-
   String username = 'Loading...';
 
   @override
@@ -226,7 +219,6 @@ class _HomeScreenState extends State<HomeScreen> {
     fetchPatientName();
 
     fetchBannerImage();
-
   }
 
   void fetchAndSetUserInfo() async {
@@ -235,7 +227,6 @@ class _HomeScreenState extends State<HomeScreen> {
       username = userInfo['userName'] ?? 'Unknown Name';
     });
   }
-
 
   Future<void> fetchBannerImage() async {
     try {
@@ -253,7 +244,6 @@ class _HomeScreenState extends State<HomeScreen> {
 //     'assets/images/appIcon.jpeg',
 
 //   ];
-
 
   // Banner carousel widget
   Widget buildBannerCarousel() {
@@ -300,11 +290,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   CircleAvatar(
                     radius: 30,
-
-                    backgroundImage: profileImageUrl != null && profileImageUrl!.isNotEmpty
-                        ? NetworkImage(profileImageUrl!) // Load from Firestore if available
+                    backgroundImage: profileImageUrl != null &&
+                            profileImageUrl!.isNotEmpty
+                        ? NetworkImage(
+                            profileImageUrl!) // Load from Firestore if available
                         : AssetImage("images/patient1.jpeg") as ImageProvider,
-
                   ),
                   SizedBox(height: 10),
                   Text(
@@ -497,8 +487,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 70, // Increased size of the category icons
                             width: 70,
                             decoration: BoxDecoration(
-
-                              color: Color.fromARGB(255, 38, 187, 213), // Updated color for category circles
+                              color: Color.fromARGB(255, 38, 187,
+                                  213), // Updated color for category circles
 
                               shape: BoxShape.circle,
                               boxShadow: const [
@@ -629,7 +619,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     const SizedBox(width: 5),
                                     Text(
-                                      rating.toStringAsFixed(1),
+                                      'click to see reviews',
                                       style: const TextStyle(fontSize: 14),
                                     ),
                                   ],
@@ -664,7 +654,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         doctorImage: doctor.image,
 
                                         // doctorImages: [],
-
                                       ),
                                     ),
                                   );
