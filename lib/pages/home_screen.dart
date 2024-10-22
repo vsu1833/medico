@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 import 'package:login/components/category_card.dart';
 
 import 'package:login/pages/health_analytics.dart';
+import 'package:login/pages/login_page.dart';
 import 'package:login/pages/patient_profileview.dart';
 
 import 'package:login/components/symptoms/dentaldoc.dart';
@@ -20,7 +22,10 @@ import 'package:login/pages/upload_reports.dart';
 import 'package:login/sidebar/category.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:login/sidebar/appointment_booking.dart';
+
+
 import 'package:login/pages/login_page.dart';
+
 
 class Doctor {
   final String name;
@@ -80,26 +85,40 @@ class _HomeScreenState extends State<HomeScreen> {
     'Skin Specialist',
     'Gynecologist',
     'ENT',
+
+    'Ophthalmologist',
     'Neurologist',
     'Psychiatrist',
     'Dentist',
+    
+
   ];
 
   final List<Icon> catIcons = [
-    Icon(MdiIcons.hospital, size: 30),
+    Icon(MdiIcons.stethoscope, size: 30),
     Icon(MdiIcons.heart, size: 30),
     Icon(MdiIcons.knife, size: 30),
     Icon(MdiIcons.bone, size: 30),
-    Icon(MdiIcons.baby, size: 30),
-    Icon(MdiIcons.ski, size: 30),
-    Icon(MdiIcons.faceWoman, size: 30),
+    Icon(MdiIcons.babyFace, size: 30),
+    Icon(MdiIcons.lotionPlus, size: 30),
+    Icon(MdiIcons.humanPregnant, size: 30),
     Icon(MdiIcons.earHearing, size: 30),
+    Icon(MdiIcons.eye,size:30),
     Icon(MdiIcons.brain, size: 30),
-    Icon(MdiIcons.emoticonSad, size: 30),
+    Icon(MdiIcons.emoticon, size: 30),
     Icon(MdiIcons.toothOutline, size: 30),
+    
   ];
 
   String searchQuery = '';
+  String bannerImageUrl = '';
+
+  //  @override
+  // void initState() {
+  //   super.initState();
+  //   fetchAndSetUserInfo();
+  //   fetchBannerImage();
+  // }
 
   Stream<List<Doctor>> fetchDoctors() {
     return FirebaseFirestore.instance
@@ -180,6 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
         .where('phone', isEqualTo: phone)
         .get();
 
+
     if (patientSnapshot.docs.isEmpty) {
       return {}; // No patient found
     }
@@ -195,13 +215,18 @@ class _HomeScreenState extends State<HomeScreen> {
     };
   }
 
+
   String username = 'Loading...';
 
   @override
   void initState() {
     super.initState();
     fetchAndSetUserInfo();
+
     fetchPatientName();
+
+    fetchBannerImage();
+
   }
 
   void fetchAndSetUserInfo() async {
@@ -211,9 +236,24 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  final List<String> bannerImages = [
-    'assets/images/appIcon.jpeg',
-  ];
+
+  Future<void> fetchBannerImage() async {
+    try {
+      final ref = FirebaseStorage.instance.ref('appicon/withCompanyName.png');
+      String url = await ref.getDownloadURL();
+      setState(() {
+        bannerImageUrl = url;
+      });
+    } catch (e) {
+      print('Failed to load banner image: $e');
+    }
+  }
+
+// final List<String> bannerImages = [
+//     'assets/images/appIcon.jpeg',
+
+//   ];
+
 
   // Banner carousel widget
   Widget buildBannerCarousel() {
@@ -221,17 +261,19 @@ class _HomeScreenState extends State<HomeScreen> {
       height: 150, // Adjust height to fill the space
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: bannerImages.length,
+        itemCount: 1,
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                bannerImages[index],
-                fit: BoxFit.cover,
-                width: MediaQuery.of(context).size.width * 0.9,
-              ),
+              child: bannerImageUrl.isEmpty
+                  ? CircularProgressIndicator()
+                  : Image.network(
+                      bannerImageUrl,
+                      fit: BoxFit.cover,
+                      width: MediaQuery.of(context).size.width * 0.9,
+                    ),
             ),
           );
         },
@@ -258,9 +300,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   CircleAvatar(
                     radius: 30,
+
                     backgroundImage: profileImageUrl != null && profileImageUrl!.isNotEmpty
                         ? NetworkImage(profileImageUrl!) // Load from Firestore if available
                         : AssetImage("images/patient1.jpeg") as ImageProvider,
+
                   ),
                   SizedBox(height: 10),
                   Text(
@@ -296,7 +340,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ProfileUpdateApp(),
+                    builder: (context) => const ProfileUpdatePage(),
                   ),
                 );
               },
@@ -453,8 +497,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 70, // Increased size of the category icons
                             width: 70,
                             decoration: BoxDecoration(
-                              color: Colors.teal
-                                  .shade500, // Updated color for category circles
+
+                              color: Color.fromARGB(255, 38, 187, 213), // Updated color for category circles
+
                               shape: BoxShape.circle,
                               boxShadow: const [
                                 BoxShadow(
@@ -617,7 +662,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         doctorLocation: doctor.address,
                                         doctorAddress: doctor.address,
                                         doctorImage: doctor.image,
-                                        doctorImages: [],
+
+                                        // doctorImages: [],
+
                                       ),
                                     ),
                                   );

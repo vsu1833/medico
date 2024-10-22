@@ -23,7 +23,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         image: "assets/dcotor.jpeg",
         imageHeight: 400,
         imageWidth: 400,
-        title: "Welcome to MediCo!",
+        title: "Welcome to Medico!",
         description:
             "Manage your health effortlessly and stay connected with your provider.",
         buttonText: 'Continue',
@@ -37,7 +37,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         image: "assets/choose_doctor.png",
         title: "Choose Your Doctor",
         description:
-            "At MediCo, we believe in personalized care. Choose from a curated selection of top-notch doctors who align with your needs and values.",
+            "At Medico, we believe in personalized care. Choose from a curated selection of top-notch doctors who align with your needs and values.",
         buttonText: 'Continue',
         onPressed: () {
           _pageController.animateToPage(2,
@@ -48,7 +48,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         image: "assets/hii.png",
         title: "Get Appointments with Doctor",
         description:
-            "Schedule and manage your appointments effortlessly, all at your fingertips. Welcome to a new era of convenience with MediCo - Your health, our priority.",
+            "Schedule and manage your appointments effortlessly, all at your fingertips. Welcome to a new era of convenience with Medico - Your health, our priority.",
         buttonText: 'Continue',
         onPressed: () {
           _pageController.animateToPage(3,

@@ -1,5 +1,6 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 // To handle the file object
 // To pick image from gallery/camera
@@ -58,6 +59,8 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
   TextEditingController _heightController = TextEditingController();
   TextEditingController _weightController = TextEditingController();
 
+  File? _profileImage;
+
   DateTime? _selectedDate;
   String _gender = 'Male';
   bool _showNameFields = false;
@@ -67,7 +70,7 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
   void initState() {
     super.initState();
     fetchUserDetails(); // Fetch UID and email when the page is initialized
-    fetchPatientDetails();
+    /*fetchPatientDetails();*/
   }
 
   Future<void> _pickImage() async {
@@ -277,24 +280,6 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
         uid = currentUser.uid;
         email = currentUser.email;
       });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('User is not logged in.')),
-      );
-    }
-  }
-
-  Future<void> fetchPatientDetails() async {
-    //DO NOT TOUCH
-    // Get the current logged-in user from Firebase Authentication
-    User? currentUser = FirebaseAuth.instance.currentUser;
-
-    if (currentUser != null) {
-      // Extract UID and email
-      setState(() {
-        uid = currentUser.uid;
-        email = currentUser.email;
-      });
       DocumentSnapshot doc = await FirebaseFirestore.instance
           .collection('patients')
           .doc(uid)
@@ -307,15 +292,29 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
         _middleNameController.text = data['middle_name'] ?? '';
         _firstNameController.text = data['first_name'] ?? '';
 
-        _houseNoController.text = data['house_no'] ?? '';
-        _cityController.text = data['city'] ?? '';
-        _pincodeController.text = data['pincode']?.toString() ?? '';
+        var address = data['address'] as Map<String, dynamic>? ?? {};
+        _houseNoController.text = address['house_no'] ?? '';
+        _cityController.text = address['city'] ?? '';
+        _pincodeController.text = address['pincode']?.toString() ?? '';
+
+        //_houseNoController.text = data['house_no'] ?? '';
+        //_cityController.text = data['city'] ?? '';
+        //_pincodeController.text = data['pincode']?.toString() ?? '';
         _phoneController.text = data['phone'] ?? '';
         _gender = data['gender'] ?? 'Male';
-        _heightController = data['height'] ?? '';
-        _weightController = data['weight'] ?? '';
+        _heightController.text = data['height']?.toString() ?? '';
+        _weightController.text = data['weight']?.toString() ?? '';
         _bloodGroup = data['bloodgrp'];
-        _selectedDate = data['dob'];
+        var dobField = data['dob'];
+        if (dobField != null) {
+          if (dobField is Timestamp) {
+            _selectedDate = dobField.toDate();
+          } else if (dobField is String) {
+            _selectedDate = DateTime.tryParse(dobField);
+          }
+        }
+
+        _imageUrl = data['profile_image_url'] ?? '';
 
         setState(() {});
       }
@@ -460,6 +459,16 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
         title: const Text('Patient Profile'),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 107, 170, 181),
+        leading: Row(
+            mainAxisSize: MainAxisSize.min, // Set the row size to minimum
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back), // Default back arrow
+                onPressed: () {
+                  Navigator.pop(context); // Go back to the previous page
+                },
+              )
+            ]),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -491,9 +500,19 @@ class _ProfileUpdatePageState extends State<ProfileUpdatePage> {
                           ),
                           child: CircleAvatar(
                             radius: 50, // Inner Circle Radius
-                            backgroundImage: _imageFile == null
-                                ? AssetImage('assets/doc1.jpg') as ImageProvider
-                                : FileImage(_imageFile!), // Profile Image Logic
+                            backgroundImage: _profileImage != null
+                                ? FileImage(_profileImage!)
+                                : (_imageUrl != null && _imageUrl!.isNotEmpty
+                                    ? NetworkImage(_imageUrl!)
+                                    : null),
+                            child: _profileImage == null &&
+                                    (_imageUrl == null || _imageUrl!.isEmpty)
+                                ? const Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                    size: 30,
+                                  )
+                                : null,
                           ),
                         ),
                       ),
@@ -539,6 +558,116 @@ ElevatedButton(
                 ),
                 const SizedBox(height: 20),
                 const SizedBox(height: 20),
+
+// SwitchListTile to toggle the name fields
+                SwitchListTile(
+                  title: const Text('Show Name Fields'),
+                  value: _showNameFields,
+                  onChanged: (value) {
+                    setState(() {
+                      _showNameFields = value;
+                    });
+                  },
+                ),
+
+                if (_showNameFields) ...[
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _firstNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'First Name',
+                      labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(Icons.person,
+                          color: Color.fromARGB(255, 107, 170, 181)),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'First Name is required';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _middleNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Middle Name (Optional)',
+                      labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(Icons.person_outline,
+                          color: Color.fromARGB(255, 107, 170, 181)),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _lastNameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Last Name',
+                      labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(Icons.person,
+                          color: Color.fromARGB(255, 107, 170, 181)),
+                    ),
+                    validator: (value) {
+                      if (_firstNameController.text.isEmpty) {
+                        return 'Please enter First Name before Last Name';
+                      }
+                      if (value == null || value.isEmpty) {
+                        return 'Last Name is required';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+                /* else
+  // Placeholder field for when name fields are hidden
+  TextFormField(
+    onTap: () {
+      setState(() {
+        _showNameFields = true;
+      });
+    },
+    decoration: const InputDecoration(
+      labelText: 'Name',
+      labelStyle: TextStyle(
+        color: Color.fromARGB(255, 107, 170, 181),
+      ),
+      border: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: Color.fromARGB(255, 107, 170, 181),
+        ),
+      ),
+      prefixIcon: Icon(Icons.person,
+          color: Color.fromARGB(255, 107, 170, 181)),
+    ),
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return 'Name is required';
+      }
+      return null;
+    },
+  ),*/
+
+                /*const SizedBox(height: 20),
                 if (!_showNameFields)
                   TextFormField(
                     onTap: () {
@@ -633,7 +762,7 @@ ElevatedButton(
                       return null;
                     },
                   ),
-                ],
+                ],*/
                 const SizedBox(height: 20),
                 TextFormField(
                   readOnly: true,
@@ -701,6 +830,121 @@ ElevatedButton(
                   ],
                 ),
                 const SizedBox(height: 20),
+
+// SwitchListTile to toggle the address fields
+                SwitchListTile(
+                  title: const Text('Show Address Fields'),
+                  value: _showAddressFields,
+                  onChanged: (value) {
+                    setState(() {
+                      _showAddressFields = value;
+                    });
+                  },
+                ),
+
+/*if (_showAddressFields)...[
+  
+    decoration: const InputDecoration(
+      labelText: 'Address',
+      labelStyle: TextStyle(
+        color: Color.fromARGB(255, 107, 170, 181),
+      ),
+      border: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: Color.fromARGB(255, 107, 170, 181),
+        ),
+      ),
+      prefixIcon: Icon(Icons.home,
+          color: Color.fromARGB(255, 107, 170, 181)),
+    ),
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return 'Address is required';
+      }
+      return null;
+    },
+  ),*/
+                if (_showAddressFields) ...[
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _houseNoController,
+                    decoration: const InputDecoration(
+                      labelText: 'Line-1: House No., Street Name',
+                      labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(Icons.home_filled,
+                          color: Color.fromARGB(255, 107, 170, 181)),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Line-1 is required';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _cityController,
+                    decoration: const InputDecoration(
+                      labelText: 'Line-2: City/District, State',
+                      labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(Icons.home_outlined,
+                          color: Color.fromARGB(255, 107, 170, 181)),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Line-2 is required';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: _pincodeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Pincode',
+                      labelStyle: TextStyle(
+                        color: Color.fromARGB(255, 107, 170, 181),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color.fromARGB(255, 107, 170, 181),
+                        ),
+                      ),
+                      prefixIcon: Icon(Icons.location_on,
+                          color: Color.fromARGB(255, 107, 170, 181)),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Pincode is required';
+                      } else if (value.length != 6) {
+                        return 'Enter a valid 6-digit pincode';
+                      }
+                      return null;
+                    },
+                    /*validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Pincode is required';
+                      }
+                      return null;
+                    },*/
+                  ),
+                ],
+
+                /*const SizedBox(height: 20),
                 if (!_showAddressFields)
                   TextFormField(
                     onTap: () {
@@ -727,8 +971,8 @@ ElevatedButton(
                       }
                       return null;
                     },
-                  ),
-                if (_showAddressFields) ...[
+                  ),*/
+                /*if (_showAddressFields) ...[
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: _houseNoController,
@@ -751,8 +995,8 @@ ElevatedButton(
                       }
                       return null;
                     },
-                  ),
-                  /*SizedBox(height: 10),
+                  ),*/
+                /*SizedBox(height: 10),
                   TextFormField(
                     controller: _streetNameController,
                     decoration: InputDecoration(
@@ -773,7 +1017,7 @@ ElevatedButton(
                       return null;
                     },
                   ),*/
-                  const SizedBox(height: 10),
+                /*const SizedBox(height: 10),
                   TextFormField(
                     controller: _cityController,
                     decoration: const InputDecoration(
@@ -793,8 +1037,8 @@ ElevatedButton(
                       }
                       return null;
                     },
-                  ),
-                  /*SizedBox(height: 10),
+                  ),*/
+                /*SizedBox(height: 10),
                   TextFormField(
                     controller: _districtController,
                     decoration: InputDecoration(
@@ -815,7 +1059,7 @@ ElevatedButton(
                       return null;
                     },
                   ),*/
-                  /*SizedBox(height: 10),
+                /*SizedBox(height: 10),
                   TextFormField(
                     controller: _stateController,
                     decoration: InputDecoration(
@@ -836,7 +1080,7 @@ ElevatedButton(
                       return null;
                     },
                   ),*/
-                  const SizedBox(height: 10),
+                /*const SizedBox(height: 10),
                   TextFormField(
                     controller: _pincodeController,
                     decoration: const InputDecoration(
@@ -858,131 +1102,144 @@ ElevatedButton(
                       }
                       return null;
                     },
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone',
-                      labelStyle: TextStyle(
-                        color: Color.fromARGB(255, 107, 170, 181),
-                      ),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color.fromARGB(255, 107, 170, 181),
-                        ),
-                      ),
-                      prefixIcon: Icon(
-                        Icons.phone,
+                  ),*/
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [
+                    FilteringTextInputFormatter
+                        .digitsOnly, // Allows only numbers
+                    LengthLimitingTextInputFormatter(
+                        10), // Limits input to 10 characters
+                  ],
+                  decoration: const InputDecoration(
+                    labelText: 'Phone',
+                    labelStyle: TextStyle(
+                      color: Color.fromARGB(255, 107, 170, 181),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
                         color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
+                    prefixIcon: Icon(
+                      Icons.phone,
+                      color: Color.fromARGB(255, 107, 170, 181),
+                    ),
                   ),
-                  SizedBox(height: 20),
-                  // Dropdown for Blood Group
-                  DropdownButtonFormField<String>(
-                    value:
-                        _bloodGroup, // Initialize this variable in your state
-                    decoration: InputDecoration(
-                      labelText: 'Blood Group',
-                      labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
-                      ),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                      ),
-                      prefixIcon: Icon(
-                        Icons.bloodtype,
+                  validator: (value) {
+    if (value == null || value.isEmpty) {
+      return 'Clinic Phone is required';
+    } else if (value.length != 10) {
+      return 'Enter a valid 10-digit phone number';
+    }
+    return null;
+  },
+                  
+                ),
+                SizedBox(height: 20),
+                // Dropdown for Blood Group
+                DropdownButtonFormField<String>(
+                  value: _bloodGroup, // Initialize this variable in your state
+                  decoration: InputDecoration(
+                    labelText: 'Blood Group',
+                    labelStyle: TextStyle(
+                      color: const Color.fromARGB(255, 107, 170, 181),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
                         color: const Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
-                    items: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _bloodGroup = newValue!;
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Blood group is required';
-                      }
-                      return null;
-                    },
+                    prefixIcon: Icon(
+                      Icons.bloodtype,
+                      color: const Color.fromARGB(255, 107, 170, 181),
+                    ),
                   ),
-                  SizedBox(height: 20),
+                  items: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _bloodGroup = newValue!;
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Blood group is required';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
 
 // Height field with validation
-                  TextFormField(
-                    controller: _heightController, // Initialize in your state
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'Height (cm)',
-                      labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
-                      ),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                      ),
-                      prefixIcon: Icon(
-                        Icons.height,
+                TextFormField(
+                  controller: _heightController, // Initialize in your state
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Height (cm)',
+                    labelStyle: TextStyle(
+                      color: const Color.fromARGB(255, 107, 170, 181),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
                         color: const Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Height is required';
-                      }
-                      final height = double.tryParse(value);
-                      if (height == null || height < 50 || height > 250) {
-                        return 'Please enter a valid height between 50 and 250 cm';
-                      }
-                      return null;
-                    },
+                    prefixIcon: Icon(
+                      Icons.height,
+                      color: const Color.fromARGB(255, 107, 170, 181),
+                    ),
                   ),
-                  SizedBox(height: 20),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Height is required';
+                    }
+                    final height = double.tryParse(value);
+                    if (height == null || height < 50 || height > 250) {
+                      return 'Please enter a valid height between 50 and 250 cm';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
 
 // Weight field with validation
-                  TextFormField(
-                    controller: _weightController, // Initialize in your state
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'Weight (kg)',
-                      labelStyle: TextStyle(
-                        color: const Color.fromARGB(255, 107, 170, 181),
-                      ),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: const Color.fromARGB(255, 107, 170, 181),
-                        ),
-                      ),
-                      prefixIcon: Icon(
-                        Icons.fitness_center,
+                TextFormField(
+                  controller: _weightController, // Initialize in your state
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Weight (kg)',
+                    labelStyle: TextStyle(
+                      color: const Color.fromARGB(255, 107, 170, 181),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
                         color: const Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Weight is required';
-                      }
-                      final weight = double.tryParse(value);
-                      if (weight == null || weight < 10 || weight > 300) {
-                        return 'Please enter a valid weight between 10 and 300 kg';
-                      }
-                      return null;
-                    },
+                    prefixIcon: Icon(
+                      Icons.fitness_center,
+                      color: const Color.fromARGB(255, 107, 170, 181),
+                    ),
                   ),
-                ],
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Weight is required';
+                    }
+                    final weight = double.tryParse(value);
+                    if (weight == null || weight < 10 || weight > 300) {
+                      return 'Please enter a valid weight between 10 and 300 kg';
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

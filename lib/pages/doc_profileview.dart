@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:login/pages/doc_profile.dart';
+import 'package:login/pages/doc_profile_update.dart';
 import 'package:login/pages/main_screen.dart';
 import 'package:login/pages/profile_updation.dart';
 import 'package:login/pages/doc_homepage.dart';
@@ -112,7 +113,7 @@ class _DocProfileViewPageState extends State<DocProfileViewPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => DoctorProfileUpdateApp()),
+                    builder: (context) => DoctorProfileUpdatePage()),
               );
             },
             style: TextButton.styleFrom(

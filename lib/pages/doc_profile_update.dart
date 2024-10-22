@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -146,6 +147,7 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
         _gender = data['gender'] ?? 'Male';
         _isSpecializationSelected = data['isSpecializationSelected'] ?? false;
         _selectedSpecialization = data['specialization'] ?? '';
+        _imageUrl = data['profile_image_url'] ?? '';
 
         setState(() {});
       }
@@ -280,10 +282,34 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                 const SizedBox(height: 30),
                 GestureDetector(
                   onTap: _pickImage,
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundColor: const Color.fromARGB(255, 107, 170, 181),
-                    backgroundImage: _profileImage != null
+                  child: Container(
+                    width: 112, // 2 * 56 (Outer Radius)
+                    height: 112,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color:
+                            Color.fromARGB(255, 107, 170, 181), // Border Color
+                        width: 6.0, // Border Width
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: const Color.fromARGB(255, 107, 170, 181),
+                      backgroundImage: _profileImage != null
+                          ? FileImage(_profileImage!)
+                          : (_imageUrl != null && _imageUrl!.isNotEmpty
+                              ? NetworkImage(_imageUrl!)
+                              : null),
+                      child: _profileImage == null &&
+                              (_imageUrl == null || _imageUrl!.isEmpty)
+                          ? const Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 30,
+                            )
+                          : null,
+                      /*backgroundImage: _profileImage != null
                         ? FileImage(_profileImage!)
                         : null,
                     child: _profileImage == null
@@ -292,7 +318,8 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                             color: Colors.white,
                             size: 30,
                           )
-                        : null,
+                        : null,*/
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -380,7 +407,7 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                         color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
-                    prefixIcon: Icon(Icons.home,
+                    prefixIcon: Icon(Icons.location_city,
                         color: const Color.fromARGB(255, 107, 170, 181)),
                   ),
                   validator: (value) {
@@ -389,6 +416,9 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                     }
                     return null;
                   },
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(100),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
@@ -407,9 +437,17 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                     prefixIcon: Icon(Icons.phone,
                         color: const Color.fromARGB(255, 107, 170, 181)),
                   ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter
+                        .digitsOnly, // Allows only numbers
+                    LengthLimitingTextInputFormatter(
+                        10), // Limits input to 10 characters
+                  ],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Clinic Phone is required';
+                    } else if (value.length != 10) {
+                      return 'Enter a valid 10-digit phone number';
                     }
                     return null;
                   },
@@ -417,7 +455,7 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _minConsultFeeController,
-                  keyboardType: TextInputType.phone,
+                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText:
                         'Consultation Fee: enter a minimum consultation fee',
@@ -429,8 +467,13 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                         color: Color.fromARGB(255, 107, 170, 181),
                       ),
                     ),
-                    prefixIcon: Icon(Icons.phone,
+                    prefixIcon: Icon(Icons.money,
                         color: Color.fromARGB(255, 107, 170, 181)),
+                    prefixText: '₹ ',
+                    prefixStyle: TextStyle(
+                      color: Color.fromARGB(255, 107, 170, 181),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -591,6 +634,9 @@ class _DoctorProfileUpdatePageState extends State<DoctorProfileUpdatePage> {
                     prefixIcon: Icon(Icons.description,
                         color: Color.fromARGB(255, 107, 170, 181)),
                   ),
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(100),
+                  ],
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton(
