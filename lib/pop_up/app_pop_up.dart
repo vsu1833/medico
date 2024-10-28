@@ -67,7 +67,7 @@ class _PopUpAppoState extends State<PopUpAppo> {
             ],
           ),
           content: Text(
-            'Rs. 400 should be paid at the medical center before the appointment.',
+            'Consultation fee should be paid at the medical center before the appointment.',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
